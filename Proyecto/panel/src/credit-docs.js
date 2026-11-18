@@ -71,11 +71,11 @@ function openCreditForm(id='',clientId=''){
  <div class="form-grid">${selectField('Cliente del panel · opcional','clientId',clientOptions(f.clientId,'Sin vincular'),true)}</div>
  <h3 class="credit-step"><span>1</span>Buró · precalificación</h3><p class="subtext credit-step-note">Con estos dos datos ya podés guardar y descargar el Buró.</p>
  <div class="form-grid">${cIn('Nombre completo según DUI','name',f.name,{req:true,full:true})}${cIn('Número de DUI','dui',f.dui,{req:true,hint:'9 dígitos, ejemplo 01234567-8',mode:'numeric',max:10})}${cIn('Teléfono celular','phone',f.phone,{type:'tel',mode:'tel',max:50})}</div>
- <h3 class="credit-step"><span>2</span>Cotizador Siete Tres 47%</h3>
+ <h3 class="credit-step"><span>2</span>Cotizador Siete Tres 47%</h3><p class="subtext credit-step-note">Para descargar el Cotizador se necesitan el nombre, el teléfono celular y todos los campos de esta sección.</p>
  <div class="form-grid">${cIn('Moto (modelo)','model',f.model,{list:'credit-models',full:true})}${cIn('Año','year',f.year,{mode:'numeric',max:10})}${cIn('Valor de la moto $','price',f.price,{type:'number',mode:'decimal'})}${cIn('Prima $','down',f.down,{type:'number',mode:'decimal',hint:'Dejá 0 si no hay prima.'})}${selectField('Plazo elegido','months',options(SIETE_TRES.terms.map(n=>[n,n+' cuotas']),f.months))}<div class="field"><span class="field-label">Cuota del plazo elegido</span><output id="credit-chosen" class="credit-chosen">—</output></div>
  <div class="field full"><div class="credit-preview" id="credit-preview" aria-live="polite"></div></div>
  ${cIn('Vendedor','vendor',f.vendor)}${cIn('Agencia','agency',f.agency)}${cIn('Teléfono de la agencia','agencyPhone',f.agencyPhone,{type:'tel',mode:'tel',max:50})}</div>
- <h3 class="credit-step"><span>3</span>Solicitud de crédito</h3>
+ <h3 class="credit-step"><span>3</span>Solicitud de crédito</h3><p class="subtext credit-step-note">Para descargar la Solicitud se necesitan todos los campos, menos otros ingresos, punto de referencia y teléfono del trabajo, y el detalle.</p>
  <p class="section-label">Datos personales</p>
  <div class="form-grid">${cIn('Fecha de nacimiento','birth',f.birth,{type:'date'})}<div class="field"><span class="field-label">Sexo</span><div class="checks credit-sex"><label class="check"><input type="radio" name="sex" value="F"${f.sex==='F'?' checked':''}> F</label><label class="check"><input type="radio" name="sex" value="M"${f.sex==='M'?' checked':''}> M</label></div></div>${cIn('Nacionalidad','nationality',f.nationality)}${cIn('Dirección actual de residencia','address',f.address,{full:true})}${cIn('Punto de referencia','addressRef',f.addressRef,{full:true})}</div>
  <p class="section-label">Datos laborales</p>
@@ -257,14 +257,39 @@ function makeSolicitudPDF(f){
 }
 
 const CREDIT_DOCS={buro:['Buro',makeBuroPDF],cotizador:['Cotizador Siete Tres',makeCotizadorPDF],solicitud:['Solicitud de credito',makeSolicitudPDF]};
+// Campos obligatorios de cada documento. El Buró solo necesita nombre y DUI.
+const CREDIT_LABELS={name:'nombre',dui:'DUI',phone:'teléfono celular',model:'moto',year:'año',price:'valor de la moto',down:'prima (poné 0 si no hay)',vendor:'vendedor',agency:'agencia',agencyPhone:'teléfono de la agencia',birth:'fecha de nacimiento',sex:'sexo',nationality:'nacionalidad',address:'dirección de residencia',addressRef:'punto de referencia',company:'empresa o negocio',position:'cargo',startDate:'fecha de ingreso',income:'ingreso mensual',workAddress:'dirección del trabajo'};
+const refFields=kind=>Array.from({length:CREDIT_REF_COUNT},(_,i)=>[`${kind}-${i}-name`,`${kind}-${i}-phone`]).flat();
+const CREDIT_REQUIRED={buro:['name','dui'],cotizador:['name','phone','model','year','price','down','vendor','agency','agencyPhone'],solicitud:['name','dui','phone','birth','sex','nationality','address','addressRef','company','position','startDate','income','workAddress',...refFields('fam'),...refFields('friend')]};
+const CREDIT_DOC_NAMES={buro:'el Buró',cotizador:'el Cotizador',solicitud:'la Solicitud'};
+function creditFieldValue(f,key){const ref=key.match(/^(fam|friend)-(\d)-(name|phone)$/);if(ref)return (ref[1]==='fam'?f.famRefs:f.friendRefs)?.[ref[2]]?.[ref[3]];return f[key];}
+function creditFieldLabel(key){const ref=key.match(/^(fam|friend)-(\d)-(name|phone)$/);if(ref)return `${ref[3]==='name'?'nombre':'teléfono'} de la referencia ${ref[1]==='fam'?'familiar':'de amigo'} ${Number(ref[2])+1}`;return CREDIT_LABELS[key]||key;}
+function creditMissing(kind,f){return (CREDIT_REQUIRED[kind]||[]).filter(k=>{const v=creditFieldValue(f,k);return v===null||v===undefined||String(v).trim()===''||(k==='price'&&!(Number(v)>0));});}
+function markCreditMissing(keys){
+ const form=$('credit-form');if(!form)return;
+ form.querySelectorAll('.credit-missing').forEach(el=>{el.classList.remove('credit-missing');el.removeAttribute('aria-invalid');});
+ let first=null;
+ for(const k of keys){const el=k==='sex'?form.querySelector('.credit-sex'):form.querySelector(`[name="${k}"]`);if(!el)continue;el.classList.add('credit-missing');if(k!=='sex')el.setAttribute('aria-invalid','true');first??=k==='sex'?form.querySelector('input[name="sex"]'):el;}
+ first?.focus({preventScroll:true});first?.scrollIntoView({block:'center',behavior:'smooth'});
+}
 function downloadCreditPDF(kind,f){
  const [name,make]=CREDIT_DOCS[kind]||[];if(!make)return;
+ const missing=creditMissing(kind,f);
+ if(missing.length){
+  const list=missing.map(creditFieldLabel),msg=`No se puede descargar ${CREDIT_DOC_NAMES[kind]}: faltan ${list.length} ${list.length===1?'campo':'campos'}. Completá: ${list.join(', ')}.`;
+  toast(`No se puede descargar ${CREDIT_DOC_NAMES[kind]}. Faltan ${list.length} ${list.length===1?'campo':'campos'}.`,true);
+  // Si se pidió desde la lista, se abre el formulario de ese cliente con los campos marcados.
+  if(!($('modal').open&&$('credit-form'))&&f.id)openCreditForm(f.id);
+  if($('credit-form')){showCreditError(msg);markCreditMissing(missing);}
+  else toast(msg,true);
+  return false;
+ }
  try{const doc=make(f);doc.save(creditFileName(name,f));toast(name.replace('Buro','Buró').replace('credito','crédito')+' descargado en PDF.');return true;}
  catch(err){if($('credit-error'))showCreditError(err.message);else toast(err.message,true);return false;}
 }
 
 /* ---------- Eventos ---------- */
-document.addEventListener('input',e=>{if(e.target.closest('#credit-form')&&['price','down','months'].includes(e.target.name))updateCreditPreview();});
+document.addEventListener('input',e=>{if(!e.target.closest('#credit-form'))return;if(['price','down','months'].includes(e.target.name))updateCreditPreview();const m=e.target.closest('.credit-missing')||e.target;if(m.classList.contains('credit-missing')&&String(e.target.value).trim()){m.classList.remove('credit-missing');m.removeAttribute('aria-invalid');}});
 document.addEventListener('change',e=>{
  if(!e.target.closest('#credit-form'))return;
  if(e.target.name==='months')updateCreditPreview();
