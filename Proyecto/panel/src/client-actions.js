@@ -5,6 +5,8 @@ function removeClientRecord(data,id){
  if(!data.clients.some(c=>c.id===id))throw Error('Este cliente ya no existe.');
  const next=clone(data);next.clients=next.clients.filter(c=>c.id!==id);
  for(const list of ['quotes','requests','sales','postSales'])next[list]=next[list].filter(item=>item.clientId!==id);
+ // Los datos de crédito se conservan sin vincular: pueden servir para otra gestión.
+ for(const f of next.creditForms||[])if(f.clientId===id)f.clientId='';
  return next;
 }
 function confirmDeleteClient(id){

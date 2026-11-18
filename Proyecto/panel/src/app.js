@@ -47,6 +47,7 @@ function validateDB(v){
  for(const name of ['advisor','agency','phone','location'])if(!str(v.settings[name],250))throw new Error('Los ajustes del respaldo no son válidos.');
  if(!Number.isInteger(v.settings.validDays)||v.settings.validDays<1||v.settings.validDays>365||!['light','dark'].includes(v.settings.theme)||!Number.isInteger(v.revision)||v.revision<0)throw new Error('Los ajustes del respaldo no son válidos.');
  validateMonthlyFields(v);
+ validateCreditForms(v);
  return v;
 }
 function loadDB(){try{const raw=localStorage.getItem(key());storageBroken=false;rawBroken='';return raw?validateDB(JSON.parse(raw)):(!demo&&INITIAL_BACKUP?validateDB(clone(INITIAL_BACKUP)):freshDB());}catch(err){storageBroken=true;try{rawBroken=localStorage.getItem(key())||'';}catch{}return freshDB();}}

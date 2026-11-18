@@ -14,7 +14,7 @@ function monthSales(data,period){return data.sales.filter(s=>activeSale(s)&&s.da
 function validISODate(s){return /^\d{4}-\d{2}-\d{2}$/.test(s||'')&&!isNaN(Date.parse(s))&&new Date(s+'T12:00:00Z').toISOString().slice(0,10)===s;}
 function migrateDB(value){
  if(!value||value.schema!=='tvs-panel-daniel'||![1,2].includes(value.version))return value;
- const v=clone(value);v.version=2;v.imports??=[];v.payrollPlans??=[];
+ const v=clone(value);v.version=2;v.imports??=[];v.payrollPlans??=[];v.creditForms??=[];
  for(const c of v.clients||[]){
   c.stage=({'Contactado':'En seguimiento','En evaluación':'Credito ingresado'})[c.stage]||c.stage;
   c.recordDate??=c.createdAt?.slice(0,10)||today();c.documentation??='';c.plates??='';c.price??=null;c.saleId??='';
