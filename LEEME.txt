@@ -1,4 +1,4 @@
-PANEL DE VENTAS DANIEL CAMPOS · VERSIÓN 1.8.0 · INGRESAR CRÉDITO CREDIOPCIONES
+PANEL DE VENTAS DANIEL CAMPOS · VERSIÓN 1.9.0 · TEMA SHOWROOM TVS
 4 de noviembre de 2026
 
 PAQUETE PARA WINDOWS
@@ -6,6 +6,11 @@ Usá Extraer todo en Windows y abrí Panel-Ventas-Daniel.html con Chrome o Edge.
 También se entrega el HTML por separado: ese archivo incluye toda la aplicación y se puede abrir directamente.
 El ZIP evita duplicar las imágenes de las fichas técnicas. Todas están incluidas dentro del HTML con sus bytes originales.
 Para trabajar con el código fuente, ejecutá python Proyecto/panel/build.py. Si faltan las imágenes sueltas, se recuperan automáticamente del HTML antes de generar la aplicación. Conservá el HTML en la carpeta principal.
+
+TEMA SHOWROOM TVS (VERSIÓN 1.9.0)
+Nuevo aspecto pensado para trabajar en la PC: menú lateral azul marino con la sección activa marcada en rojo TVS, títulos y cifras con tipografía Plus Jakarta Sans y textos con Inter. Las dos fuentes van incluidas en el HTML y funcionan sin internet.
+Tarjetas, tablas, botones y ventanas tienen más contraste y jerarquía. Las ventanas aparecen con un pequeño zoom, los botones responden al clic y los avisos suben suavemente. Si Windows tiene activado reducir animaciones, solo se usan fundidos.
+El modo oscuro usa la misma estructura. No cambió ninguna función, cálculo ni dato.
 
 INGRESAR CRÉDITO CREDIOPCIONES · PLAN SIETE TRES 47% (VERSIÓN 1.8.0)
 En Solicitudes usá + Ingresar crédito. Un solo formulario llena los tres documentos y cada uno se descarga en PDF con su propio botón: Buró, Cotizador y Solicitud.

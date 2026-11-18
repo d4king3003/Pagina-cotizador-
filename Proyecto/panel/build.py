@@ -63,6 +63,7 @@ for asset in [branding['tvs'], *branding['models'].values()]:
     mime = 'image/jpeg' if file.suffix.lower() in ['.jpg', '.jpeg'] else 'image/png' if file.suffix.lower() == '.png' else 'image/webp'
     asset['src'] = 'data:'+mime+';base64,'+base64.b64encode(file.read_bytes()).decode()
 quote_image_source = (ROOT/'src/quote-image.js').read_text().replace('/*QUOTE_IMAGE_BRANDING*/null', json.dumps(branding,ensure_ascii=False).replace('</','<\\/'))
+calc_font=lambda name:'data:font/woff2;base64,'+base64.b64encode((ROOT/'src/vendor/fonts'/name).read_bytes()).decode()
 embedded = original.replace(needle,"window.addEventListener('beforeprint', preparePrint);\n"+quote_image_source+'\n'+bridge)
 embedded = embedded.replace('crediopciones-android-v1','tvs-daniel-panel-calculator-v1')
 # Reuse the calculator's existing visibility control outside its hidden header.
@@ -75,7 +76,7 @@ term_card = '<div class="card term-card">'
 assert embedded.count(term_card) == 1
 image_buttons = '<button type="button" class="details-toggle details-toggle-labeled quote-image-button" id="panel-copy-quote-image" disabled><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="8" y="8" width="12" height="13" rx="2"/><path d="M15 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg><span>Copiar cotización como imagen</span></button><button type="button" class="details-toggle details-toggle-labeled" id="panel-download-quote-image" disabled><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5"/></svg><span>Descargar PNG</span></button>'
 embedded = embedded.replace(term_card, '<div class="panel-details-toolbar">'+toggle_markup+image_buttons+'</div><p class="panel-quote-image-status" id="panel-quote-image-status" role="status" aria-live="polite" hidden></p>\n          '+term_card)
-embedded = embedded.replace('</head>', '''<style>
+embedded = embedded.replace('</head>', '<style>@font-face{font-family:"Inter Panel";src:url('+calc_font('inter-latin-wght-normal.woff2')+') format("woff2");font-weight:100 900}@font-face{font-family:"Jakarta Panel";src:url('+calc_font('plus-jakarta-sans-latin-wght-normal.woff2')+') format("woff2");font-weight:200 800}body,button,input,select,textarea{font-family:"Inter Panel",ui-sans-serif,"Segoe UI",sans-serif!important}h1,h2,h3{font-family:"Jakarta Panel","Inter Panel",sans-serif!important;letter-spacing:-.4px}</style>'+'''<style>
 body{background:transparent!important}.topbar,footer,.actions{display:none!important}.workspace{max-width:none;padding:0 4px}.financial-nav{height:64px}.financial-active{height:64px}.page-heading{margin:24px 0}.page-heading h1{font-size:25px}.page-heading .intro{font-size:11px}.page-heading .eyebrow{font-size:8px}.calculator-grid{gap:22px}.workspace>main{padding:0}.quote-result{margin-bottom:12px}
 .results{width:100%;max-width:680px;min-width:0;justify-self:start}
 .panel-details-toolbar{display:flex;justify-content:flex-start;flex-wrap:wrap;gap:8px;margin:0 0 12px}
@@ -120,7 +121,9 @@ app_source=app_source.replace('let db=loadDB();',monthly+'\n'+technical+'\n'+cas
 (ROOT/'qa/app-compiled.js').write_text(app_source)
 office_render_source=office_bundle()
 (ROOT/'qa/office-renderer.js').write_text(office_render_source)
-html=shell.replace('/*APP_CSS*/',(ROOT/'src/style.css').read_text()+'\n'+(ROOT/'src/fichas.css').read_text()+'\n'+(ROOT/'src/cash-quote.css').read_text()+'\n'+(ROOT/'src/office-scene.css').read_text()+'\n'+(ROOT/'src/office.css').read_text()+'\n'+(ROOT/'src/quick-lead.css').read_text()+'\n'+(ROOT/'src/refresh.css').read_text()+'\n'+(ROOT/'src/credit-docs.css').read_text()).replace('/*CALCULATOR_BASE64*/',base64.b64encode(embedded.encode()).decode()).replace('/*TECHNICAL_ASSETS*/','\n'.join(assets)).replace('/*APP_JS*/',app_source).replace('/*JSPDF_JS*/',(ROOT/'src/vendor/jspdf.umd.min.js').read_text()).replace('/*OFFICE_SCENE_JS*/',office_render_source)
+font_url=lambda name:'data:font/woff2;base64,'+base64.b64encode((ROOT/'src/vendor/fonts'/name).read_bytes()).decode()
+theme_css=(ROOT/'src/theme.css').read_text().replace('/*FONT_INTER*/',font_url('inter-latin-wght-normal.woff2')).replace('/*FONT_JAKARTA*/',font_url('plus-jakarta-sans-latin-wght-normal.woff2'))
+html=shell.replace('/*APP_CSS*/',(ROOT/'src/style.css').read_text()+'\n'+(ROOT/'src/fichas.css').read_text()+'\n'+(ROOT/'src/cash-quote.css').read_text()+'\n'+(ROOT/'src/office-scene.css').read_text()+'\n'+(ROOT/'src/office.css').read_text()+'\n'+(ROOT/'src/quick-lead.css').read_text()+'\n'+(ROOT/'src/refresh.css').read_text()+'\n'+(ROOT/'src/credit-docs.css').read_text()+'\n'+theme_css).replace('/*CALCULATOR_BASE64*/',base64.b64encode(embedded.encode()).decode()).replace('/*TECHNICAL_ASSETS*/','\n'.join(assets)).replace('/*APP_JS*/',app_source).replace('/*JSPDF_JS*/',(ROOT/'src/vendor/jspdf.umd.min.js').read_text()).replace('/*OFFICE_SCENE_JS*/',office_render_source)
 (ROOT/'dist').mkdir(exist_ok=True)
 (ROOT/'dist/index.pending').write_text(html)
 (ROOT/'dist/index.pending').replace(ROOT/'dist/index.html')

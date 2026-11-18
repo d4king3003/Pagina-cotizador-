@@ -1,0 +1,185 @@
+/* ==========================================================================
+   Tema "Showroom TVS" · versión 1.9
+   Se carga al final: redefine colores, tipografía y movimiento sin tocar
+   la estructura ni el funcionamiento del panel.
+   ========================================================================== */
+@font-face{font-family:"Inter Panel";src:url(/*FONT_INTER*/) format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
+@font-face{font-family:"Jakarta Panel";src:url(/*FONT_JAKARTA*/) format("woff2");font-weight:200 800;font-style:normal;font-display:swap}
+
+:root{
+  --bg:#f1f3f7;--paper:#fff;--ink:#0f1b2d;--muted:#5f6b82;--faint:#8a95a8;--line:#e1e6ee;--line-strong:#cfd6e2;
+  --primary:#1747b5;--primary-hover:#103a99;--primary-soft:#e8eefb;
+  --navy:#0b1a33;--navy-2:#11264a;--red:#e2231a;--red-soft:#fdeceb;--green:#0f7b5f;
+  --soft:#eef2f8;
+  --radius:16px;--radius-sm:10px;
+  --shadow:0 1px 2px #0f1b2d0a,0 4px 16px #0f1b2d08;--shadow-hover:0 2px 6px #0f1b2d10,0 16px 36px #0f1b2d14;
+  --ease-enter:cubic-bezier(.22,1,.36,1);--ease-press:cubic-bezier(.25,.46,.45,.94);
+  --font-ui:"Inter Panel",Inter,ui-sans-serif,-apple-system,"Segoe UI",sans-serif;
+  --font-display:"Jakarta Panel","Inter Panel",ui-sans-serif,"Segoe UI",sans-serif;
+  font-family:var(--font-ui);
+}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-ui);font-feature-settings:"cv11","ss01"}
+h1,h2,h3,.metric-value,.stock-price,.payroll-total>strong,.payroll-fortnight strong,.mini-card strong,.document-payment strong,.credit-chosen,.hero-card h2,.brand{font-family:var(--font-display)}
+
+/* ---------- Menú lateral oscuro ---------- */
+.sidebar{background:linear-gradient(180deg,var(--navy) 0%,#0d203f 100%);border-right:0;color:#c3cfe4;padding:28px 14px 18px}
+.brand{color:#fff;font-weight:700;letter-spacing:-.3px;padding:0 8px}
+.brand small{color:#8d9fc0;font-family:var(--font-ui);font-weight:450}
+.brand-badge{background:#fff;color:var(--navy);box-shadow:none;position:relative;overflow:hidden;padding:8px 10px 10px}
+.brand-badge::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--red)}
+.brand-badge span{color:#5c6c88}
+.sidebar-label{color:#6f84a8;font-weight:600;margin:34px 0 10px;padding:0 12px}
+.nav-item{color:#b4c2da;font-weight:500;border-radius:10px;position:relative;margin-bottom:2px;padding:10px 12px;transition:background-color .15s ease,color .15s ease}
+.nav-item svg{color:#7f94b8;transition:color .15s ease}
+.nav-item.active{background:#ffffff14;color:#fff;font-weight:600;box-shadow:none}
+.nav-item.active::before{content:"";position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:0 3px 3px 0;background:var(--red)}
+.nav-item.active svg{color:#fff}
+.nav-item .nav-count{background:var(--red);border-radius:999px;font-weight:600}
+.local-tag{color:#8d9fc0;border-bottom-color:#ffffff14}
+.local-tag>span{background:#34d399;box-shadow:0 0 0 3px #34d39926}
+.profile strong{color:#fff}
+.profile small{color:#8d9fc0}
+.sidebar .avatar{background:#1d3560;color:#d6e3ff}
+@media (hover:hover) and (pointer:fine){.nav-item:hover{background:#ffffff0d;color:#fff}.nav-item:hover svg{color:#c9d6ee}}
+.sidebar-shade{background:#0b1a3399}
+
+/* ---------- Barra superior ---------- */
+.topbar{height:68px;border-bottom:1px solid var(--line);box-shadow:none}
+.breadcrumb{font-size:13px;color:var(--faint)}
+.breadcrumb strong{font-weight:600;color:var(--ink)}
+.save-indicator{color:var(--faint)}
+.icon-button{border-radius:10px;border-color:var(--line);transition:background-color .15s ease,border-color .15s ease}
+
+/* ---------- Tipografía y encabezados ---------- */
+main{padding-top:32px}
+.page-heading{margin-bottom:26px;align-items:flex-end}
+.eyebrow{color:var(--red);font-weight:700;letter-spacing:1.6px;font-size:10.5px}
+h1{font-size:32px;font-weight:750;letter-spacing:-.7px;line-height:1.1;margin-bottom:8px}
+h2{font-weight:700;letter-spacing:-.3px}
+h3{font-weight:700}
+.subtext{color:var(--muted)}
+
+/* ---------- Botones ---------- */
+.btn{height:40px;border-radius:var(--radius-sm);border-color:var(--line-strong);font-weight:600;letter-spacing:-.05px;
+  transition:background-color .15s ease,border-color .15s ease,color .15s ease,box-shadow .15s ease,transform .12s var(--ease-press)}
+.btn-small{height:36px}
+.btn:active:not(:disabled){transform:scale(.97);transition-duration:0s}
+.btn-primary{background:var(--primary);border-color:var(--primary);box-shadow:0 1px 2px #1747b533,0 4px 12px #1747b526}
+.btn-danger{color:#b4231b;background:var(--red-soft);border-color:#f6cfcc}
+.btn-quiet{color:var(--muted)}
+@media (hover:hover) and (pointer:fine){
+  .btn:hover{background:var(--soft);border-color:var(--line-strong)}
+  .btn-primary:hover{background:var(--primary-hover);border-color:var(--primary-hover);box-shadow:0 2px 4px #1747b533,0 8px 18px #1747b533}
+  .btn-danger:hover{background:#fbdcd9}
+  .icon-button:hover{background:var(--soft)}
+}
+.text-button{font-weight:600;color:var(--primary)}
+
+/* ---------- Tarjetas e indicadores ---------- */
+.card{border-color:var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.card-head{padding:18px 22px}
+.card-head h2{font-size:16px}
+.metrics{gap:16px}
+.metric{padding:20px 22px 18px;transition:box-shadow .2s ease,transform .2s var(--ease-enter)}
+.metric::after{content:"";position:absolute;left:22px;right:22px;top:0;height:2px;border-radius:0 0 2px 2px;background:var(--primary);opacity:0;transition:opacity .2s ease}
+.metric-label{font-size:12.5px;font-weight:550;color:var(--muted);margin-bottom:10px}
+.metric-value{font-size:34px;font-weight:750;letter-spacing:-1.2px;color:var(--ink)}
+.metric-note{font-size:11.5px;color:var(--faint)}
+.metric-icon{background:var(--primary-soft);color:var(--primary);border-radius:10px;padding:8px}
+.metric:hover,.stock-card:hover{transform:none}
+@media (hover:hover) and (pointer:fine){
+  .metric:hover{box-shadow:var(--shadow-hover);transform:translateY(-2px)}
+  .metric:hover::after{opacity:1}
+  .stock-card:hover{box-shadow:var(--shadow-hover);transform:translateY(-2px)}
+}
+.callout{background:var(--paper);border:1px solid var(--line);border-left:3px solid var(--primary);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px 20px}
+.callout svg{background:var(--primary-soft);padding:7px;width:32px;height:32px;border-radius:9px}
+.notice{border-radius:var(--radius-sm)}
+
+/* ---------- Banner principal: pista TVS ---------- */
+.hero-card{background:linear-gradient(120deg,#0b1a33 0%,#13305e 58%,#1a3f7a 100%);border-radius:var(--radius);box-shadow:0 12px 32px #0b1a3333;isolation:isolate}
+.hero-card::before{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 52%,var(--red) 52%,var(--red) 54.5%,transparent 54.5%,transparent 57%,#ffffff1f 57%,#ffffff1f 58%,transparent 58%);right:auto;bottom:auto;width:100%;height:100%;border-radius:0;z-index:0;pointer-events:none}
+.hero-card::after{border-color:#ffffff12}
+.hero-card .eyebrow{color:#ffb3ae}
+.hero-card h2{font-size:26px;font-weight:750;letter-spacing:-.8px}
+.hero-card p{color:#c6d4ea}
+.hero-card .btn{background:#fff;border-color:#fff;color:var(--navy);box-shadow:0 6px 16px #0006}
+.hero-card img{z-index:1;border-radius:14px;box-shadow:0 10px 26px #0005}
+
+/* ---------- Tablas ---------- */
+.table-wrap{border-radius:var(--radius)}
+thead{background:transparent}
+th{font-size:11px;font-weight:650;letter-spacing:.7px;text-transform:uppercase;color:var(--faint);padding:13px 20px;border-bottom:1px solid var(--line);background:#f7f9fc}
+td{border-top:1px solid var(--line)}
+tbody tr:first-child td{border-top:0}
+tbody tr{transition:background-color .12s ease}
+@media (hover:hover) and (pointer:fine){tbody tr:hover{background:#f6f8fc}}
+td strong{font-weight:600}
+.badge{font-weight:600;border-radius:999px}
+.badge.red{background:var(--red-soft);color:#b4231b}
+
+/* Selectores de la tabla de Clientes: que no corten el texto */
+.leads-table .inline-select,.leads-table td:nth-child(6) .inline-select,.leads-table td:nth-child(7) .inline-select{width:auto;min-width:128px;max-width:170px}
+
+/* ---------- Formularios ---------- */
+.field-input,input:not([type=checkbox]):not([type=radio]):not([type=file]),select,textarea{border-color:var(--line-strong);border-radius:var(--radius-sm);background:var(--paper)}
+input:not([type=checkbox]):not([type=radio]):not([type=file]):focus,select:focus,textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px #1747b524}
+.field>label,.field>span.field-label{color:var(--ink);font-weight:600}
+.tabs{border-radius:12px;background:var(--soft)}
+.tabs button{border-radius:9px;font-weight:550;transition:background-color .15s ease,color .15s ease}
+.tabs button[aria-pressed=true]{color:var(--primary);font-weight:650;box-shadow:0 1px 2px #0f1b2d14,0 2px 8px #0f1b2d0d}
+
+/* ---------- Ventanas (modales) ---------- */
+dialog{border:0;border-radius:20px;box-shadow:0 24px 80px #0b1a3340,0 2px 8px #0b1a331a}
+dialog::backdrop{background:#0b1a338c;backdrop-filter:blur(4px)}
+dialog[open]{animation:panel-dialog-in .22s var(--ease-enter)}
+dialog[open]::backdrop{animation:panel-fade-in .22s var(--ease-enter)}
+.modal-head{padding:22px 26px 18px}
+.modal-head h2{font-size:18px;font-weight:750}
+.modal-actions{background:#f7f9fc;border-radius:0 0 20px 20px}
+@keyframes panel-dialog-in{from{opacity:0;transform:translateY(8px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes panel-fade-in{from{opacity:0}to{opacity:1}}
+
+/* ---------- Avisos ---------- */
+.toast{background:var(--navy);border-radius:12px;padding:13px 18px;box-shadow:0 12px 32px #0b1a3359;font-weight:500;animation:panel-toast-in .22s var(--ease-enter)}
+.toast.error{background:#a3201a}
+@keyframes panel-toast-in{from{opacity:0;transform:translate(-50%,10px)}to{opacity:1;transform:translateX(-50%)}}
+
+/* ---------- Cambio de sección: solo opacidad, rápido ---------- */
+.view{animation:panel-view-in .16s ease-out}
+@keyframes panel-view-in{from{opacity:.4}to{opacity:1}}
+
+/* ---------- Motos y precios ---------- */
+.stock-card{transition:box-shadow .2s ease,transform .2s var(--ease-enter)}
+.stock-image{background:linear-gradient(180deg,#fff 60%,#f4f6fa)}
+.stock-price{font-weight:750;letter-spacing:-.8px}
+
+/* ---------- Ventas y comisiones ---------- */
+.payroll-total{background:linear-gradient(120deg,#0b1a33,#163a72);border-radius:14px;position:relative;overflow:hidden}
+.payroll-total::after{content:"";position:absolute;right:-30px;top:0;bottom:0;width:120px;background:linear-gradient(105deg,transparent 40%,#e2231a 40%,#e2231a 46%,transparent 46%);opacity:.9}
+.commission-table .current-tier{background:var(--primary-soft);box-shadow:inset 3px 0 var(--primary)}
+
+/* ---------- Ingresar crédito y registro rápido ---------- */
+.credit-panel{border-top:0;border-left:3px solid var(--red)}
+.credit-step span{background:var(--navy)}
+.quick-lead{border-left-color:var(--primary)}
+
+/* ---------- Pie ---------- */
+.app-footer{color:var(--faint);border-top-color:var(--line)}
+
+/* ---------- Modo oscuro ---------- */
+html[data-theme=dark]{--bg:#0b111d;--paper:#131c2c;--ink:#e9eef8;--muted:#9eabc2;--faint:#7b89a3;--line:#233047;--line-strong:#2e3d57;--primary:#7aa7ff;--primary-hover:#9bbcff;--primary-soft:#1b2c4a;--soft:#1a2539;--red-soft:#3b1d22;--shadow:0 1px 2px #0006;--shadow-hover:0 16px 36px #0009}
+html[data-theme=dark] .sidebar{background:linear-gradient(180deg,#08111f,#0b1729);border-right:1px solid #1b263a}
+html[data-theme=dark] .btn-primary{background:#2f63d6;border-color:#2f63d6;color:#fff;box-shadow:none}
+html[data-theme=dark] th{background:#162135}
+html[data-theme=dark] .modal-actions{background:#162135}
+html[data-theme=dark] .metric::after{background:var(--primary)}
+@media (hover:hover) and (pointer:fine){html[data-theme=dark] tbody tr:hover{background:#18233a}html[data-theme=dark] .btn-primary:hover{background:#3d72e6;border-color:#3d72e6}}
+
+/* ---------- Movimiento reducido: sin desplazamientos, se conservan los fundidos ---------- */
+@media (prefers-reduced-motion:reduce){
+  html dialog[open]{animation:panel-fade-in .15s ease-out!important}
+  html dialog[open]::backdrop{animation:panel-fade-in .15s ease-out!important}
+  html .toast{animation:panel-fade-in .15s ease-out!important}
+  html .metric:hover,html .stock-card:hover,html .btn:active:not(:disabled){transform:none!important}
+}
