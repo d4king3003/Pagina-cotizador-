@@ -53,7 +53,7 @@ Al pasar a Vendidos, completá moto, precio real y fecha. Guardar registra o act
 Solo los vendidos bailan. Fiesta de vendidos permite pausar o reanudar la celebración y se respeta la preferencia del sistema de reducir movimiento.
 Los descartados aparecen como tumbas en el cementerio. Podés seleccionarlos y reactivarlos moviéndolos a otra sala. No se borra su historial.
 Arrastrá el piso para girar la cámara; la rueda y los botones + / - acercan o alejan. También podés enfocar Vendidos o el cementerio.
-La oficina muestra todos los meses inicialmente. Usá el buscador, mes o salas para filtrar. Los archivados siguen disponibles en Clientes y no aparecen como personajes.
+La oficina abre en el mes actual. Podés elegir otro mes o usar Todos los meses. Usá el buscador, mes o salas para filtrar. Los archivados siguen disponibles en Clientes y no aparecen como personajes.
 Si una sala tiene más de nueve clientes, usá las páginas para ver sus demás personajes; la vista Lista también permite consultar todos los registros.
 El motor 3D está incluido en el HTML: no necesita internet ni descargar librerías. Si el navegador no puede activar WebGL, cambia a Lista y conserva las gestiones del CRM.
 Se mantienen los cotizadores de crédito y contado, PNG para WhatsApp, fichas técnicas, clientes, seguimientos, ventas y comisiones.

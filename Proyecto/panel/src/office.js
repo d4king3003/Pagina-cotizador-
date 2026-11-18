@@ -7,7 +7,8 @@ const OFFICE_ROOMS=[
  {id:'vendido',name:'Vendidos',color:'#d68f96',stage:'Vendido'},
  {id:'descartado',name:'Descartados',color:'#a0a8aa',stage:'No continuó'}
 ];
-const officeUI={selected:'',room:'',period:'',search:'',view:'scene',page:0,listPage:0,party:true};
+// La oficina abre en el mes actual; "Todos los meses" quita el filtro.
+const officeUI={selected:'',room:'',period:month(),search:'',view:'scene',page:0,listPage:0,party:true};
 let officeScene=null,officeFailed=false;
 function officeRoom(stage){
  if(stage==='Vendido')return 'vendido';
