@@ -16,6 +16,9 @@ La Solicitud corresponde a la hoja SOLICITUD versión 3.0 (CC-CI-P-F-01): datos 
 Podés vincular el crédito a un cliente del panel para completar nombre, teléfono, moto y precio. Si borrás ese cliente, los datos de crédito se conservan sin vincular.
 Los créditos se guardan en esta PC junto con tus demás datos y se incluyen en los respaldos. Los PDF se generan sin internet.
 
+MENÚ SIMPLIFICADO
+Se quitaron los apartados Mensajes y Posventa, junto con los botones Mensaje de Clientes y de la Oficina virtual. Los seguimientos de posventa que existieran se conservan en tus datos y en los respaldos.
+
 REGISTRO RÁPIDO DE INTERESADOS
 En Clientes o en Oficina virtual, usá Nuevo interesado. Escribí solo el número y presioná Añadir interesado. También está el botón Solo número en la barra superior.
 Se crea una ficha en estado Nuevo, dentro de Interesados. Queda identificada por su número hasta que completés el nombre. No exige moto, precio ni prima.
