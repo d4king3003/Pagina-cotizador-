@@ -183,3 +183,39 @@ html[data-theme=dark] .metric::after{background:var(--primary)}
   html .toast{animation:panel-fade-in .15s ease-out!important}
   html .metric:hover,html .stock-card:hover,html .btn:active:not(:disabled){transform:none!important}
 }
+
+/* ---------- Casos extremos (revisión break-ui) ---------- */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+/* Clientes: que la tabla quepa en una laptop y las acciones queden a la vista */
+.leads-table th,.leads-table td{padding:12px 10px}
+.leads-table th:first-child,.leads-table td:first-child{padding-left:20px}
+.leads-table td:first-child{white-space:normal;min-width:150px;max-width:230px}
+.leads-table td:first-child strong{overflow-wrap:anywhere;line-height:1.35}
+.leads-table td:nth-child(2){white-space:normal;min-width:96px;max-width:150px}
+.leads-table .inline-select,.leads-table td:nth-child(5) .inline-select,.leads-table td:nth-child(6) .inline-select{width:auto;min-width:0;max-width:150px}
+.leads-table .table-actions{gap:6px;flex-wrap:nowrap}
+.leads-table .table-actions .btn{padding:0 9px}
+/* Ventas del mes: nombres largos en dos líneas */
+.sales-table td:first-child{white-space:normal;max-width:300px}
+/* Ingresar crédito: nombre y moto pueden partirse; los botones de PDF nunca se esconden */
+.credit-panel td:first-child{white-space:normal;min-width:200px;max-width:320px}
+.credit-panel td:first-child strong{overflow-wrap:anywhere;line-height:1.35}
+.credit-panel td:nth-child(2){white-space:normal;min-width:150px;max-width:240px}
+.credit-panel .credit-pdf-actions{flex-wrap:nowrap}
+.credit-panel .credit-pdf-actions .btn{padding:0 10px}
+/* Gestiones: la lista de documentos pendientes se lee completa */
+.requests-table td:first-child{white-space:normal;max-width:260px}
+.requests-table td:nth-child(4){white-space:normal;min-width:220px;max-width:420px}
+.requests-table td:nth-child(4) small{line-height:1.5}
+/* Ficha: el estado es una etiqueta, no una barra */
+.detail-cell .badge{display:inline-block;width:auto;margin-bottom:0}
+/* Indicadores: la etiqueta no se mete debajo del ícono */
+.metric-label{padding-right:40px}
+.table-wrap{position:relative}
+
+/* ---------- Logo TVS en el menú ---------- */
+.brand.brand-with-logo{flex-direction:column;align-items:stretch;gap:12px;padding:0 4px}
+.brand-logo{display:flex;align-items:center;justify-content:center;background:#fff;border-radius:12px;padding:12px 14px;box-shadow:0 6px 18px #0004}
+.brand-logo img{display:block;width:100%;max-width:170px;height:auto}
+.brand-text{display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding:0 4px;font-size:16px}
+.brand-text small{margin-top:0;font-size:11px}

@@ -3,3 +3,5 @@ __pycache__/
 Proyecto/panel/dist/
 Proyecto/panel/qa/*
 !Proyecto/panel/qa/test-*.cjs
+!Proyecto/panel/qa/worst-case-data.py
+!Proyecto/panel/qa/break-ui.cjs

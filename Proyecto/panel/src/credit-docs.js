@@ -53,8 +53,8 @@ renderRequests=function(){
 };
 function creditPanel(){
  const list=[...(db.creditForms||[])].sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt)));
- const rows=list.map(f=>{const q=sieteTresQuote(f.price,f.down),chosen=q.terms.find(t=>t.months===f.months);return `<tr><td><strong>${esc(f.name)}</strong><small>DUI ${esc(f.dui)}${f.phone?' · '+esc(f.phone):''}</small></td><td>${f.model?esc(f.model):'<span class="subtext">Sin moto</span>'}<small>${f.price?'$'+creditMoney(f.price)+' · prima $'+creditMoney(f.down||0):'Sin precio'}</small></td><td>${chosen&&f.price?'$'+creditMoney(chosen.payment)+'<small>'+f.months+' cuotas</small>':'—'}</td><td>${esc(fmtDate(String(f.updatedAt).slice(0,10)))}</td><td><div class="table-actions credit-pdf-actions"><button class="btn" data-action="credit-pdf" data-doc="buro" data-id="${esc(f.id)}">${icon('download')}Buró</button><button class="btn" data-action="credit-pdf" data-doc="cotizador" data-id="${esc(f.id)}">${icon('download')}Cotizador</button><button class="btn" data-action="credit-pdf" data-doc="solicitud" data-id="${esc(f.id)}">${icon('download')}Solicitud</button><button class="btn" data-action="credit-edit" data-id="${esc(f.id)}">Editar</button><button class="btn btn-quiet" data-action="credit-delete" data-id="${esc(f.id)}" aria-label="Borrar crédito de ${esc(f.name)}">Borrar</button></div></td></tr>`;}).join('');
- return `<section class="card credit-panel" aria-labelledby="credit-panel-title"><div class="card-head"><div><h2 id="credit-panel-title">Ingresar crédito · Crediopciones</h2><p class="subtext">Plan Siete Tres 47%. Llená los datos una vez y descargá el Buró, el Cotizador o la Solicitud en PDF.</p></div><button class="btn btn-primary" data-action="credit-new">+ Ingresar crédito</button></div>${list.length?`<div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Moto</th><th>Cuota</th><th>Actualizado</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`:`<div class="empty compact">${icon('document')}<h3>Todavía no hay créditos ingresados</h3><p>Para la precalificación basta con el nombre y el DUI: guardá y descargá el Buró.</p></div>`}</section>`;
+ const rows=list.map(f=>{const q=sieteTresQuote(f.price,f.down),chosen=q.terms.find(t=>t.months===f.months);return `<tr><td><strong>${esc(f.name)}</strong><small>DUI ${esc(f.dui)}${f.phone?' · '+esc(f.phone):''} · ${esc(fmtDate(String(f.updatedAt).slice(0,10)))}</small></td><td>${f.model?esc(f.model):'<span class="subtext">Sin moto</span>'}<small>${f.price?'$'+creditMoney(f.price)+' · prima $'+creditMoney(f.down||0):'Sin precio'}</small></td><td>${chosen&&f.price?'$'+creditMoney(chosen.payment)+'<small>'+f.months+' cuotas</small>':'—'}</td><td><div class="table-actions credit-pdf-actions"><button class="btn" data-action="credit-pdf" data-doc="buro" data-id="${esc(f.id)}">${icon('download')}Buró</button><button class="btn" data-action="credit-pdf" data-doc="cotizador" data-id="${esc(f.id)}">${icon('download')}Cotizador</button><button class="btn" data-action="credit-pdf" data-doc="solicitud" data-id="${esc(f.id)}">${icon('download')}Solicitud</button><button class="btn" data-action="credit-edit" data-id="${esc(f.id)}">Editar</button><button class="btn btn-quiet" data-action="credit-delete" data-id="${esc(f.id)}" aria-label="Borrar crédito de ${esc(f.name)}">Borrar</button></div></td></tr>`;}).join('');
+ return `<section class="card credit-panel" aria-labelledby="credit-panel-title"><div class="card-head"><div><h2 id="credit-panel-title">Ingresar crédito · Crediopciones</h2><p class="subtext">Plan Siete Tres 47%. Llená los datos una vez y descargá el Buró, el Cotizador o la Solicitud en PDF.</p></div><button class="btn btn-primary" data-action="credit-new">+ Ingresar crédito</button></div>${list.length?`<div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Moto</th><th>Cuota</th><th><span class="sr-only">Documentos y acciones</span></th></tr></thead><tbody>${rows}</tbody></table></div>`:`<div class="empty compact">${icon('document')}<h3>Todavía no hay créditos ingresados</h3><p>Para la precalificación basta con el nombre y el DUI: guardá y descargá el Buró.</p></div>`}</section>`;
 }
 
 /* ---------- Formulario ---------- */
@@ -125,7 +125,7 @@ function updateCreditPreview(){
  const form=$('credit-form');if(!form)return;
  const price=Number(form.price.value)||0,down=Number(form.down.value)||0,box=$('credit-preview'),out=$('credit-chosen');
  if(!price){box.innerHTML='<p class="subtext">Ingresá el valor de la moto para ver las cuotas de 12 a 48 meses.</p>';out.textContent='—';return;}
- if(down>price){box.innerHTML='<p class="form-error" style="margin:0">La prima no puede ser mayor que el valor de la moto.</p>';out.textContent='—';return;}
+ if(down>=price){box.innerHTML='<p class="form-error" style="margin:0">La prima debe ser menor que el valor de la moto: si cubre todo el valor, no hay nada que financiar.</p>';out.textContent='—';return;}
  const q=sieteTresQuote(price,down),months=Number(form.months.value);
  out.textContent='$'+creditMoney(q.terms.find(t=>t.months===months)?.payment);
  box.innerHTML=`<div class="credit-summary"><span>Gastos de formalización <strong>$${creditMoney(q.fee)}</strong></span><span>Prima <strong>${(q.primaRate*100).toFixed(2)}%</strong></span><span>Monto a financiar <strong>$${creditMoney(q.amount)}</strong></span></div><div class="credit-terms">${q.terms.map(t=>`<span class="${t.months===months?'active':''}"><small>${t.months} cuotas</small>$${creditMoney(t.payment)}</span>`).join('')}</div>`;
@@ -176,7 +176,7 @@ function makeBuroPDF(f){
 function makeCotizadorPDF(f){
  if(!f.model)throw Error('Para el Cotizador escribí el modelo de la moto.');
  if(!f.price)throw Error('Para el Cotizador escribí el valor de la moto.');
- if((f.down||0)>f.price)throw Error('La prima no puede ser mayor que el valor de la moto.');
+ if((f.down||0)>=f.price)throw Error('No se puede descargar el Cotizador: la prima debe ser menor que el valor de la moto (si la prima cubre todo el valor, no hay nada que financiar).');
  const doc=needPDF(),X=n=>n*0.28222,q=sieteTresQuote(f.price,f.down||0),blue=[46,117,181];
  doc.setDrawColor(0);doc.setLineWidth(0.3);doc.rect(X(63),X(67),X(636-63),X(128-67));
  pdfLogo(doc,'credi',X(67),X(71),X(95),X(50));
@@ -242,7 +242,7 @@ function makeSolicitudPDF(f){
  rect(L,384,404,424);lab('Punto de Referencia',L,390);val(f.workRef,L+20,393,404-20,424,{maxLines:3});
  // Referencias
  const refs=(y,title,list,relation)=>{bar(y,y+18,title);const h=y+18;rect(L,h,325,h+18);lab('Nombre (s) Apellido (s) Completo (s)',L,h+13);rect(325,h,543,h+18);pdfCell(doc,'N° de teléfono',X(325),X(h+6),X(218),X(12),{size:6.2,maxLines:1});rect(543,h,R,h+18);lab('Parentesco',543,h+13);
-  list.forEach((r,i)=>{const y1=h+18+i*18,y2=y1+18;rect(L,y1,325,y2);lab(`${i+1}.-`,L,y1+12,5.5);val(r.name,L+10,y1,325,y2,{maxLines:1});rect(325,y1,543,y2);val(r.phone,325,y1,543,y2,{maxLines:1});rect(543,y1,R,y2);val(relation,543,y1,R,y2,{maxLines:1});});
+  list.forEach((r,i)=>{const y1=h+18+i*18,y2=y1+18;rect(L,y1,325,y2);lab(`${i+1}.-`,L,y1+12,5.5);val(r.name,L+10,y1,325,y2,{maxLines:2,size:7.4});rect(325,y1,543,y2);val(r.phone,325,y1,543,y2,{maxLines:1});rect(543,y1,R,y2);val(relation,543,y1,R,y2,{maxLines:1});});
   return h+18+list.length*18;};
  let y=refs(424,'INDISPENSABLE:  DOS REFERENCIAS FAMILIARES QUE NO VIVAN CON EL CLIENTE',f.famRefs,CREDIT_RELATION.fam);
  y=refs(y,'DOS REFERENCIAS  DE AMIGOS O COMPAÑEROS DE TRABAJO',f.friendRefs,CREDIT_RELATION.friend);
@@ -285,7 +285,10 @@ function downloadCreditPDF(kind,f){
   return false;
  }
  try{const doc=make(f);doc.save(creditFileName(name,f));toast(name.replace('Buro','Buró').replace('credito','crédito')+' descargado en PDF.');return true;}
- catch(err){if($('credit-error'))showCreditError(err.message);else toast(err.message,true);return false;}
+ catch(err){
+  // Desde la lista la ventana está cerrada: se abre el formulario del cliente para mostrar el motivo.
+  if(!($('modal').open&&$('credit-form'))&&f.id)openCreditForm(f.id);
+  toast(err.message,true);if($('credit-form'))showCreditError(err.message);return false;}
 }
 
 /* ---------- Eventos ---------- */
