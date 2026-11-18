@@ -45,11 +45,9 @@ function validateCreditForms(v){
 }
 
 /* ---------- Pantalla de Solicitudes ---------- */
-const renderRequestsBase=renderRequests;
+// Solicitudes muestra solo Ingresar crédito. Las gestiones antiguas (db.requests) se conservan en los respaldos.
 renderRequests=function(){
- renderRequestsBase();
- const head=$('view-financieras').querySelector('.page-heading');
- if(head)head.insertAdjacentHTML('afterend',creditPanel());
+ $('view-financieras').innerHTML=heading('Solicitudes de crédito','Ingresá los datos del cliente una vez y descargá el Buró, el Cotizador o la Solicitud en PDF.')+creditPanel();
 };
 function creditPanel(){
  const list=[...(db.creditForms||[])].sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt)));
@@ -302,7 +300,8 @@ document.addEventListener('change',e=>{
 document.addEventListener('submit',e=>{if(e.target.id!=='credit-form')return;e.preventDefault();if(saveCreditForm())$('modal').close();});
 document.addEventListener('click',e=>{
  const b=e.target.closest('[data-action^="credit-"]');if(!b)return;const action=b.dataset.action,id=b.dataset.id||'';
- if(action==='credit-new')openCreditForm('',ui.route==='clientes'?id:'');
+ if(action==='credit-new')openCreditForm('');
+ else if(action==='credit-client')openCreditForm('',id);
  else if(action==='credit-edit')openCreditForm(id);
  else if(action==='credit-pdf'){const f=(db.creditForms||[]).find(f=>f.id===id);if(f)downloadCreditPDF(b.dataset.doc,f);}
  else if(action==='credit-save-pdf'){const f=saveCreditForm();if(f){$('credit-error')&&($('credit-error').hidden=true);downloadCreditPDF(b.dataset.doc,f);}}

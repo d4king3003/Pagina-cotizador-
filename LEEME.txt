@@ -36,6 +36,7 @@ El Cotizador usa la fórmula del Excel PLAN SIETE TRES 47: gastos de formalizaci
 La Solicitud corresponde a la hoja SOLICITUD versión 3.0 (CC-CI-P-F-01): datos personales, laborales, dos referencias familiares, dos de amigos o compañeros y el detalle.
 Podés vincular el crédito a un cliente del panel para completar nombre, teléfono, moto y precio. Si borrás ese cliente, los datos de crédito se conservan sin vincular.
 Los créditos se guardan en esta PC junto con tus demás datos y se incluyen en los respaldos. Los PDF se generan sin internet.
+Solicitudes muestra solo Ingresar crédito: se quitó el registro anterior de gestiones por financiera. Las gestiones que existieran se conservan en tus datos y en los respaldos. En la ficha del cliente y en A un clic del Resumen, el botón Ingresar crédito abre el formulario con el cliente ya vinculado.
 
 MENÚ SIMPLIFICADO
 Se quitaron los apartados Mensajes y Posventa, junto con los botones Mensaje de Clientes y de la Oficina virtual. Los seguimientos de posventa que existieran se conservan en tus datos y en los respaldos.
