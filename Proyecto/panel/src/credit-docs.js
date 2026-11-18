@@ -270,7 +270,7 @@ function markCreditMissing(keys){
  form.querySelectorAll('.credit-missing').forEach(el=>{el.classList.remove('credit-missing');el.removeAttribute('aria-invalid');});
  let first=null;
  for(const k of keys){const el=k==='sex'?form.querySelector('.credit-sex'):form.querySelector(`[name="${k}"]`);if(!el)continue;el.classList.add('credit-missing');if(k!=='sex')el.setAttribute('aria-invalid','true');first??=k==='sex'?form.querySelector('input[name="sex"]'):el;}
- first?.focus({preventScroll:true});first?.scrollIntoView({block:'center',behavior:'smooth'});
+ first?.focus({preventScroll:true});first?.scrollIntoView({block:'center',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
 }
 function downloadCreditPDF(kind,f){
  const [name,make]=CREDIT_DOCS[kind]||[];if(!make)return;

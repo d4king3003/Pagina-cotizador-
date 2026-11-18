@@ -9,7 +9,7 @@ Para trabajar con el código fuente, ejecutá python Proyecto/panel/build.py. Si
 
 TEMA SHOWROOM TVS (VERSIÓN 1.9.0)
 Nuevo aspecto pensado para trabajar en la PC: menú lateral azul marino con la sección activa marcada en rojo TVS, títulos y cifras con tipografía Plus Jakarta Sans y textos con Inter. Las dos fuentes van incluidas en el HTML y funcionan sin internet.
-Tarjetas, tablas, botones y ventanas tienen más contraste y jerarquía. Las ventanas aparecen con un pequeño zoom, los botones responden al clic y los avisos suben suavemente. Si Windows tiene activado reducir animaciones, solo se usan fundidos.
+Tarjetas, tablas, botones y ventanas tienen más contraste y jerarquía. Movimiento revisado con criterio de uso diario: cambiar de sección es inmediato; las ventanas entran en 0,2 s y salen en 0,14 s; los avisos suben y se desvanecen; los botones se hunden al hacer clic. Las tarjetas de indicadores ya no se levantan al pasar el mouse porque no se pueden pulsar. Si Windows tiene activado reducir animaciones, solo se usan fundidos.
 El modo oscuro usa la misma estructura. No cambió ninguna función, cálculo ni dato.
 
 COMISIÓN CON MÁS DE 15 MOTOS

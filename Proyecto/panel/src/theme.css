@@ -13,7 +13,7 @@
   --soft:#eef2f8;
   --radius:16px;--radius-sm:10px;
   --shadow:0 1px 2px #0f1b2d0a,0 4px 16px #0f1b2d08;--shadow-hover:0 2px 6px #0f1b2d10,0 16px 36px #0f1b2d14;
-  --ease-enter:cubic-bezier(.22,1,.36,1);--ease-press:cubic-bezier(.25,.46,.45,.94);
+  --ease-out:cubic-bezier(.23,1,.32,1);--ease-drawer:cubic-bezier(.32,.72,0,1);
   --font-ui:"Inter Panel",Inter,ui-sans-serif,-apple-system,"Segoe UI",sans-serif;
   --font-display:"Jakarta Panel","Inter Panel",ui-sans-serif,"Segoe UI",sans-serif;
   font-family:var(--font-ui);
@@ -61,7 +61,7 @@ h3{font-weight:700}
 
 /* ---------- Botones ---------- */
 .btn{height:40px;border-radius:var(--radius-sm);border-color:var(--line-strong);font-weight:600;letter-spacing:-.05px;
-  transition:background-color .15s ease,border-color .15s ease,color .15s ease,box-shadow .15s ease,transform .12s var(--ease-press)}
+  transition:background-color .15s ease,border-color .15s ease,color .15s ease,transform .16s var(--ease-out)}
 .btn-small{height:36px}
 .btn:active:not(:disabled){transform:scale(.97);transition-duration:0s}
 .btn-primary{background:var(--primary);border-color:var(--primary);box-shadow:0 1px 2px #1747b533,0 4px 12px #1747b526}
@@ -80,18 +80,13 @@ h3{font-weight:700}
 .card-head{padding:18px 22px}
 .card-head h2{font-size:16px}
 .metrics{gap:16px}
-.metric{padding:20px 22px 18px;transition:box-shadow .2s ease,transform .2s var(--ease-enter)}
-.metric::after{content:"";position:absolute;left:22px;right:22px;top:0;height:2px;border-radius:0 0 2px 2px;background:var(--primary);opacity:0;transition:opacity .2s ease}
+.metric{padding:20px 22px 18px}
 .metric-label{font-size:12.5px;font-weight:550;color:var(--muted);margin-bottom:10px}
 .metric-value{font-size:34px;font-weight:750;letter-spacing:-1.2px;color:var(--ink)}
 .metric-note{font-size:11.5px;color:var(--faint)}
 .metric-icon{background:var(--primary-soft);color:var(--primary);border-radius:10px;padding:8px}
 .metric:hover,.stock-card:hover{transform:none}
-@media (hover:hover) and (pointer:fine){
-  .metric:hover{box-shadow:var(--shadow-hover);transform:translateY(-2px)}
-  .metric:hover::after{opacity:1}
-  .stock-card:hover{box-shadow:var(--shadow-hover);transform:translateY(-2px)}
-}
+
 .callout{background:var(--paper);border:1px solid var(--line);border-left:3px solid var(--primary);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px 20px}
 .callout svg{background:var(--primary-soft);padding:7px;width:32px;height:32px;border-radius:9px}
 .notice{border-radius:var(--radius-sm)}
@@ -132,25 +127,27 @@ input:not([type=checkbox]):not([type=radio]):not([type=file]):focus,select:focus
 /* ---------- Ventanas (modales) ---------- */
 dialog{border:0;border-radius:20px;box-shadow:0 24px 80px #0b1a3340,0 2px 8px #0b1a331a}
 dialog::backdrop{background:#0b1a338c;backdrop-filter:blur(4px)}
-dialog[open]{animation:panel-dialog-in .22s var(--ease-enter)}
-dialog[open]::backdrop{animation:panel-fade-in .22s var(--ease-enter)}
+dialog{opacity:0;transform:translateY(4px) scale(.98);transition:opacity .14s var(--ease-out),transform .14s var(--ease-out),overlay .14s allow-discrete,display .14s allow-discrete}
+dialog[open]{opacity:1;transform:none;transition-duration:.2s}
+@starting-style{dialog[open]{opacity:0;transform:translateY(6px) scale(.98)}}
+dialog::backdrop{opacity:0;transition:opacity .14s var(--ease-out),overlay .14s allow-discrete,display .14s allow-discrete}
+dialog[open]::backdrop{opacity:1;transition-duration:.2s}
+@starting-style{dialog[open]::backdrop{opacity:0}}
 .modal-head{padding:22px 26px 18px}
 .modal-head h2{font-size:18px;font-weight:750}
 .modal-actions{background:#f7f9fc;border-radius:0 0 20px 20px}
-@keyframes panel-dialog-in{from{opacity:0;transform:translateY(8px) scale(.97)}to{opacity:1;transform:none}}
-@keyframes panel-fade-in{from{opacity:0}to{opacity:1}}
 
 /* ---------- Avisos ---------- */
-.toast{background:var(--navy);border-radius:12px;padding:13px 18px;box-shadow:0 12px 32px #0b1a3359;font-weight:500;animation:panel-toast-in .22s var(--ease-enter)}
+.toast{background:var(--navy);border-radius:12px;padding:13px 18px;box-shadow:0 12px 32px #0b1a3359;font-weight:500;opacity:1;transform:translateX(-50%);transition:opacity .2s var(--ease-out),transform .2s var(--ease-out),display .2s allow-discrete}
+.toast[hidden]{opacity:0;transform:translate(-50%,4px);transition-duration:.14s}
+@starting-style{.toast:not([hidden]){opacity:0;transform:translate(-50%,8px)}}
 .toast.error{background:#a3201a}
-@keyframes panel-toast-in{from{opacity:0;transform:translate(-50%,10px)}to{opacity:1;transform:translateX(-50%)}}
 
-/* ---------- Cambio de sección: solo opacidad, rápido ---------- */
-.view{animation:panel-view-in .16s ease-out}
-@keyframes panel-view-in{from{opacity:.4}to{opacity:1}}
+/* ---------- Cambio de sección: inmediato (se usa decenas de veces al día) ---------- */
+.view{animation:none}
 
 /* ---------- Motos y precios ---------- */
-.stock-card{transition:box-shadow .2s ease,transform .2s var(--ease-enter)}
+.stock-card{transition:none}
 .stock-image{background:linear-gradient(180deg,#fff 60%,#f4f6fa)}
 .stock-price{font-weight:750;letter-spacing:-.8px}
 
@@ -173,15 +170,15 @@ html[data-theme=dark] .sidebar{background:linear-gradient(180deg,#08111f,#0b1729
 html[data-theme=dark] .btn-primary{background:#2f63d6;border-color:#2f63d6;color:#fff;box-shadow:none}
 html[data-theme=dark] th{background:#162135}
 html[data-theme=dark] .modal-actions{background:#162135}
-html[data-theme=dark] .metric::after{background:var(--primary)}
 @media (hover:hover) and (pointer:fine){html[data-theme=dark] tbody tr:hover{background:#18233a}html[data-theme=dark] .btn-primary:hover{background:#3d72e6;border-color:#3d72e6}}
 
 /* ---------- Movimiento reducido: sin desplazamientos, se conservan los fundidos ---------- */
 @media (prefers-reduced-motion:reduce){
-  html dialog[open]{animation:panel-fade-in .15s ease-out!important}
-  html dialog[open]::backdrop{animation:panel-fade-in .15s ease-out!important}
-  html .toast{animation:panel-fade-in .15s ease-out!important}
-  html .metric:hover,html .stock-card:hover,html .btn:active:not(:disabled){transform:none!important}
+  html dialog,html dialog[open]{transform:none}
+  html .toast,html .toast[hidden]{transform:translateX(-50%)}
+  @starting-style{html dialog[open]{transform:none}html .toast:not([hidden]){transform:translateX(-50%)}}
+  html .btn:active:not(:disabled){transform:none}
+  html .sidebar{transition:none}
 }
 
 /* ---------- Casos extremos (revisión break-ui) ---------- */
@@ -219,3 +216,11 @@ html[data-theme=dark] .metric::after{background:var(--primary)}
 .brand-logo img{display:block;width:100%;max-width:170px;height:auto}
 .brand-text{display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding:0 4px;font-size:16px}
 .brand-text small{margin-top:0;font-size:11px}
+
+/* ---------- Movimiento: ajustes finos ---------- */
+/* Pasar el mouse: el resaltado entra al instante y se desvanece al salir */
+@media (hover:hover) and (pointer:fine){tbody tr:hover,.nav-item:hover,.quick-link:hover{transition-duration:0s}}
+/* Menú en pantallas angostas: curva de cajón */
+@media(max-width:900px){.sidebar{transition:transform .28s var(--ease-drawer)}}
+/* Al cambiar entre modo claro y oscuro todo cambia a la vez, sin transiciones sueltas */
+html[data-theme-switching] :not(.toast),html[data-theme-switching] :not(.toast)::before,html[data-theme-switching] :not(.toast)::after{transition:none!important}
