@@ -18,6 +18,7 @@ Los créditos se guardan en esta PC junto con tus demás datos y se incluyen en 
 
 MENÚ SIMPLIFICADO
 Se quitaron los apartados Mensajes y Posventa, junto con los botones Mensaje de Clientes y de la Oficina virtual. Los seguimientos de posventa que existieran se conservan en tus datos y en los respaldos.
+También se quitó el apartado Cotizaciones y el bloque Cotizaciones recientes del Resumen. Las cotizaciones se envían como imagen desde Cotizar. Las que ya estaban guardadas se conservan en tus datos y en los respaldos.
 
 REGISTRO RÁPIDO DE INTERESADOS
 En Clientes o en Oficina virtual, usá Nuevo interesado. Escribí solo el número y presioná Añadir interesado. También está el botón Solo número en la barra superior.
