@@ -1,0 +1,50 @@
+{
+  "version": "1.6.0",
+  "referenceOffice": "https://oficina-tvs-daniel-campos.eldaniisv.chatgpt.site",
+  "referenceSourceCommit": "497cf7a24a43559f82d928bb7ddb09cd687c30ff",
+  "businessRules": {
+    "saleCreationAndCorrectMonth": "passed",
+    "approvalSoldRoundtripWithoutDuplicates": "passed",
+    "discardAndReactivation": "passed",
+    "legacySaleCancellation": "passed",
+    "originalDataNotMutated": "passed",
+    "invalidSaleRejected": "passed",
+    "nineStatusesPreserved": "passed",
+    "concurrentDialogChangeRejected": "passed",
+    "archivedMonthAndSearchFilters": "passed"
+  },
+  "sceneTests": {
+    "actualBundledThreeScene": "passed with renderer stub",
+    "meshCharactersAndGraves": "passed",
+    "onlySoldDance": "passed",
+    "pointerRayAndRoomDrop": "passed",
+    "cancelDrag": "passed",
+    "roomPagination20Clients": "passed",
+    "reducedMotion": "passed",
+    "hiddenRoutePausesAnimation": "passed",
+    "visualWebGL": "not verified: cloud browser GPU disabled"
+  },
+  "browserUI": {
+    "cloudBrowser": "Chrome",
+    "listFallback": "passed",
+    "clientSelectionAndStageChange": "passed",
+    "saleFormAndMonthlyReport": "passed; fictional sale 1949 + existing fictional sale 1099 = 3048",
+    "returnSoldToApproved": "passed; sold count returned to one",
+    "webGLVisual": "not verified: cloud browser GPU disabled",
+    "darkMode": "passed"
+  },
+  "regressions": {
+    "monthlyControl": "passed",
+    "creditQuotePNG": "passed",
+    "technicalSheets": "passed",
+    "cashSourceAndData": "byte-identical to 1.5.0",
+    "financingEngine": "unchanged"
+  },
+  "preservation": {
+    "unchangedExistingFiles": 40,
+    "clientSourceAndInitialRecords": "unchanged",
+    "existingLogosAndTechnicalSheets": "unchanged",
+    "originalCalculatorSHA256": "895a9d80773e9a35c165607517e79333295cf43b7cf79436316f8449d49edecf"
+  },
+  "offline": "All rendering code and assets are embedded; no runtime CDN or external Three.js imports."
+}

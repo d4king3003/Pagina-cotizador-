@@ -1,0 +1,151 @@
+PANEL DE VENTAS DANIEL CAMPOS · VERSIÓN 1.6.1 · INTERESADOS POR NÚMERO
+4 de noviembre de 2026
+
+PAQUETE PARA WINDOWS
+Usá Extraer todo en Windows y abrí Panel-Ventas-Daniel.html con Chrome o Edge.
+También se entrega el HTML por separado: ese archivo incluye toda la aplicación y se puede abrir directamente.
+El ZIP evita duplicar las imágenes de las fichas técnicas. Todas están incluidas dentro del HTML con sus bytes originales.
+Para trabajar con el código fuente, ejecutá python Proyecto/panel/build.py. Si faltan las imágenes sueltas, se recuperan automáticamente del HTML antes de generar la aplicación. Conservá el HTML en la carpeta principal.
+
+REGISTRO RÁPIDO DE INTERESADOS
+En Clientes o en Oficina virtual, usá Nuevo interesado. Escribí solo el número y presioná Añadir interesado. También está el botón Solo número en la barra superior.
+Se crea una ficha en estado Nuevo, dentro de Interesados. Queda identificada por su número hasta que completés el nombre. No exige moto, precio ni prima.
+Para El Salvador aceptá los ocho dígitos o el prefijo +503. Para otros países escribí + y el código de país.
+Si el número ya está registrado, se abre su ficha existente. Se conservan su nombre, estado, historial y ventas, incluso si está vendido, descartado o archivado.
+Agregar nombre permite completar la misma ficha; también podés editar otros datos mientras el nombre siga pendiente.
+
+BORRAR UN REGISTRO
+En Clientes, junto a Ver y Editar, está Borrar. Primero muestra una confirmación con el cliente y la cantidad de registros relacionados. Cancelar conserva todo.
+Sí, borrar registro elimina la ficha, su personaje y las cotizaciones, solicitudes, ventas y seguimientos de posventa asociados. Las ventas eliminadas dejan de contar en sus meses y se recalculan las comisiones.
+La confirmación ofrece Descargar respaldo antes de borrar. Si otra pestaña cambió los datos, se rechaza el borrado para que revisés el registro actualizado.
+
+RESPALDO QUE PROPORCIONASTE
+Se incluye Respaldo-Panel-TVS-2026-11-03.json intacto: 13 clientes, 3 cotizaciones y el historial de ventas con sus estados originales. Hay 12 clientes de octubre y uno de septiembre.
+Al abrir esta versión sin datos guardados, carga ese respaldo. Clientes abre en el mes más reciente registrado. Tus nuevos interesados quedan en el mes actual.
+Si el navegador ya tiene datos, se conservan. En Respaldo y ajustes > Restaurar respaldo incluido podés cargar expresamente el archivo proporcionado. La restauración pide descargar primero los datos actuales.
+La demostración sigue separada de tus datos. Esta versión funciona sin internet y el alta por número es manual.
+
+OFICINA VIRTUAL 3D
+Entrá a Oficina virtual desde el menú lateral o desde Resumen. Usa los mismos clientes del panel; no crea una segunda lista ni agrega los ejemplos del sitio web.
+Cada personaje representa un cliente. Clic para seleccionarlo y acceder a su ficha, cotizaciones y mensajes. Sujetalo con el mouse y soltalo en otra sala para cambiar su etapa; Esc cancela el arrastre.
+Las salas se relacionan con los estados actuales:
+- Interesados: Nuevo y No responde.
+- Seguimiento: En seguimiento.
+- En evaluación: Documentos, Credito ingresado y Preaprobado.
+- Aprobados: Aprobado.
+- Vendidos: Vendido.
+- Descartados: No continuó.
+La ficha conserva el estado exacto; también podés elegirlo en Cambiar etapa. Mover a Seguimiento no crea una cotización ni la marca como enviada.
+Al pasar a Vendidos, completá moto, precio real y fecha. Guardar registra o actualiza la misma venta y recalcula el mes correspondiente. Al volver a Aprobado u otra etapa deja de contar; si volvés a Vendido se reutiliza el mismo registro, sin duplicarlo.
+Solo los vendidos bailan. Fiesta de vendidos permite pausar o reanudar la celebración y se respeta la preferencia del sistema de reducir movimiento.
+Los descartados aparecen como tumbas en el cementerio. Podés seleccionarlos y reactivarlos moviéndolos a otra sala. No se borra su historial.
+Arrastrá el piso para girar la cámara; la rueda y los botones + / - acercan o alejan. También podés enfocar Vendidos o el cementerio.
+La oficina muestra todos los meses inicialmente. Usá el buscador, mes o salas para filtrar. Los archivados siguen disponibles en Clientes y no aparecen como personajes.
+Si una sala tiene más de nueve clientes, usá las páginas para ver sus demás personajes; la vista Lista también permite consultar todos los registros.
+El motor 3D está incluido en el HTML: no necesita internet ni descargar librerías. Si el navegador no puede activar WebGL, cambia a Lista y conserva las gestiones del CRM.
+Se mantienen los cotizadores de crédito y contado, PNG para WhatsApp, fichas técnicas, clientes, seguimientos, ventas y comisiones.
+
+COTIZACIONES AL CONTADO CON FICHA TÉCNICA
+En Cotizar elegí Contado y seleccioná la moto. Ingresá el precio vigente; podés agregar un descuento en dólares o porcentaje y gastos adicionales con su concepto.
+El total se calcula con redondeo a centavos: precio menos descuento más gastos adicionales. El descuento no puede superar el precio de la moto.
+En Cliente, versión y beneficios podés poner el nombre, año o versión, color y accesorios o beneficios confirmados. Los campos opcionales vacíos no aparecen en la imagen.
+En Editar ficha técnica se completa un resumen del catálogo incluido para los modelos que tienen una correspondencia clara. Podés ajustar cada dato para la versión exacta. Para King GD elegí expresamente la ficha Duramax o Kargo; para modelos sin ficha completá los datos manualmente.
+El resumen técnico proviene de las fichas proporcionadas. No se agregan precios actuales, características de otros años, garantías ni cifras ambiguas. Las fichas completas originales siguen en Fichas técnicas.
+La vista previa reúne logo de TVS, logo del modelo cuando está disponible, foto, ficha en dos columnas, beneficios y desglose del precio. El botón del ojo permite ocultar o mostrar la ficha. También podés ocultar la fecha y vigencia de la imagen.
+Copiar como imagen genera un PNG real: abrí WhatsApp y pegá con Ctrl+V. Descargar PNG guarda exactamente la misma imagen. Si el navegador bloquea el portapapeles, aparece la imagen para usar clic derecho > Copiar imagen o descargarla.
+Guardar cotización conserva el precio, descuento, gastos, ficha editada y opciones de esa propuesta. En Cotizaciones podés abrirla, copiar o descargar su PNG y volver a cotizar con esos datos.
+Nueva cotización al contado limpia el formulario para preparar otra propuesta.
+Los créditos, clientes, ventas, comisiones y fichas originales se conservan.
+
+LOGOS EN LA COTIZACIÓN PARA WHATSAPP
+Al copiar o descargar la cotización como imagen, el encabezado muestra el logo de TVS a la izquierda y el logo del modelo seleccionado a la derecha, alineados hacia la izquierda y en tamaño compacto, como en la referencia proporcionada.
+Este encabezado sustituye los textos de agencia, nombre de modelo, financiera, plan y precio de la moto que antes aparecían arriba de los plazos. La fecha se conserva.
+Se usan las imágenes proporcionadas para Apache RTR 160 2V, 160 4V, 180, 200 4V, 200 FI, RR 310, Ntorq 125 y Raider 125. Para un modelo sin logo proporcionado se conserva su nombre a la derecha del logo de TVS.
+El cambio corresponde al PNG que se copia o descarga. Se conservan los importes, las cuotas, la foto y la opción de ocultar intereses y total.
+Los logos están integrados en el HTML, sin conexiones externas. Proyecto/panel/data/logos.json relaciona los modelos con sus archivos en assets/logos.
+
+COTIZADOR COMPACTO Y VISIBILIDAD
+El bloque Elegí el plazo y la tarjeta de la cuota tienen un ancho máximo de 680 píxeles, adaptándose a pantallas menores.
+Arriba de la tabla de plazos está el botón con el ícono del ojo, sin texto visible. Al presionarlo oculta o muestra Intereses estimados y Total estimado a pagar. Al pasar el mouse se indica su función.
+La cuota mensual, el plazo, la foto y la prima total siguen visibles. El navegador recuerda tu elección.
+Copiar cotización como imagen genera un PNG con todos los plazos y cuotas, la cuota seleccionada, la foto de la moto y la prima total. Si ocultaste intereses y total, esos datos tampoco aparecen en la imagen.
+Después de copiar, abrí el chat de WhatsApp y pegá con Ctrl+V. Descargar PNG guarda la misma cotización para adjuntarla. Si el navegador impide copiar automáticamente, aparece una vista con la imagen y las alternativas de clic derecho > Copiar imagen o Descargar PNG.
+Los botones se activan al completar una cotización válida. No hace falta tomar capturas ni tener internet para generar el PNG.
+
+FICHAS TÉCNICAS PARA WHATSAPP
+En el menú lateral entrá a Fichas técnicas y elegí el modelo o buscá por nombre.
+Copiar imagen lleva la ficha completa al portapapeles como imagen PNG: abrí WhatsApp Web o WhatsApp para PC, elegí el chat y pegá con Ctrl+V. Revisá la imagen y enviála desde WhatsApp.
+Descargar PNG guarda la misma ficha en tu equipo para adjuntarla. En el teléfono podés adjuntar ese archivo desde tu galería.
+Presioná la vista previa o Ver en grande para ampliarla. Ver tamaño original abre la imagen completa en otra pestaña.
+Si el navegador bloquea el portapapeles, aparece la ficha con instrucciones para clic derecho > Copiar imagen y la alternativa Descargar PNG.
+Se incluyen las 10 fichas del PDF proporcionado: Apache RTR 160 2V Refresh, 160 4V, 180, 200 4V, 200 4V FI, Apache RR 310, Raider 125, Sport 100, King Duramax Plus 225 y King Kargo 225.
+Cada imagen tiene 2400 x 1855 píxeles. El diseño y la información se conservan como aparecen en el PDF, incluso en las páginas escaneadas. La portada no se incluye como ficha de modelo.
+Las imágenes están dentro del HTML y funcionan sin internet. No ocupan el almacenamiento de clientes ni se duplican en el respaldo JSON.
+
+ABRIR Y ACTUALIZAR
+Abrí Panel-Ventas-Daniel.html con Chrome o Edge. La aplicación sigue funcionando sin internet.
+Si ya usaste el panel anterior, exportá primero tus registros desde Respaldo y ajustes > Exportar respaldo JSON.
+Conservá el mismo nombre y ubicación del HTML, o importá ese JSON en la versión nueva si abrís otra copia o cambiás de navegador.
+La versión nueva conserva el mismo espacio de datos y migra los respaldos anteriores. Los clientes del Excel se integran una sola vez, buscando coincidencias por teléfono o nombre.
+
+DÓNDE ESTÁ CADA COSA
+Clientes: Nombre, número, modelo, precio, fecha, Updates, documentación y placas. Tiene filtro de mes y las listas del Excel, además de los estados del panel que se conservan.
+Marcar Vendido crea o actualiza la venta vinculada a esa ficha. Editar otra vez conserva el mismo registro. Volver a un estado pendiente deja de contar esa venta.
+Ventas y comisiones: selector mensual, suma de precios reales, unidades vendidas, sueldo base, comisión, bonificación y segunda quincena más comisión. También conserva publicidad e historial por mes.
+Al editar el esquema de un mes no se modifican los demás meses.
+
+REGLAS CONFIRMADAS
+La comisión usa una base fija de $1,890 por unidad, como la imagen Esquema Ago26.
+El porcentaje se determina por la cantidad de unidades Vendido de ese mes.
+La bonificación se agrega una sola vez; la columna Comisión $ de la imagen ya la incluye.
+Base por quincena: $183.45. Base de 2 quincenas: $366.90.
+La venta del 29 de septiembre se conserva en septiembre.
+Los registros con crédito ingresado u otro estado pendiente no suman ventas ni comisión.
+No se extrapolan escalas superiores a 15 unidades: pueden agregarse en Editar esquema.
+
+TUS DATOS INICIALES
+El respaldo del 3 de noviembre reemplaza los datos iniciales de las entregas anteriores en las copias sin datos guardados. Se mantienen las 13 fichas, las 3 cotizaciones, las ventas confirmadas y anuladas, los precios y las tablas mensuales exactamente como estaban en ese respaldo.
+No se vuelve a aplicar automáticamente el Excel LEADS anterior sobre ese respaldo.
+Podés consultar las cifras del mes desde Clientes y Ventas y comisiones. Solo las ventas activas cuentan en el total.
+
+IMPORTAR OTRO MES
+En Clientes elegí Importar Excel / CSV. Conservá las columnas Nombre, Número, Modelo, PRECIO, Fecha, Updates, Documentación y PLACAS.
+Se admite .xlsx sin contraseña, con la tabla en la primera hoja, o CSV. Las fechas del archivo determinan el mes.
+La vista previa indica cuántos registros son nuevos y cuántos actualizarán coincidencias. Podés exportar una copia antes de integrar.
+Reimportar las mismas filas no crea otra venta de esos mismos clientes.
+
+RESPALDOS
+Respaldo-Panel-Ventas-antes-control-mensual.zip conserva los archivos de la versión 1.0.
+Respaldo-Cotizador-TVS-2026-10-21.zip, entregado antes, conserva el cotizador original y la APK.
+El HTML contiene la aplicación y los datos iniciales proporcionados. El JSON exportado desde el panel conserva tus cambios posteriores.
+Los archivos de Fuentes son copias intactas de los adjuntos usados en esta versión.
+
+PROYECTO
+Proyecto/panel/src contiene la aplicación y el control mensual. Proyecto/panel/data/leads-import.json contiene los registros iniciales.
+Para regenerar la aplicación, ejecutá python3 Proyecto/panel/build.py. El resultado queda en Proyecto/panel/dist/index.html.
+Se conservaron las funciones y tablas financieras del cotizador anterior.
+
+CÓDIGO DE FICHAS
+Proyecto/panel/src/fichas.js y fichas.css contienen el apartado. Proyecto/panel/data/fichas.json relaciona cada modelo con su página del PDF. Las imágenes y miniaturas están en Proyecto/panel/assets/fichas.
+
+CÓDIGO DE COTIZACIONES COMO IMAGEN
+Proyecto/panel/src/quote-image.js genera el PNG a partir de los resultados vigentes del cotizador. Proyecto/panel/build.py integra los controles de visibilidad y exportación. La generación de imágenes es local y el HTML no requiere instalar nada.
+
+CÓDIGO DE CONTADO
+Proyecto/panel/src/cash-quote.js y cash-quote.css contienen el editor y el generador local de PNG.
+Proyecto/panel/data/cash-specs.json contiene el resumen técnico; cash-specs-source.json registra las fuentes y los datos omitidos por ambigüedad.
+La prueba qa/test-cash.cjs requiere Playwright y una ruta de Chromium en CASH_CHROMIUM. No son necesarios para usar el HTML.
+VALIDACION-CONTADO.json resume las verificaciones de esta entrega sin registros personales.
+
+CÓDIGO DE LA OFICINA
+Proyecto/panel/src/office.js conecta las salas con la base existente.
+Office-scene.js adapta la oficina 3D del sitio proporcionado. Los archivos Three.js originales y su licencia MIT están en src/vendor.
+Bundle_office.py integra los dos módulos locales sin instalar Node ni descargar dependencias. Build.py genera un HTML autocontenido y los archivos temporales para las pruebas.
+Qa/test-office.cjs verifica ventas, meses, reactivación y ausencia de duplicados. Qa/test-office-scene.cjs prueba personajes, tumbas, animación y arrastre matemático sin GPU.
+VALIDACION-OFICINA.json indica qué pruebas se ejecutaron y sus límites de verificación.
+
+CÓDIGO DE REGISTRO RÁPIDO Y BORRADO
+Proyecto/panel/src/quick-lead.js y quick-lead.css contienen el registro por teléfono. Client-actions.js contiene la confirmación, eliminación de registros vinculados y acceso al respaldo incluido.
+Proyecto/panel/data/initial-backup.json conserva los datos proporcionados. Fuentes contiene una copia intacta del JSON original.
+Qa/test-client-actions.cjs verifica el alta, formatos de teléfono, duplicados, completar el nombre, conservar el respaldo, cancelar y confirmar un borrado, recalcular ventas y proteger cambios concurrentes. Se ejecuta con node Proyecto/panel/qa/test-client-actions.cjs después de generar la aplicación con build.py.
+VALIDACION-CLIENTES.json resume las pruebas. Las verificaciones de formularios usan un entorno JavaScript simulado; no equivalen a una revisión visual completa en un navegador.

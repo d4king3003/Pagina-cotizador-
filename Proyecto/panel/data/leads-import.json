@@ -1,0 +1,118 @@
+{
+  "id": "leads-2e34d59dc807e0467afb",
+  "source": "LEADS.xlsx",
+  "records": [
+    {
+      "sourceRow": 6,
+      "name": "MELVIN SORTO",
+      "phone": "7277 2837",
+      "model": "APACHE RTR 200 4V",
+      "price": 3199.0,
+      "date": "2026-09-29",
+      "stage": "Vendido",
+      "documentation": "Entregada",
+      "plates": "En proceso"
+    },
+    {
+      "sourceRow": 7,
+      "name": "RENE BELTZASAR GIRON RIVAS",
+      "phone": "72873394",
+      "model": "APACHE RTR 1602V REF",
+      "price": 2149.0,
+      "date": "2026-10-03",
+      "stage": "Vendido",
+      "documentation": "Entregada",
+      "plates": "En proceso"
+    },
+    {
+      "sourceRow": 8,
+      "name": "KERIN RIGOBERTO CISNEROS RIVAS",
+      "phone": "64406748",
+      "model": "APACHE RTR 1602V REF",
+      "price": 2149.0,
+      "date": "2026-10-06",
+      "stage": "Vendido",
+      "documentation": "Entregada",
+      "plates": "En proceso"
+    },
+    {
+      "sourceRow": 9,
+      "name": "JAIME ROMERO MATA",
+      "phone": "75167603",
+      "model": "RAIDER 125",
+      "price": 1949.0,
+      "date": "2026-10-06",
+      "stage": "Vendido",
+      "documentation": "Entregada",
+      "plates": "En proceso"
+    },
+    {
+      "sourceRow": 10,
+      "name": "ALDUBI VILLALOBOS QUINTANILLA",
+      "phone": "68310087",
+      "model": "APACHE RTR 1602V REF",
+      "price": 2149.0,
+      "date": "2026-10-08",
+      "stage": "Vendido",
+      "documentation": "Entregada",
+      "plates": "En proceso"
+    },
+    {
+      "sourceRow": 11,
+      "name": "DONI ALEXANDER LOBO GONZALEZ",
+      "phone": "73016013",
+      "model": "APACHE RTR 1602V REF",
+      "price": 2149.0,
+      "date": "2026-10-10",
+      "stage": "Vendido",
+      "documentation": "Entregada",
+      "plates": "En proceso"
+    },
+    {
+      "sourceRow": 12,
+      "name": "SAMUEL ANTONIO GOMEZ PAIZ",
+      "phone": "7470 1640",
+      "model": "SPORT 100",
+      "price": 999.0,
+      "date": "2026-10-16",
+      "stage": "Vendido",
+      "documentation": "Entregada",
+      "plates": "En proceso"
+    },
+    {
+      "sourceRow": 13,
+      "name": "FABIO JEREMIAS ULLOA FERNANDEZ",
+      "phone": "78936251",
+      "model": "APACHE RTR 1602V REF",
+      "price": 1999.0,
+      "date": "2026-10-19",
+      "stage": "Vendido",
+      "documentation": "Entregada",
+      "plates": "En proceso"
+    },
+    {
+      "sourceRow": 14,
+      "name": "MILAGRO ELIZABETH CAMPOS AMAYA",
+      "phone": "78794690",
+      "model": "APACHE RTR 200 FI",
+      "price": 3299.0,
+      "date": "2026-10-20",
+      "stage": "Vendido",
+      "documentation": "Pendiente",
+      "plates": ""
+    },
+    {
+      "sourceRow": 15,
+      "name": "WILFREDO ANTONIO ANGEL",
+      "phone": "6025 6957",
+      "model": "APACHE RTR 1602V REF",
+      "price": 2149.0,
+      "date": "2026-10-21",
+      "stage": "Credito ingresado",
+      "documentation": "",
+      "plates": ""
+    }
+  ],
+  "confirmedMonthRule": "source-date",
+  "commissionBasis": "fixed-unit-1890"
+}

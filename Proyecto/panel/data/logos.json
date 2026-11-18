@@ -1,0 +1,80 @@
+{
+  "tvs": {
+    "file": "tvs.jpg",
+    "width": 2048,
+    "height": 445
+  },
+  "models": {
+    "apache-160-2v-ref": {
+      "file": "apache-160-2v.png",
+      "width": 430,
+      "height": 159,
+      "aliases": [
+        "apache1602v",
+        "apachertr1602v"
+      ]
+    },
+    "apache-160-4v": {
+      "file": "apache-160-4v.webp",
+      "width": 500,
+      "height": 199,
+      "aliases": [
+        "apache1604v",
+        "apachertr1604v"
+      ]
+    },
+    "apache-180": {
+      "file": "apache-180.webp",
+      "width": 500,
+      "height": 193,
+      "aliases": [
+        "apache180",
+        "apachertr180"
+      ]
+    },
+    "apache-200-4v": {
+      "file": "apache-200-4v.webp",
+      "width": 410,
+      "height": 160,
+      "aliases": [
+        "apache2004v",
+        "apachertr2004v"
+      ]
+    },
+    "apache-200-fi": {
+      "file": "apache-200-fi.webp",
+      "width": 500,
+      "height": 194,
+      "aliases": [
+        "apache200fi",
+        "apachertr200fi",
+        "apachertr2004vfi"
+      ]
+    },
+    "apache-310": {
+      "file": "apache-rr310.webp",
+      "width": 398,
+      "height": 125,
+      "aliases": [
+        "apacherr310",
+        "apache310"
+      ]
+    },
+    "ntorq-125": {
+      "file": "ntorq-125.webp",
+      "width": 729,
+      "height": 85,
+      "aliases": [
+        "ntorq125"
+      ]
+    },
+    "raider-125": {
+      "file": "raider-125.webp",
+      "width": 592,
+      "height": 171,
+      "aliases": [
+        "raider125"
+      ]
+    }
+  }
+}

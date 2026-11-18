@@ -1,0 +1,1426 @@
+{
+  "schema": "tvs-panel-daniel",
+  "version": 2,
+  "revision": 74,
+  "settings": {
+    "advisor": "Daniel Campos",
+    "agency": "TVS Roosevelt San Miguel",
+    "phone": "60824466",
+    "location": "San Miguel, El Salvador",
+    "validDays": 7,
+    "theme": "light"
+  },
+  "clients": [
+    {
+      "id": "c1d182dc-55ca-4661-8fb5-5d08500129c0",
+      "name": "MELVIN SORTO",
+      "phone": "7277 2837",
+      "stockId": "moto-apache-200-4v",
+      "stage": "Vendido",
+      "source": "Otro",
+      "paymentMode": "Por definir",
+      "nextFollow": "",
+      "notes": "",
+      "archived": false,
+      "createdAt": "2026-09-29T12:00:00Z",
+      "history": [
+        {
+          "at": "2026-10-29T20:12:27.580Z",
+          "text": "Placas: Entregada"
+        },
+        {
+          "at": "2026-10-21T21:37:17.871Z",
+          "text": "Datos integrados desde LEADS.xlsx · fila 6"
+        }
+      ],
+      "recordDate": "2026-09-29",
+      "price": 3199,
+      "documentation": "Entregada",
+      "plates": "Entregada",
+      "saleId": "25bd113b-216b-46f4-8c1a-cc66e677d461"
+    },
+    {
+      "id": "e09f94e5-022d-4c7d-8a12-6486ab798501",
+      "name": "RENE BELTZASAR GIRON RIVAS",
+      "phone": "72873394",
+      "stockId": "moto-apache-160-2v-ref",
+      "stage": "Vendido",
+      "source": "Otro",
+      "paymentMode": "Por definir",
+      "nextFollow": "",
+      "notes": "",
+      "archived": false,
+      "createdAt": "2026-10-03T12:00:00Z",
+      "history": [
+        {
+          "at": "2026-10-21T21:37:17.871Z",
+          "text": "Datos integrados desde LEADS.xlsx · fila 7"
+        }
+      ],
+      "recordDate": "2026-10-03",
+      "price": 2149,
+      "documentation": "Entregada",
+      "plates": "En proceso",
+      "saleId": "98cf34b0-290f-4cb4-a806-ee011e508612"
+    },
+    {
+      "id": "a16c362f-f888-4fca-80ac-3ad421aeec71",
+      "name": "KERIN RIGOBERTO CISNEROS RIVAS",
+      "phone": "64406748",
+      "stockId": "moto-apache-160-2v-ref",
+      "stage": "Vendido",
+      "source": "Otro",
+      "paymentMode": "Por definir",
+      "nextFollow": "",
+      "notes": "",
+      "archived": false,
+      "createdAt": "2026-10-06T12:00:00Z",
+      "history": [
+        {
+          "at": "2026-10-21T21:37:17.871Z",
+          "text": "Datos integrados desde LEADS.xlsx · fila 8"
+        }
+      ],
+      "recordDate": "2026-10-06",
+      "price": 2149,
+      "documentation": "Entregada",
+      "plates": "En proceso",
+      "saleId": "e864f710-eca0-4c2e-bf3d-b8e3b438df71"
+    },
+    {
+      "id": "47cf811d-e205-4482-bbb7-922176d1ee1e",
+      "name": "JAIME ROMERO MATA",
+      "phone": "75167603",
+      "stockId": "moto-raider-125",
+      "stage": "Vendido",
+      "source": "Otro",
+      "paymentMode": "Por definir",
+      "nextFollow": "",
+      "notes": "",
+      "archived": false,
+      "createdAt": "2026-10-06T12:00:00Z",
+      "history": [
+        {
+          "at": "2026-10-21T21:37:17.871Z",
+          "text": "Datos integrados desde LEADS.xlsx · fila 9"
+        }
+      ],
+      "recordDate": "2026-10-06",
+      "price": 1949,
+      "documentation": "Entregada",
+      "plates": "En proceso",
+      "saleId": "7664d004-b475-42bd-8997-b078b51900d0"
+    },
+    {
+      "id": "1a82e5dd-5481-4159-b4b5-53d2aa9c21b9",
+      "name": "ALDUBI VILLALOBOS QUINTANILLA",
+      "phone": "68310087",
+      "stockId": "moto-apache-160-2v-ref",
+      "stage": "Vendido",
+      "source": "Otro",
+      "paymentMode": "Por definir",
+      "nextFollow": "",
+      "notes": "",
+      "archived": false,
+      "createdAt": "2026-10-08T12:00:00Z",
+      "history": [
+        {
+          "at": "2026-10-21T21:37:17.871Z",
+          "text": "Datos integrados desde LEADS.xlsx · fila 10"
+        }
+      ],
+      "recordDate": "2026-10-08",
+      "price": 2149,
+      "documentation": "Entregada",
+      "plates": "En proceso",
+      "saleId": "2d93c4de-1e43-4577-83ec-850e053f56a1"
+    },
+    {
+      "id": "b9f045d4-9263-4e17-8a6f-6c7bc07b0e05",
+      "name": "DONI ALEXANDER LOBO GONZALEZ",
+      "phone": "73016013",
+      "stockId": "moto-apache-160-2v-ref",
+      "stage": "Vendido",
+      "source": "Otro",
+      "paymentMode": "Por definir",
+      "nextFollow": "",
+      "notes": "",
+      "archived": false,
+      "createdAt": "2026-10-10T12:00:00Z",
+      "history": [
+        {
+          "at": "2026-10-21T21:37:17.871Z",
+          "text": "Datos integrados desde LEADS.xlsx · fila 11"
+        }
+      ],
+      "recordDate": "2026-10-10",
+      "price": 2149,
+      "documentation": "Entregada",
+      "plates": "En proceso",
+      "saleId": "7a104786-5a4d-4da3-9372-d418e8a267dd"
+    },
+    {
+      "id": "d0341e4f-4293-4309-bab0-18e650a8c7a8",
+      "name": "SAMUEL ANTONIO GOMEZ PAIZ",
+      "phone": "7470 1640",
+      "stockId": "moto-sport-100",
+      "stage": "Vendido",
+      "source": "Otro",
+      "paymentMode": "Por definir",
+      "nextFollow": "",
+      "notes": "",
+      "archived": false,
+      "createdAt": "2026-10-16T12:00:00Z",
+      "history": [
+        {
+          "at": "2026-10-21T21:37:17.871Z",
+          "text": "Datos integrados desde LEADS.xlsx · fila 12"
+        }
+      ],
+      "recordDate": "2026-10-16",
+      "price": 999,
+      "documentation": "Entregada",
+      "plates": "En proceso",
+      "saleId": "6265f93a-1ac9-4c14-a6dd-acabcce6ed88"
+    },
+    {
+      "id": "81d7e8bf-6ccf-4cb5-9a3f-3fef40204b37",
+      "name": "FABIO JEREMIAS ULLOA FERNANDEZ",
+      "phone": "78936251",
+      "stockId": "moto-apache-160-2v-ref",
+      "stage": "Vendido",
+      "source": "Otro",
+      "paymentMode": "Por definir",
+      "nextFollow": "",
+      "notes": "",
+      "archived": false,
+      "createdAt": "2026-10-19T12:00:00Z",
+      "history": [
+        {
+          "at": "2026-10-21T21:37:17.871Z",
+          "text": "Datos integrados desde LEADS.xlsx · fila 13"
+        }
+      ],
+      "recordDate": "2026-10-19",
+      "price": 1999,
+      "documentation": "Entregada",
+      "plates": "En proceso",
+      "saleId": "bca413d5-9b73-4529-b0b1-7f5a96a9323a"
+    },
+    {
+      "id": "453c92c3-30ab-4d0f-b856-8dbd39e99147",
+      "name": "MILAGRO ELIZABETH CAMPOS AMAYA",
+      "phone": "78794690",
+      "stockId": "moto-apache-200-fi",
+      "stage": "Vendido",
+      "source": "Otro",
+      "paymentMode": "Por definir",
+      "nextFollow": "",
+      "notes": "",
+      "archived": false,
+      "createdAt": "2026-10-20T12:00:00Z",
+      "history": [
+        {
+          "at": "2026-10-24T17:07:23.732Z",
+          "text": "Placas: En proceso"
+        },
+        {
+          "at": "2026-10-23T17:17:32.459Z",
+          "text": "Updates: Vendido"
+        },
+        {
+          "at": "2026-10-23T17:17:22.536Z",
+          "text": "Updates: Aprobado"
+        },
+        {
+          "at": "2026-10-23T15:07:51.070Z",
+          "text": "Documentación: Entregada"
+        },
+        {
+          "at": "2026-10-21T21:37:17.871Z",
+          "text": "Datos integrados desde LEADS.xlsx · fila 14"
+        }
+      ],
+      "recordDate": "2026-10-20",
+      "price": 3299,
+      "documentation": "Entregada",
+      "plates": "En proceso",
+      "saleId": "a1620bcc-54f8-46e4-b4cc-985e7c98f726"
+    },
+    {
+      "id": "edec40a0-aa6b-4a1c-841e-48c917466d48",
+      "name": "WILFREDO ANTONIO ANGEL",
+      "phone": "6025 6957",
+      "stockId": "moto-apache-160-2v-ref",
+      "stage": "Vendido",
+      "source": "Otro",
+      "paymentMode": "Por definir",
+      "nextFollow": "",
+      "notes": "",
+      "archived": false,
+      "createdAt": "2026-10-21T12:00:00Z",
+      "history": [
+        {
+          "at": "2026-10-29T20:12:00.486Z",
+          "text": "Documentación: Entregada"
+        },
+        {
+          "at": "2026-10-23T17:36:56.557Z",
+          "text": "Cotización COT-20261023-002 guardada · APACHE RTR 160 2V REF"
+        },
+        {
+          "at": "2026-10-23T17:36:35.524Z",
+          "text": "Cotización COT-20261023-001 guardada · APACHE RTR 160 2V REF"
+        },
+        {
+          "at": "2026-10-23T17:30:10.960Z",
+          "text": "Ficha y control de venta actualizados"
+        },
+        {
+          "at": "2026-10-23T17:17:33.906Z",
+          "text": "Updates: Vendido"
+        },
+        {
+          "at": "2026-10-23T17:17:21.196Z",
+          "text": "Updates: Aprobado"
+        },
+        {
+          "at": "2026-10-23T17:10:35.535Z",
+          "text": "Updates: Vendido"
+        },
+        {
+          "at": "2026-10-22T16:48:57.267Z",
+          "text": "Updates: Aprobado"
+        },
+        {
+          "at": "2026-10-22T16:47:19.031Z",
+          "text": "Updates: Vendido"
+        },
+        {
+          "at": "2026-10-22T14:40:21.241Z",
+          "text": "Updates: Aprobado"
+        },
+        {
+          "at": "2026-10-22T14:40:18.349Z",
+          "text": "Updates: Vendido"
+        },
+        {
+          "at": "2026-10-22T14:40:08.251Z",
+          "text": "Updates: Aprobado"
+        },
+        {
+          "at": "2026-10-21T21:37:17.871Z",
+          "text": "Datos integrados desde LEADS.xlsx · fila 15"
+        }
+      ],
+      "recordDate": "2026-10-23",
+      "price": 2149,
+      "documentation": "Entregada",
+      "plates": "",
+      "saleId": "64e1e50b-baa7-4911-9104-665eb2be1fb2"
+    },
+    {
+      "id": "3b6910cf-1db3-4e0e-a0a6-0ec4925c9322",
+      "name": "DARWIN ADOLFO BUSTIILO MARTINEZ",
+      "phone": "60530016",
+      "stockId": "moto-apache-180",
+      "stage": "Vendido",
+      "source": "WhatsApp",
+      "paymentMode": "Crédito",
+      "nextFollow": "",
+      "notes": "falta de documentacion",
+      "recordDate": "2026-10-24",
+      "price": 2274,
+      "documentation": "Entregada",
+      "plates": "",
+      "saleId": "e064554c-baf0-4b57-b95d-42f1c2d38548",
+      "archived": false,
+      "createdAt": "2026-10-24T12:00:00Z",
+      "history": [
+        {
+          "at": "2026-10-29T20:12:11.081Z",
+          "text": "Documentación: Entregada"
+        },
+        {
+          "at": "2026-10-27T15:05:53.894Z",
+          "text": "Updates: Vendido"
+        },
+        {
+          "at": "2026-10-27T15:05:52.138Z",
+          "text": "Updates: Aprobado"
+        },
+        {
+          "at": "2026-10-27T15:05:47.419Z",
+          "text": "Updates: Vendido"
+        },
+        {
+          "at": "2026-10-27T15:05:45.430Z",
+          "text": "Updates: Aprobado"
+        },
+        {
+          "at": "2026-10-27T15:05:42.475Z",
+          "text": "Updates: Vendido"
+        },
+        {
+          "at": "2026-10-26T22:40:30.718Z",
+          "text": "Updates: Aprobado"
+        },
+        {
+          "at": "2026-10-26T22:40:13.984Z",
+          "text": "Updates: Vendido"
+        },
+        {
+          "at": "2026-10-26T22:20:16.281Z",
+          "text": "Updates: Aprobado"
+        },
+        {
+          "at": "2026-10-26T22:20:00.783Z",
+          "text": "Updates: Vendido"
+        },
+        {
+          "at": "2026-10-26T17:33:54.861Z",
+          "text": "Updates: Aprobado"
+        },
+        {
+          "at": "2026-10-26T16:05:26.696Z",
+          "text": "Updates: Credito ingresado"
+        },
+        {
+          "at": "2026-10-24T17:07:06.840Z",
+          "text": "Ficha y control de venta actualizados"
+        },
+        {
+          "at": "2026-10-24T17:05:54.861Z",
+          "text": "Updates: Documentos"
+        },
+        {
+          "at": "2026-10-24T17:05:34.233Z",
+          "text": "Updates: Vendido"
+        },
+        {
+          "at": "2026-10-24T17:05:28.511Z",
+          "text": "Cliente registrado"
+        }
+      ]
+    },
+    {
+      "id": "fba52ca6-e304-4e23-b040-7ffe10754661",
+      "name": "FREDYS ALEXANDER GIRON CASTILLO",
+      "phone": "7878 8790",
+      "stockId": "moto-apache-160-2v-ref",
+      "stage": "Vendido",
+      "source": "WhatsApp",
+      "paymentMode": "Por definir",
+      "nextFollow": "",
+      "notes": "",
+      "recordDate": "2026-10-26",
+      "price": 2149,
+      "documentation": "Entregada",
+      "plates": "",
+      "saleId": "a9cd7145-55eb-4416-8d06-e6ef2f2001f9",
+      "archived": false,
+      "createdAt": "2026-10-26T12:00:00Z",
+      "history": [
+        {
+          "at": "2026-10-29T20:12:13.100Z",
+          "text": "Documentación: Entregada"
+        },
+        {
+          "at": "2026-10-28T17:24:23.649Z",
+          "text": "Updates: Vendido"
+        },
+        {
+          "at": "2026-10-28T16:55:14.881Z",
+          "text": "Updates: Aprobado"
+        },
+        {
+          "at": "2026-10-27T20:10:32.297Z",
+          "text": "Updates: Credito ingresado"
+        },
+        {
+          "at": "2026-10-27T20:10:04.756Z",
+          "text": "Updates: Vendido"
+        },
+        {
+          "at": "2026-10-26T22:40:32.244Z",
+          "text": "Updates: Credito ingresado"
+        },
+        {
+          "at": "2026-10-26T22:40:20.167Z",
+          "text": "Updates: Vendido"
+        },
+        {
+          "at": "2026-10-26T22:20:17.695Z",
+          "text": "Updates: Credito ingresado"
+        },
+        {
+          "at": "2026-10-26T22:20:02.407Z",
+          "text": "Updates: Vendido"
+        },
+        {
+          "at": "2026-10-26T22:19:54.544Z",
+          "text": "Cliente registrado"
+        }
+      ]
+    },
+    {
+      "id": "ffd574f4-4dff-4715-b5ee-c7035b028560",
+      "name": "MARCO ISAAC GARCIA ALVAREZ",
+      "phone": "7546 5872",
+      "stockId": "moto-apache-160-2v-ref",
+      "stage": "No continuó",
+      "source": "WhatsApp",
+      "paymentMode": "Por definir",
+      "nextFollow": "",
+      "notes": "",
+      "recordDate": "2026-10-27",
+      "price": 2149,
+      "documentation": "",
+      "plates": "",
+      "saleId": "c199c840-3fa8-4f57-901e-beedda7074ac",
+      "archived": false,
+      "createdAt": "2026-10-27T12:00:00Z",
+      "history": [
+        {
+          "at": "2026-10-31T15:26:43.048Z",
+          "text": "Updates: No continuó"
+        },
+        {
+          "at": "2026-10-30T19:46:57.189Z",
+          "text": "Updates: Documentos"
+        },
+        {
+          "at": "2026-10-30T19:46:43.668Z",
+          "text": "Updates: Vendido"
+        },
+        {
+          "at": "2026-10-28T20:40:31.490Z",
+          "text": "Updates: En seguimiento"
+        },
+        {
+          "at": "2026-10-28T20:40:20.758Z",
+          "text": "Updates: Vendido"
+        },
+        {
+          "at": "2026-10-27T20:10:30.032Z",
+          "text": "Updates: En seguimiento"
+        },
+        {
+          "at": "2026-10-27T20:10:19.476Z",
+          "text": "Ficha y control de venta actualizados"
+        },
+        {
+          "at": "2026-10-27T20:09:59.618Z",
+          "text": "Cliente registrado"
+        }
+      ]
+    }
+  ],
+  "quotes": [
+    {
+      "id": "61ab1d74-496b-4a93-b0dd-f2eb65a353bd",
+      "number": "COT-20261022-001",
+      "date": "2026-10-22",
+      "createdAt": "2026-10-22T20:49:20.001Z",
+      "validUntil": "2026-10-29",
+      "clientId": "",
+      "customerName": "",
+      "customerPhone": "",
+      "stockId": "moto-sport-100",
+      "modelLabel": "SPORT 100",
+      "calcModelId": "sport-100",
+      "mode": "credit",
+      "price": 999,
+      "financierName": "Crediopciones",
+      "calcState": {
+        "financierId": "crediopciones",
+        "bacProfile": "otro",
+        "income": "700",
+        "bacExtra": "0",
+        "planId": "recompra-45",
+        "price": "999",
+        "down": "0",
+        "downMode": "percent",
+        "months": 40,
+        "model": "sport-100",
+        "detailsVisible": true,
+        "theme": "light",
+        "touched": true,
+        "mongePlanId": "diamante"
+      },
+      "calculation": {
+        "valid": true,
+        "plan": {
+          "id": "recompra-45",
+          "name": "Especial Recompra",
+          "annualRate": 0.45,
+          "fee": {
+            "mode": "none",
+            "value": 0
+          },
+          "source": "PLAN ESPECIAL RECOMPRA TASA 45%.xlsx"
+        },
+        "price": 999,
+        "downAmount": 0,
+        "downPercent": 0,
+        "principal": 999,
+        "fee": 0,
+        "initialPayment": 0,
+        "rows": [
+          {
+            "months": 12,
+            "monthly": 104.90728867854664,
+            "totalInstallments": 1258.8874641425596,
+            "interest": 259.88746414255957,
+            "total": 1258.8874641425596
+          },
+          {
+            "months": 18,
+            "monthly": 77.31922219992832,
+            "totalInstallments": 1391.7459995987097,
+            "interest": 392.74599959870966,
+            "total": 1391.7459995987097
+          },
+          {
+            "months": 24,
+            "monthly": 63.854984440261404,
+            "totalInstallments": 1532.5196265662737,
+            "interest": 533.5196265662737,
+            "total": 1532.5196265662737
+          },
+          {
+            "months": 30,
+            "monthly": 56.0315365297374,
+            "totalInstallments": 1680.946095892122,
+            "interest": 681.946095892122,
+            "total": 1680.946095892122
+          },
+          {
+            "months": 36,
+            "monthly": 51.019534361091964,
+            "totalInstallments": 1836.7032369993108,
+            "interest": 837.7032369993108,
+            "total": 1836.7032369993108
+          },
+          {
+            "months": 40,
+            "monthly": 48.610796869847036,
+            "totalInstallments": 1944.4318747938814,
+            "interest": 945.4318747938814,
+            "total": 1944.4318747938814
+          }
+        ],
+        "selected": {
+          "months": 40,
+          "monthly": 48.610796869847036,
+          "totalInstallments": 1944.4318747938814,
+          "interest": 945.4318747938814,
+          "total": 1944.4318747938814
+        },
+        "financierId": "crediopciones",
+        "financierName": "Crediopciones",
+        "estimated": false
+      },
+      "sourceText": "COTIZACIÓN CREDIOPCIONES\nEspecial Recompra · 45% anual nominal\nModelo: SPORT 100\nPrecio: $999.00\nPrima: $0.00\nMonto financiado: $999.00\nGastos administrativos: $0.00\nPrima total (prima + gastos): $0.00\nPlazo: 40 meses\nCuota mensual: $48.61\nTotal estimado, incluida prima y gastos: $1,944.43\n\nLos gastos administrativos se muestran por separado y no se incluyen en las cuotas.\nMontos referenciales. El último pago puede ajustarse por redondeo.\nDaniel Campos · TVS Roosevelt San Miguel",
+      "note": "",
+      "status": "Descartada",
+      "advisor": "Daniel Campos",
+      "agency": "TVS Roosevelt San Miguel",
+      "advisorPhone": "60824466",
+      "location": "San Miguel, El Salvador"
+    },
+    {
+      "id": "909b686a-ef72-4587-b3ea-b2d384865ebe",
+      "number": "COT-20261023-001",
+      "date": "2026-10-23",
+      "createdAt": "2026-10-23T17:36:35.524Z",
+      "validUntil": "2026-10-30",
+      "clientId": "edec40a0-aa6b-4a1c-841e-48c917466d48",
+      "customerName": "WILFREDO ANTONIO ANGEL",
+      "customerPhone": "6025 6957",
+      "stockId": "moto-apache-160-2v-ref",
+      "modelLabel": "APACHE RTR 160 2V REF",
+      "calcModelId": "apache-160-2v-ref",
+      "mode": "credit",
+      "price": 2149,
+      "financierName": "BAC",
+      "calcState": {
+        "financierId": "bac",
+        "bacProfile": "otro",
+        "income": "700",
+        "bacExtra": "0",
+        "planId": "recompra-45",
+        "price": "2149",
+        "down": "0",
+        "downMode": "percent",
+        "months": 24,
+        "model": "apache-160-2v-ref",
+        "detailsVisible": true,
+        "theme": "light",
+        "touched": true,
+        "mongePlanId": "diamante"
+      },
+      "calculation": {
+        "valid": true,
+        "financierId": "bac",
+        "financierName": "BAC",
+        "estimated": false,
+        "price": 2149,
+        "downAmount": 214.9,
+        "downPercent": 10,
+        "principal": 1934.1,
+        "fee": 0,
+        "initialPayment": 214.9,
+        "minimumDown": 214.9,
+        "income": 700,
+        "profile": {
+          "id": "otro",
+          "name": "Asalariado · Otro empleador",
+          "salaried": true,
+          "workplace": "OTRO"
+        },
+        "rows": [
+          {
+            "months": 12,
+            "annualRate": 0.45,
+            "monthly": 204,
+            "totalInstallments": 2448,
+            "interest": 513.9000000000001,
+            "total": 2662.9,
+            "eligible": true,
+            "incomeRatio": 0.33,
+            "reason": ""
+          },
+          {
+            "months": 18,
+            "annualRate": 0.49,
+            "monthly": 154,
+            "totalInstallments": 2772,
+            "interest": 837.9000000000001,
+            "total": 2986.9,
+            "eligible": true,
+            "incomeRatio": 0.33,
+            "reason": ""
+          },
+          {
+            "months": 24,
+            "annualRate": 0.49,
+            "monthly": 128,
+            "totalInstallments": 3072,
+            "interest": 1137.9,
+            "total": 3286.9,
+            "eligible": true,
+            "incomeRatio": 0.33,
+            "reason": ""
+          },
+          {
+            "months": 30,
+            "annualRate": 0.49,
+            "monthly": 113,
+            "totalInstallments": 3390,
+            "interest": 1455.9,
+            "total": 3604.9,
+            "eligible": true,
+            "incomeRatio": 0.33,
+            "reason": ""
+          },
+          {
+            "months": 36,
+            "annualRate": 0.49,
+            "monthly": 104,
+            "totalInstallments": 3744,
+            "interest": 1809.9,
+            "total": 3958.9,
+            "eligible": true,
+            "incomeRatio": 0.33,
+            "reason": ""
+          }
+        ],
+        "selected": {
+          "months": 24,
+          "annualRate": 0.49,
+          "monthly": 128,
+          "totalInstallments": 3072,
+          "interest": 1137.9,
+          "total": 3286.9,
+          "eligible": true,
+          "incomeRatio": 0.33,
+          "reason": ""
+        },
+        "sourceNote": "Cotización referencial según el Excel de BAC. Sujeta al perfil, récord y análisis de la financiera."
+      },
+      "sourceText": "COTIZACIÓN BAC\nPerfil: Asalariado · Otro empleador\nModelo: APACHE RTR 160 2V REF\nPrecio: $2,149.00\nPrima: $214.90\nMonto financiado: $1,934.10\nGastos administrativos incluidos en este cálculo: $0.00\nPrima total: $214.90\nPlazo: 24 meses\nCuota mensual: $128.00\nIntereses estimados: $1,137.90\nTotal estimado, incluida prima: $3,286.90\nTasa anual nominal del plazo: 49%\nCuotas redondeadas al dólar superior, como en el Excel. El total usa esas cuotas; el pago final puede ajustarse.\n\nCotización referencial según el Excel de BAC. Sujeta al perfil, récord y análisis de la financiera.\nDaniel Campos · TVS Roosevelt San Miguel",
+      "note": "",
+      "status": "Pendiente",
+      "advisor": "Daniel Campos",
+      "agency": "TVS Roosevelt San Miguel",
+      "advisorPhone": "60824466",
+      "location": "San Miguel, El Salvador"
+    },
+    {
+      "id": "e6cf4780-1edc-415e-9d73-7b290385b4ff",
+      "number": "COT-20261023-002",
+      "date": "2026-10-23",
+      "createdAt": "2026-10-23T17:36:56.557Z",
+      "validUntil": "2026-10-30",
+      "clientId": "edec40a0-aa6b-4a1c-841e-48c917466d48",
+      "customerName": "WILFREDO ANTONIO ANGEL",
+      "customerPhone": "6025 6957",
+      "stockId": "moto-apache-160-2v-ref",
+      "modelLabel": "APACHE RTR 160 2V REF",
+      "calcModelId": "apache-160-2v-ref",
+      "mode": "credit",
+      "price": 2149,
+      "financierName": "BAC",
+      "calcState": {
+        "financierId": "bac",
+        "bacProfile": "otro",
+        "income": "700",
+        "bacExtra": "0",
+        "planId": "recompra-45",
+        "price": "2149",
+        "down": "0",
+        "downMode": "percent",
+        "months": 24,
+        "model": "apache-160-2v-ref",
+        "detailsVisible": true,
+        "theme": "light",
+        "touched": true,
+        "mongePlanId": "diamante"
+      },
+      "calculation": {
+        "valid": true,
+        "financierId": "bac",
+        "financierName": "BAC",
+        "estimated": false,
+        "price": 2149,
+        "downAmount": 214.9,
+        "downPercent": 10,
+        "principal": 1934.1,
+        "fee": 0,
+        "initialPayment": 214.9,
+        "minimumDown": 214.9,
+        "income": 700,
+        "profile": {
+          "id": "otro",
+          "name": "Asalariado · Otro empleador",
+          "salaried": true,
+          "workplace": "OTRO"
+        },
+        "rows": [
+          {
+            "months": 12,
+            "annualRate": 0.45,
+            "monthly": 204,
+            "totalInstallments": 2448,
+            "interest": 513.9000000000001,
+            "total": 2662.9,
+            "eligible": true,
+            "incomeRatio": 0.33,
+            "reason": ""
+          },
+          {
+            "months": 18,
+            "annualRate": 0.49,
+            "monthly": 154,
+            "totalInstallments": 2772,
+            "interest": 837.9000000000001,
+            "total": 2986.9,
+            "eligible": true,
+            "incomeRatio": 0.33,
+            "reason": ""
+          },
+          {
+            "months": 24,
+            "annualRate": 0.49,
+            "monthly": 128,
+            "totalInstallments": 3072,
+            "interest": 1137.9,
+            "total": 3286.9,
+            "eligible": true,
+            "incomeRatio": 0.33,
+            "reason": ""
+          },
+          {
+            "months": 30,
+            "annualRate": 0.49,
+            "monthly": 113,
+            "totalInstallments": 3390,
+            "interest": 1455.9,
+            "total": 3604.9,
+            "eligible": true,
+            "incomeRatio": 0.33,
+            "reason": ""
+          },
+          {
+            "months": 36,
+            "annualRate": 0.49,
+            "monthly": 104,
+            "totalInstallments": 3744,
+            "interest": 1809.9,
+            "total": 3958.9,
+            "eligible": true,
+            "incomeRatio": 0.33,
+            "reason": ""
+          }
+        ],
+        "selected": {
+          "months": 24,
+          "annualRate": 0.49,
+          "monthly": 128,
+          "totalInstallments": 3072,
+          "interest": 1137.9,
+          "total": 3286.9,
+          "eligible": true,
+          "incomeRatio": 0.33,
+          "reason": ""
+        },
+        "sourceNote": "Cotización referencial según el Excel de BAC. Sujeta al perfil, récord y análisis de la financiera."
+      },
+      "sourceText": "COTIZACIÓN BAC\nPerfil: Asalariado · Otro empleador\nModelo: APACHE RTR 160 2V REF\nPrecio: $2,149.00\nPrima: $214.90\nMonto financiado: $1,934.10\nGastos administrativos incluidos en este cálculo: $0.00\nPrima total: $214.90\nPlazo: 24 meses\nCuota mensual: $128.00\nIntereses estimados: $1,137.90\nTotal estimado, incluida prima: $3,286.90\nTasa anual nominal del plazo: 49%\nCuotas redondeadas al dólar superior, como en el Excel. El total usa esas cuotas; el pago final puede ajustarse.\n\nCotización referencial según el Excel de BAC. Sujeta al perfil, récord y análisis de la financiera.\nDaniel Campos · TVS Roosevelt San Miguel",
+      "note": "",
+      "status": "Pendiente",
+      "advisor": "Daniel Campos",
+      "agency": "TVS Roosevelt San Miguel",
+      "advisorPhone": "60824466",
+      "location": "San Miguel, El Salvador"
+    }
+  ],
+  "requests": [],
+  "stock": [
+    {
+      "id": "moto-sport-100",
+      "calcModelId": "sport-100",
+      "label": "SPORT 100",
+      "type": "Trabajo",
+      "year": "",
+      "colors": "",
+      "price": null,
+      "quantity": null,
+      "promo": "",
+      "active": true
+    },
+    {
+      "id": "moto-raider-125",
+      "calcModelId": "raider-125",
+      "label": "RAIDER 125",
+      "type": "Urbana",
+      "year": "",
+      "colors": "",
+      "price": null,
+      "quantity": null,
+      "promo": "",
+      "active": true
+    },
+    {
+      "id": "moto-apache-160-2v-ref",
+      "calcModelId": "apache-160-2v-ref",
+      "label": "APACHE RTR 160 2V REF",
+      "type": "Deportiva",
+      "year": "",
+      "colors": "",
+      "price": null,
+      "quantity": null,
+      "promo": "",
+      "active": true
+    },
+    {
+      "id": "moto-apache-160-4v",
+      "calcModelId": "apache-160-4v",
+      "label": "APACHE RTR 160 4V",
+      "type": "Deportiva",
+      "year": "",
+      "colors": "",
+      "price": null,
+      "quantity": null,
+      "promo": "",
+      "active": true
+    },
+    {
+      "id": "moto-apache-180",
+      "calcModelId": "apache-180",
+      "label": "APACHE RTR 180",
+      "type": "Deportiva",
+      "year": "",
+      "colors": "",
+      "price": null,
+      "quantity": null,
+      "promo": "",
+      "active": true
+    },
+    {
+      "id": "moto-apache-200-4v",
+      "calcModelId": "apache-200-4v",
+      "label": "APACHE RTR 200 4V",
+      "type": "Deportiva",
+      "year": "",
+      "colors": "",
+      "price": null,
+      "quantity": null,
+      "promo": "",
+      "active": true
+    },
+    {
+      "id": "moto-apache-200-fi",
+      "calcModelId": "apache-200-fi",
+      "label": "APACHE RTR 200 FI",
+      "type": "Deportiva",
+      "year": "",
+      "colors": "",
+      "price": null,
+      "quantity": null,
+      "promo": "",
+      "active": true
+    },
+    {
+      "id": "moto-king-gd",
+      "calcModelId": "king-gd",
+      "label": "KING GD",
+      "type": "Carga",
+      "year": "",
+      "colors": "",
+      "price": null,
+      "quantity": null,
+      "promo": "",
+      "active": true
+    },
+    {
+      "id": "moto-apache-310",
+      "calcModelId": "apache-310",
+      "label": "APACHE 310",
+      "type": "Deportiva",
+      "year": "",
+      "colors": "",
+      "price": null,
+      "quantity": null,
+      "promo": "",
+      "active": true
+    },
+    {
+      "id": "moto-9",
+      "calcModelId": "",
+      "label": "NTORQ 125",
+      "type": "Scooter",
+      "year": "",
+      "colors": "",
+      "price": null,
+      "quantity": null,
+      "promo": "",
+      "active": true
+    },
+    {
+      "id": "moto-10",
+      "calcModelId": "",
+      "label": "HLX 150",
+      "type": "Trabajo",
+      "year": "",
+      "colors": "",
+      "price": null,
+      "quantity": null,
+      "promo": "",
+      "active": true
+    }
+  ],
+  "sales": [
+    {
+      "id": "25bd113b-216b-46f4-8c1a-cc66e677d461",
+      "clientId": "c1d182dc-55ca-4661-8fb5-5d08500129c0",
+      "stockId": "moto-apache-200-4v",
+      "amount": 3199,
+      "commission": 0,
+      "date": "2026-09-29",
+      "source": "Otro",
+      "campaignId": "",
+      "notes": "Importado de LEADS.xlsx",
+      "status": "Vendido",
+      "documentation": "Entregada",
+      "plates": "Entregada",
+      "importFingerprint": "72772837|APACHERTR2004V|2026-09-29",
+      "managedByClient": true
+    },
+    {
+      "id": "98cf34b0-290f-4cb4-a806-ee011e508612",
+      "clientId": "e09f94e5-022d-4c7d-8a12-6486ab798501",
+      "stockId": "moto-apache-160-2v-ref",
+      "amount": 2149,
+      "commission": 0,
+      "date": "2026-10-03",
+      "source": "Otro",
+      "campaignId": "",
+      "notes": "Importado de LEADS.xlsx",
+      "status": "Vendido",
+      "documentation": "Entregada",
+      "plates": "En proceso",
+      "importFingerprint": "72873394|APACHERTR1602VREF|2026-10-03",
+      "managedByClient": true
+    },
+    {
+      "id": "e864f710-eca0-4c2e-bf3d-b8e3b438df71",
+      "clientId": "a16c362f-f888-4fca-80ac-3ad421aeec71",
+      "stockId": "moto-apache-160-2v-ref",
+      "amount": 2149,
+      "commission": 0,
+      "date": "2026-10-06",
+      "source": "Otro",
+      "campaignId": "",
+      "notes": "Importado de LEADS.xlsx",
+      "status": "Vendido",
+      "documentation": "Entregada",
+      "plates": "En proceso",
+      "importFingerprint": "64406748|APACHERTR1602VREF|2026-10-06",
+      "managedByClient": true
+    },
+    {
+      "id": "7664d004-b475-42bd-8997-b078b51900d0",
+      "clientId": "47cf811d-e205-4482-bbb7-922176d1ee1e",
+      "stockId": "moto-raider-125",
+      "amount": 1949,
+      "commission": 0,
+      "date": "2026-10-06",
+      "source": "Otro",
+      "campaignId": "",
+      "notes": "Importado de LEADS.xlsx",
+      "status": "Vendido",
+      "documentation": "Entregada",
+      "plates": "En proceso",
+      "importFingerprint": "75167603|RAIDER125|2026-10-06",
+      "managedByClient": true
+    },
+    {
+      "id": "2d93c4de-1e43-4577-83ec-850e053f56a1",
+      "clientId": "1a82e5dd-5481-4159-b4b5-53d2aa9c21b9",
+      "stockId": "moto-apache-160-2v-ref",
+      "amount": 2149,
+      "commission": 0,
+      "date": "2026-10-08",
+      "source": "Otro",
+      "campaignId": "",
+      "notes": "Importado de LEADS.xlsx",
+      "status": "Vendido",
+      "documentation": "Entregada",
+      "plates": "En proceso",
+      "importFingerprint": "68310087|APACHERTR1602VREF|2026-10-08",
+      "managedByClient": true
+    },
+    {
+      "id": "7a104786-5a4d-4da3-9372-d418e8a267dd",
+      "clientId": "b9f045d4-9263-4e17-8a6f-6c7bc07b0e05",
+      "stockId": "moto-apache-160-2v-ref",
+      "amount": 2149,
+      "commission": 0,
+      "date": "2026-10-10",
+      "source": "Otro",
+      "campaignId": "",
+      "notes": "Importado de LEADS.xlsx",
+      "status": "Vendido",
+      "documentation": "Entregada",
+      "plates": "En proceso",
+      "importFingerprint": "73016013|APACHERTR1602VREF|2026-10-10",
+      "managedByClient": true
+    },
+    {
+      "id": "6265f93a-1ac9-4c14-a6dd-acabcce6ed88",
+      "clientId": "d0341e4f-4293-4309-bab0-18e650a8c7a8",
+      "stockId": "moto-sport-100",
+      "amount": 999,
+      "commission": 0,
+      "date": "2026-10-16",
+      "source": "Otro",
+      "campaignId": "",
+      "notes": "Importado de LEADS.xlsx",
+      "status": "Vendido",
+      "documentation": "Entregada",
+      "plates": "En proceso",
+      "importFingerprint": "74701640|SPORT100|2026-10-16",
+      "managedByClient": true
+    },
+    {
+      "id": "bca413d5-9b73-4529-b0b1-7f5a96a9323a",
+      "clientId": "81d7e8bf-6ccf-4cb5-9a3f-3fef40204b37",
+      "stockId": "moto-apache-160-2v-ref",
+      "amount": 1999,
+      "commission": 0,
+      "date": "2026-10-19",
+      "source": "Otro",
+      "campaignId": "",
+      "notes": "Importado de LEADS.xlsx",
+      "status": "Vendido",
+      "documentation": "Entregada",
+      "plates": "En proceso",
+      "importFingerprint": "78936251|APACHERTR1602VREF|2026-10-19",
+      "managedByClient": true
+    },
+    {
+      "id": "a1620bcc-54f8-46e4-b4cc-985e7c98f726",
+      "clientId": "453c92c3-30ab-4d0f-b856-8dbd39e99147",
+      "stockId": "moto-apache-200-fi",
+      "amount": 3299,
+      "commission": 0,
+      "date": "2026-10-20",
+      "source": "Otro",
+      "campaignId": "",
+      "notes": "Importado de LEADS.xlsx",
+      "status": "Vendido",
+      "documentation": "Entregada",
+      "plates": "En proceso",
+      "importFingerprint": "78794690|APACHERTR200FI|2026-10-20",
+      "managedByClient": true
+    },
+    {
+      "id": "64e1e50b-baa7-4911-9104-665eb2be1fb2",
+      "clientId": "edec40a0-aa6b-4a1c-841e-48c917466d48",
+      "stockId": "moto-apache-160-2v-ref",
+      "amount": 2149,
+      "commission": 0,
+      "date": "2026-10-23",
+      "source": "Otro",
+      "campaignId": "",
+      "notes": "Registrada desde Clientes",
+      "status": "Vendido",
+      "managedByClient": true,
+      "documentation": "Entregada",
+      "plates": ""
+    },
+    {
+      "id": "e064554c-baf0-4b57-b95d-42f1c2d38548",
+      "clientId": "3b6910cf-1db3-4e0e-a0a6-0ec4925c9322",
+      "stockId": "moto-apache-180",
+      "amount": 2274,
+      "commission": 0,
+      "date": "2026-10-24",
+      "source": "WhatsApp",
+      "campaignId": "",
+      "notes": "Registrada desde Clientes",
+      "status": "Vendido",
+      "managedByClient": true,
+      "documentation": "Entregada",
+      "plates": ""
+    },
+    {
+      "id": "a9cd7145-55eb-4416-8d06-e6ef2f2001f9",
+      "clientId": "fba52ca6-e304-4e23-b040-7ffe10754661",
+      "stockId": "moto-apache-160-2v-ref",
+      "amount": 2149,
+      "commission": 0,
+      "date": "2026-10-26",
+      "source": "WhatsApp",
+      "campaignId": "",
+      "notes": "Registrada desde Clientes",
+      "status": "Vendido",
+      "managedByClient": true,
+      "documentation": "Entregada",
+      "plates": ""
+    },
+    {
+      "id": "c199c840-3fa8-4f57-901e-beedda7074ac",
+      "clientId": "ffd574f4-4dff-4715-b5ee-c7035b028560",
+      "stockId": "moto-apache-160-2v-ref",
+      "amount": 2149,
+      "commission": 0,
+      "date": "2026-10-27",
+      "source": "WhatsApp",
+      "campaignId": "",
+      "notes": "Registrada desde Clientes",
+      "status": "Anulada",
+      "managedByClient": true,
+      "documentation": "",
+      "plates": ""
+    }
+  ],
+  "campaigns": [],
+  "postSales": [],
+  "updatedAt": "2026-11-03T20:54:50.621Z",
+  "imports": [
+    {
+      "id": "leads-2e34d59dc807e0467afb",
+      "source": "LEADS.xlsx",
+      "at": "2026-10-21T21:37:17.871Z",
+      "rows": 10
+    }
+  ],
+  "payrollPlans": [
+    {
+      "id": "pago-2026-09",
+      "month": "2026-09",
+      "basePerFortnight": 183.45,
+      "fortnights": 2,
+      "unitBase": 1890,
+      "targetUnits": 15,
+      "source": "Esquema Ago26 · tabla proporcionada",
+      "tiers": [
+        {
+          "units": 0,
+          "rate": 0,
+          "bonus": 0
+        },
+        {
+          "units": 1,
+          "rate": 0,
+          "bonus": 0
+        },
+        {
+          "units": 2,
+          "rate": 0,
+          "bonus": 0
+        },
+        {
+          "units": 3,
+          "rate": 0,
+          "bonus": 0
+        },
+        {
+          "units": 4,
+          "rate": 0,
+          "bonus": 0
+        },
+        {
+          "units": 5,
+          "rate": 0,
+          "bonus": 0
+        },
+        {
+          "units": 6,
+          "rate": 0,
+          "bonus": 0
+        },
+        {
+          "units": 7,
+          "rate": 1.25,
+          "bonus": 0
+        },
+        {
+          "units": 8,
+          "rate": 1.5,
+          "bonus": 0
+        },
+        {
+          "units": 9,
+          "rate": 1.75,
+          "bonus": 0
+        },
+        {
+          "units": 10,
+          "rate": 2.5,
+          "bonus": 75
+        },
+        {
+          "units": 11,
+          "rate": 2.5,
+          "bonus": 75
+        },
+        {
+          "units": 12,
+          "rate": 2.5,
+          "bonus": 150
+        },
+        {
+          "units": 13,
+          "rate": 3,
+          "bonus": 150
+        },
+        {
+          "units": 14,
+          "rate": 3,
+          "bonus": 200
+        },
+        {
+          "units": 15,
+          "rate": 3,
+          "bonus": 250
+        }
+      ]
+    },
+    {
+      "id": "pago-2026-10",
+      "month": "2026-10",
+      "basePerFortnight": 183.45,
+      "fortnights": 2,
+      "unitBase": 1890,
+      "targetUnits": 15,
+      "source": "Esquema Ago26 · tabla proporcionada",
+      "tiers": [
+        {
+          "units": 0,
+          "rate": 0,
+          "bonus": 0
+        },
+        {
+          "units": 1,
+          "rate": 0,
+          "bonus": 0
+        },
+        {
+          "units": 2,
+          "rate": 0,
+          "bonus": 0
+        },
+        {
+          "units": 3,
+          "rate": 0,
+          "bonus": 0
+        },
+        {
+          "units": 4,
+          "rate": 0,
+          "bonus": 0
+        },
+        {
+          "units": 5,
+          "rate": 0,
+          "bonus": 0
+        },
+        {
+          "units": 6,
+          "rate": 0,
+          "bonus": 0
+        },
+        {
+          "units": 7,
+          "rate": 1.25,
+          "bonus": 0
+        },
+        {
+          "units": 8,
+          "rate": 1.5,
+          "bonus": 0
+        },
+        {
+          "units": 9,
+          "rate": 1.75,
+          "bonus": 0
+        },
+        {
+          "units": 10,
+          "rate": 2.5,
+          "bonus": 75
+        },
+        {
+          "units": 11,
+          "rate": 2.5,
+          "bonus": 75
+        },
+        {
+          "units": 12,
+          "rate": 2.5,
+          "bonus": 150
+        },
+        {
+          "units": 13,
+          "rate": 3,
+          "bonus": 150
+        },
+        {
+          "units": 14,
+          "rate": 3,
+          "bonus": 200
+        },
+        {
+          "units": 15,
+          "rate": 3,
+          "bonus": 250
+        }
+      ]
+    }
+  ],
+  "exportedAt": "2026-11-03T22:40:58.600Z"
+}

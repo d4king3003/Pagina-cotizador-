@@ -1,0 +1,91 @@
+{
+  "apache-rtr-160-2v-refresh": {
+    "motor": "159.7 cm³ · 4 tiempos · 2 válvulas",
+    "transmision": "5 velocidades",
+    "frenos": "Disco delantero 270 mm / tambor trasero 130 mm",
+    "tanque": "16 litros",
+    "refrigeracion": "Aire",
+    "arranque": "Eléctrico y pedal"
+  },
+  "apache-rtr-160-4v": {
+    "motor": "159.7 cm³ · 4 tiempos · 4 válvulas",
+    "potencia": "16.5 HP a 8,000 rpm",
+    "transmision": "5 velocidades",
+    "frenos": "Disco delantero y trasero",
+    "tanque": "3.17 galones",
+    "refrigeracion": "Aire y radiador de aceite",
+    "arranque": "Eléctrico y pedal"
+  },
+  "apache-rtr-180": {
+    "motor": "4 tiempos · SOHC",
+    "potencia": "17.3 HP",
+    "transmision": "5 velocidades",
+    "frenos": "Disco delantero y trasero",
+    "tanque": "4.23 galones",
+    "refrigeracion": "Aire y radiador de aceite",
+    "arranque": "Eléctrico y pedal"
+  },
+  "apache-rtr-200-4v": {
+    "motor": "197.75 cm³",
+    "potencia": "20.5 HP a 8,500 rpm",
+    "transmision": "5 velocidades",
+    "frenos": "Disco delantero y trasero",
+    "tanque": "3.17 galones",
+    "refrigeracion": "Aire",
+    "arranque": "Eléctrico"
+  },
+  "apache-rtr-200-4v-fi": {
+    "motor": "4 tiempos",
+    "potencia": "20.5 HP a 8,500 rpm",
+    "alimentacion": "Inyección",
+    "transmision": "5 velocidades",
+    "frenos": "Disco con ABS delantero / disco trasero",
+    "refrigeracion": "Aceite con asistencia de aire RAM",
+    "arranque": "Eléctrico"
+  },
+  "apache-rr-310": {
+    "motor": "4 tiempos · 4 válvulas",
+    "potencia": "34 HP a 9,700 rpm",
+    "alimentacion": "Inyección",
+    "transmision": "6 velocidades",
+    "frenos": "ABS delantero y trasero",
+    "tanque": "11 litros",
+    "refrigeracion": "Líquido",
+    "arranque": "Eléctrico"
+  },
+  "raider-125": {
+    "motor": "4 tiempos · 3 válvulas",
+    "potencia": "12.7 HP",
+    "transmision": "5 velocidades",
+    "frenos": "Disco ventilado delantero / tambor trasero",
+    "refrigeracion": "Aire",
+    "arranque": "I-Touch y pedal"
+  },
+  "sport-100": {
+    "motor": "4 tiempos · monocilíndrico · 2 válvulas",
+    "potencia": "7.38 HP a 7,500 rpm",
+    "transmision": "4 velocidades",
+    "frenos": "Tambor delantero 130 mm / trasero 110 mm",
+    "tanque": "2.5 galones",
+    "refrigeracion": "Aire",
+    "arranque": "Eléctrico y pedal"
+  },
+  "king-duramax-plus-225": {
+    "motor": "225.8 cm³ · 4 tiempos · monocilíndrico",
+    "potencia": "11.13 HP a 5,000 rpm",
+    "transmision": "4 adelante y 1 reversa",
+    "frenos": "Hidráulico delantero / tambor trasero",
+    "tanque": "3.5 galones",
+    "refrigeracion": "Líquido",
+    "arranque": "Eléctrico I-Touch"
+  },
+  "king-kargo-225": {
+    "motor": "225.8 cm³ · 4 tiempos · monocilíndrico",
+    "potencia": "11.13 HP a 4,750 rpm",
+    "transmision": "4 adelante y 1 reversa",
+    "frenos": "Tambor hidráulico delantero y trasero",
+    "tanque": "3.9 galones + 0.5 litros",
+    "refrigeracion": "Líquido",
+    "arranque": "Eléctrico y manual"
+  }
+}

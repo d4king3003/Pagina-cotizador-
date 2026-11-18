@@ -1,0 +1,102 @@
+[
+  {
+    "id": "apache-rtr-160-2v-refresh",
+    "title": "Apache RTR 160 2V Refresh",
+    "category": "Deportiva",
+    "page": 2,
+    "file": "pagina-02.png",
+    "preview": "preview-02.jpg",
+    "width": 2400,
+    "height": 1855
+  },
+  {
+    "id": "apache-rtr-160-4v",
+    "title": "Apache RTR 160 4V",
+    "category": "Deportiva",
+    "page": 3,
+    "file": "pagina-03.png",
+    "preview": "preview-03.jpg",
+    "width": 2400,
+    "height": 1855
+  },
+  {
+    "id": "apache-rtr-180",
+    "title": "Apache RTR 180",
+    "category": "Deportiva",
+    "page": 4,
+    "file": "pagina-04.png",
+    "preview": "preview-04.jpg",
+    "width": 2400,
+    "height": 1855
+  },
+  {
+    "id": "apache-rtr-200-4v",
+    "title": "Apache RTR 200 4V",
+    "category": "Deportiva",
+    "page": 5,
+    "file": "pagina-05.png",
+    "preview": "preview-05.jpg",
+    "width": 2400,
+    "height": 1855
+  },
+  {
+    "id": "apache-rtr-200-4v-fi",
+    "title": "Apache RTR 200 4V FI",
+    "category": "Deportiva",
+    "page": 6,
+    "file": "pagina-06.png",
+    "preview": "preview-06.jpg",
+    "width": 2400,
+    "height": 1855
+  },
+  {
+    "id": "apache-rr-310",
+    "title": "Apache RR 310",
+    "category": "Deportiva",
+    "page": 7,
+    "file": "pagina-07.png",
+    "preview": "preview-07.jpg",
+    "width": 2400,
+    "height": 1855
+  },
+  {
+    "id": "raider-125",
+    "title": "Raider 125",
+    "category": "Urbana",
+    "page": 8,
+    "file": "pagina-08.png",
+    "preview": "preview-08.jpg",
+    "width": 2400,
+    "height": 1855
+  },
+  {
+    "id": "sport-100",
+    "title": "Sport 100",
+    "category": "Trabajo",
+    "page": 9,
+    "file": "pagina-09.png",
+    "preview": "preview-09.jpg",
+    "width": 2400,
+    "height": 1855
+  },
+  {
+    "id": "king-duramax-plus-225",
+    "title": "King Duramax Plus 225",
+    "category": "Pasajeros",
+    "page": 10,
+    "file": "pagina-10.png",
+    "preview": "preview-10.jpg",
+    "width": 2400,
+    "height": 1855
+  },
+  {
+    "id": "king-kargo-225",
+    "title": "King Kargo 225",
+    "category": "Carga",
+    "page": 11,
+    "file": "pagina-11.png",
+    "preview": "preview-11.jpg",
+    "width": 2400,
+    "height": 1855
+  }
+]

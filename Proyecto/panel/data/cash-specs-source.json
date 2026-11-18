@@ -1,0 +1,22 @@
+{
+  "source": "Fichas PNG del catálogo incluido en el panel 1.4.2",
+  "pages": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+  ],
+  "policy": "Datos editables por cotización. No se asume el año o una variante no identificada. Los campos vacíos se omiten. KING GD requiere elegir la ficha exacta; NTORQ, HLX y modelos personalizados admiten ficha manual.",
+  "omissions": [
+    "La ficha 160 2V coloca un dato en HP bajo Velocidad máxima; no se importa ese renglón.",
+    "No se importan velocidades máximas, autonomía, garantías ni alturas ambiguas.",
+    "No se confunde capacidad de aceite con capacidad del tanque.",
+    "No se asigna alimentación carburada o ABS a una ficha que no lo indica."
+  ]
+}
