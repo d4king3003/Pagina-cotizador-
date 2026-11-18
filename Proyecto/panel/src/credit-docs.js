@@ -3,6 +3,8 @@
 const CREDIT_LOGOS=/*CREDIT_LOGOS*/null;
 const SIETE_TRES={rate:0.47,periods:12,fee:0.07,terms:[12,18,24,30,36,40,48]};
 const CREDIT_REF_COUNT=2;
+// Parentesco fijo, como en la hoja SOLICITUD.
+const CREDIT_RELATION={fam:'FAMILIAR',friend:'CONOCIDA'};
 const CREDIT_TEXT=['name','dui','phone','model','year','vendor','agency','agencyPhone','birth','sex','nationality','address','addressRef','company','position','startDate','workAddress','workRef','workPhone','detail'];
 const CREDIT_NUMBERS=['price','down','income','otherIncome'];
 let creditDraft=null;
@@ -57,7 +59,7 @@ function creditPanel(){
 
 /* ---------- Formulario ---------- */
 function cIn(label,name,value,opts={}){const {type='text',full=false,hint='',req=false,list='',max=type==='text'||type==='tel'?250:null,mode=''}=opts;return `<div class="field${full?' full':''}"><label for="cf-${name}">${esc(label)}${req?' *':''}</label><input id="cf-${name}" name="${name}" type="${type}" value="${esc(value??'')}"${max?` maxlength="${max}"`:''}${type==='number'?' min="0" step="0.01"':''}${list?` list="${list}"`:''}${mode?` inputmode="${mode}"`:''}${req?' required':''}>${hint?`<small>${esc(hint)}</small>`:''}</div>`;}
-function cRefRows(kind,title,list){return `<div class="field full"><span class="field-label">${esc(title)}</span><div class="credit-refs">${list.map((r,i)=>`<div class="credit-ref"><span class="credit-ref-n">${i+1}.</span><input name="${kind}-${i}-name" aria-label="${esc(title)} ${i+1}: nombre completo" placeholder="Nombre completo" maxlength="150" value="${esc(r.name)}"><input name="${kind}-${i}-phone" aria-label="${esc(title)} ${i+1}: teléfono" placeholder="Teléfono" type="tel" inputmode="tel" maxlength="50" value="${esc(r.phone)}"><input name="${kind}-${i}-relation" aria-label="${esc(title)} ${i+1}: parentesco" placeholder="Parentesco" maxlength="80" value="${esc(r.relation)}"></div>`).join('')}</div></div>`;}
+function cRefRows(kind,title,list){return `<div class="field full"><span class="field-label">${esc(title)}</span><div class="credit-refs">${list.map((r,i)=>`<div class="credit-ref"><span class="credit-ref-n">${i+1}.</span><input name="${kind}-${i}-name" aria-label="${esc(title)} ${i+1}: nombre completo" placeholder="Nombre completo" maxlength="150" value="${esc(r.name)}"><input name="${kind}-${i}-phone" aria-label="${esc(title)} ${i+1}: teléfono" placeholder="Teléfono" type="tel" inputmode="tel" maxlength="50" value="${esc(r.phone)}"><span class="credit-ref-tag" title="Parentesco">${CREDIT_RELATION[kind]}</span></div>`).join('')}</div></div>`;}
 function openCreditForm(id='',clientId=''){
  const base=(db.creditForms||[]).find(f=>f.id===id);
  const f=base?clone(base):emptyCreditForm();
@@ -95,7 +97,7 @@ function readCreditForm(form){
  const fd=new FormData(form),text=k=>String(fd.get(k)??'').trim(),number=k=>{const raw=text(k);if(raw==='')return null;const n=Number(raw);if(!Number.isFinite(n)||n<0||n>1e10)throw Error('Revisá el valor numérico de '+k+'.');return Math.round(n*100)/100;};
  const r={};for(const k of CREDIT_TEXT)r[k]=text(k);for(const k of CREDIT_NUMBERS)r[k]=number(k);
  r.clientId=text('clientId');r.months=Number(text('months'))||18;
- const refs=kind=>Array.from({length:CREDIT_REF_COUNT},(_,i)=>({name:text(`${kind}-${i}-name`),phone:text(`${kind}-${i}-phone`),relation:text(`${kind}-${i}-relation`)}));
+ const refs=kind=>Array.from({length:CREDIT_REF_COUNT},(_,i)=>({name:text(`${kind}-${i}-name`),phone:text(`${kind}-${i}-phone`),relation:CREDIT_RELATION[kind]}));
  r.famRefs=refs('fam');r.friendRefs=refs('friend');
  return r;
 }
@@ -239,11 +241,11 @@ function makeSolicitudPDF(f){
  rect(543,361,R,424);lab('Otros Ingresos $',543,367);if(f.otherIncome!==null){pdfLabel(doc,'$',X(546),X(398),{size:7.4,bold:true});val(creditMoney(f.otherIncome),550,372,R-2,424,{align:'right'});}
  rect(L,384,404,424);lab('Punto de Referencia',L,390);val(f.workRef,L+20,393,404-20,424,{maxLines:3});
  // Referencias
- const refs=(y,title,list)=>{bar(y,y+18,title);const h=y+18;rect(L,h,325,h+18);lab('Nombre (s) Apellido (s) Completo (s)',L,h+13);rect(325,h,543,h+18);pdfCell(doc,'N° de teléfono',X(325),X(h+6),X(218),X(12),{size:6.2,maxLines:1});rect(543,h,R,h+18);lab('Parentesco',543,h+13);
-  list.forEach((r,i)=>{const y1=h+18+i*18,y2=y1+18;rect(L,y1,325,y2);lab(`${i+1}.-`,L,y1+12,5.5);val(r.name,L+10,y1,325,y2,{maxLines:1});rect(325,y1,543,y2);val(r.phone,325,y1,543,y2,{maxLines:1});rect(543,y1,R,y2);val(r.relation,543,y1,R,y2,{maxLines:1});});
+ const refs=(y,title,list,relation)=>{bar(y,y+18,title);const h=y+18;rect(L,h,325,h+18);lab('Nombre (s) Apellido (s) Completo (s)',L,h+13);rect(325,h,543,h+18);pdfCell(doc,'N° de teléfono',X(325),X(h+6),X(218),X(12),{size:6.2,maxLines:1});rect(543,h,R,h+18);lab('Parentesco',543,h+13);
+  list.forEach((r,i)=>{const y1=h+18+i*18,y2=y1+18;rect(L,y1,325,y2);lab(`${i+1}.-`,L,y1+12,5.5);val(r.name,L+10,y1,325,y2,{maxLines:1});rect(325,y1,543,y2);val(r.phone,325,y1,543,y2,{maxLines:1});rect(543,y1,R,y2);val(relation,543,y1,R,y2,{maxLines:1});});
   return h+18+list.length*18;};
- let y=refs(424,'INDISPENSABLE:  DOS REFERENCIAS FAMILIARES QUE NO VIVAN CON EL CLIENTE',f.famRefs);
- y=refs(y,'DOS REFERENCIAS  DE AMIGOS O COMPAÑEROS DE TRABAJO',f.friendRefs);
+ let y=refs(424,'INDISPENSABLE:  DOS REFERENCIAS FAMILIARES QUE NO VIVAN CON EL CLIENTE',f.famRefs,CREDIT_RELATION.fam);
+ y=refs(y,'DOS REFERENCIAS  DE AMIGOS O COMPAÑEROS DE TRABAJO',f.friendRefs,CREDIT_RELATION.friend);
  rect(L,y,R,y+20);pdfCell(doc,'Declaro que la información consignada aquí es verídica y autorizo a CREDIOPCIONES, S.A. DE C.V, para su comprobación a su entera satisfacción sin que esto signifique compromiso alguno para CREDIOPCIONES, en fé de lo cual firmo la presente solicitud',X(L),X(y),X(R-L),X(20),{size:5.6,align:'left',maxLines:2});
  y+=20;rect(L,y,R,y+57);pdfLabel(doc,'Informacion importante a considerar:',X(L+1),X(y+7),{size:6.4,bold:true});
  ['Mejor horario para localizar al cliente o referencias.','Informar al cliente que se realizara verificación de campo de la vivienda o negocios, solicitar hora adecuada para la visita.','Dirección correcta y punto de referencia que beneficie la localización domiciliar y laboral. (dibujar croquis)','Horarios y vías de contacto de Solicitud de constancia laboral.'].forEach((t,i)=>{const ly=y+18+i*11;doc.setDrawColor(0);doc.setLineWidth(0.15);doc.circle(X(L+11),X(ly-2.4),0.55);pdfLabel(doc,t,X(L+16),X(ly),{size:6.8,bold:true});});
