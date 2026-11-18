@@ -22,6 +22,12 @@ Debajo de los clientes activos aparece cuántos días llevan sin actividad: en a
 La vista Lista muestra lo mismo en la columna Seguimiento. Los vendidos y descartados no muestran estos avisos.
 Las etiquetas de sala ya no tapan a los personajes. La oficina deja de dibujar cuando está fuera de la vista o quieta, y la fiesta de vendidos se dibuja a 30 cuadros por segundo, para que la PC no trabaje de más.
 
+OFICINA VIRTUAL: VISUALES Y FIESTA
+Al cambiar de etapa, el personaje camina hasta su nueva sala en lugar de aparecer de golpe.
+Cada sala tiene un borde y un piso del color de su etiqueta. En la pared del fondo está el logo oficial de TVS.
+La fiesta de vendidos usa los colores de TVS. Cada vez que un cliente pasa a Vendidos, al llegar a la sala salta y estalla confeti rojo, azul y blanco durante un par de segundos.
+Con reducir animaciones activado en Windows, los personajes cambian de sala al instante y no hay festejo.
+
 INGRESAR CRÉDITO CREDIOPCIONES · PLAN SIETE TRES 47% (VERSIÓN 1.8.0)
 En Solicitudes usá + Ingresar crédito. Un solo formulario llena los tres documentos y cada uno se descarga en PDF con su propio botón: Buró, Cotizador y Solicitud.
 Para la precalificación basta con el nombre completo según DUI y el número de DUI: guardá y descargá el Buró. Los demás datos se pueden completar después con Editar.
