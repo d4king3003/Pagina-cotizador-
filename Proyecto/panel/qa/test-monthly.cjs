@@ -12,7 +12,8 @@ let oct=t.monthlyTotals(data,'2026-10'),sep=t.monthlyTotals(data,'2026-09');
 assert.equal(oct.units,8);assert.equal(oct.revenueCents,1684200);assert.equal(oct.commissionCents,22680);assert.equal(oct.salaryCents,36690);assert.equal(oct.totalMonthCents,59370);assert.equal(oct.lastFortnightCents,41025);
 assert.equal(sep.units,1);assert.equal(sep.revenueCents,319900);assert.equal(sep.commissionCents,0);
 const expected=[0,0,0,0,0,0,0,16538,22680,29768,54750,59475,71700,88710,99380,110050];
-for(let units=0;units<=16;units++){const d=t.freshDB();d.sales=Array.from({length:units},(_,i)=>({id:'s-'+i,date:'2026-10-01',amount:999,status:'Vendido'}));const m=t.monthlyTotals(d,'2026-10');assert.equal(m.commissionCents,units===16?null:expected[units]);if(units===16)assert.equal(m.totalMonthCents,null);}
+for(let units=0;units<=16;units++){const d=t.freshDB();d.sales=Array.from({length:units},(_,i)=>({id:'s-'+i,date:'2026-10-01',amount:999,status:'Vendido'}));const m=t.monthlyTotals(d,'2026-10');// Desde 16 motos se aplica el tramo de 15: 3% sobre la base por unidad + bono de $250.
+assert.equal(m.commissionCents,units===16?Math.round(189000*16*300/10000)+25000:expected[units]);if(units===16)assert.equal(m.tier.units,15);}
 const repeated=t.mergeLeadBatch(data,t.LEADS_BATCH);assert(repeated.alreadyImported);assert.equal(repeated.data.clients.length,10);assert.equal(repeated.data.sales.length,9);
 const otherBatch=JSON.parse(JSON.stringify(t.LEADS_BATCH));otherBatch.id='same-rows-new-file';const updated=t.mergeLeadBatch(data,otherBatch);assert.equal(updated.stats.newClients,0);assert.equal(updated.stats.newSales,0);assert.equal(updated.data.sales.length,9);
 const withPrefix=JSON.parse(JSON.stringify(otherBatch));withPrefix.id='same-phones-country-code';withPrefix.records.forEach(r=>r.phone='503'+r.phone.replace(/\D/g,''));const prefixed=t.mergeLeadBatch(data,withPrefix);assert.equal(prefixed.stats.newClients,0);assert.equal(prefixed.stats.newSales,0);

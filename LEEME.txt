@@ -12,6 +12,10 @@ Nuevo aspecto pensado para trabajar en la PC: menú lateral azul marino con la s
 Tarjetas, tablas, botones y ventanas tienen más contraste y jerarquía. Las ventanas aparecen con un pequeño zoom, los botones responden al clic y los avisos suben suavemente. Si Windows tiene activado reducir animaciones, solo se usan fundidos.
 El modo oscuro usa la misma estructura. No cambió ninguna función, cálculo ni dato.
 
+COMISIÓN CON MÁS DE 15 MOTOS
+Si en un mes vendés más de 15 motos, se aplica el tramo de 15: el mismo porcentaje (3%) sobre la base por unidad de todas las motos vendidas y el mismo bono ($250). La tabla marca la fila "15 o más" con la cantidad real del mes.
+La ficha del cliente ya no muestra el bloque de cotizaciones guardadas.
+
 INGRESAR CRÉDITO CREDIOPCIONES · PLAN SIETE TRES 47% (VERSIÓN 1.8.0)
 En Solicitudes usá + Ingresar crédito. Un solo formulario llena los tres documentos y cada uno se descarga en PDF con su propio botón: Buró, Cotizador y Solicitud.
 Para la precalificación basta con el nombre completo según DUI y el número de DUI: guardá y descargá el Buró. Los demás datos se pueden completar después con Editar.
