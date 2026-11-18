@@ -118,7 +118,7 @@ app_source=app_source.replace('let db=loadDB();',monthly+'\n'+technical+'\n'+cas
 (ROOT/'qa/app-compiled.js').write_text(app_source)
 office_render_source=office_bundle()
 (ROOT/'qa/office-renderer.js').write_text(office_render_source)
-html=shell.replace('/*APP_CSS*/',(ROOT/'src/style.css').read_text()+'\n'+(ROOT/'src/fichas.css').read_text()+'\n'+(ROOT/'src/cash-quote.css').read_text()+'\n'+(ROOT/'src/office-scene.css').read_text()+'\n'+(ROOT/'src/office.css').read_text()+'\n'+(ROOT/'src/quick-lead.css').read_text()).replace('/*CALCULATOR_BASE64*/',base64.b64encode(embedded.encode()).decode()).replace('/*TECHNICAL_ASSETS*/','\n'.join(assets)).replace('/*APP_JS*/',app_source).replace('/*OFFICE_SCENE_JS*/',office_render_source)
+html=shell.replace('/*APP_CSS*/',(ROOT/'src/style.css').read_text()+'\n'+(ROOT/'src/fichas.css').read_text()+'\n'+(ROOT/'src/cash-quote.css').read_text()+'\n'+(ROOT/'src/office-scene.css').read_text()+'\n'+(ROOT/'src/office.css').read_text()+'\n'+(ROOT/'src/quick-lead.css').read_text()+'\n'+(ROOT/'src/refresh.css').read_text()).replace('/*CALCULATOR_BASE64*/',base64.b64encode(embedded.encode()).decode()).replace('/*TECHNICAL_ASSETS*/','\n'.join(assets)).replace('/*APP_JS*/',app_source).replace('/*OFFICE_SCENE_JS*/',office_render_source)
 (ROOT/'dist').mkdir(exist_ok=True)
 (ROOT/'dist/index.pending').write_text(html)
 (ROOT/'dist/index.pending').replace(ROOT/'dist/index.html')

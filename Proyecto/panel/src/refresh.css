@@ -1,0 +1,153 @@
+/* Versión 1.7 · Ajustes de diseño y legibilidad. Se carga al final y solo sobrescribe estilos. */
+:root{--shadow:0 1px 2px #16305608,0 6px 24px #1630560a;--shadow-hover:0 2px 4px #1630560d,0 14px 36px #16305614;--radius:16px;--soft:#eff4fc;--line:#e3e8f0}
+body{font-size:15px;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+
+/* Textos: los tamaños de 8–10 px eran difíciles de leer */
+.nav-item{font-size:13.5px;padding:11px 14px;transition:background .15s,color .15s}
+.sidebar-label{font-size:10px;letter-spacing:1.4px}
+.brand small{font-size:12px}
+.breadcrumb{font-size:13px}
+.save-indicator{font-size:11px}
+.btn{font-size:13px;font-weight:600;transition:background .15s,border-color .15s,box-shadow .15s,transform .1s}
+.btn:active:not(:disabled){transform:translateY(1px)}
+.btn-small{font-size:12px}
+.btn-primary{box-shadow:0 2px 8px #185cc433}
+.text-button{font-size:13px}
+.eyebrow{font-size:11px}
+.subtext,.page-heading .subtext{font-size:13px}
+h1{font-weight:650;letter-spacing:-1.1px}
+h2{font-size:16.5px}
+h3{font-size:14.5px}
+.metric-label{font-size:12.5px;font-weight:500}
+.metric-value{font-size:32px;font-weight:650}
+.metric-note{font-size:11.5px}
+.task-name{font-size:13.5px}
+.task-detail{font-size:12px}
+.badge{font-size:11px;font-weight:550;border-radius:999px;padding:5px 10px}
+.pipeline-line{font-size:12.5px;grid-template-columns:120px 1fr 22px}
+.bar{height:8px}
+.quick-link{font-size:13px}
+.field-input,input:not([type=checkbox]):not([type=radio]):not([type=file]),select,textarea{font-size:14px;min-height:42px;border-radius:9px;transition:border-color .15s,box-shadow .15s}
+input:not([type=checkbox]):not([type=radio]):not([type=file]):focus,select:focus,textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px #185cc41f;outline:none}
+table{font-size:13px}
+th{font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+td strong{font-size:13.5px}
+td small{font-size:11.5px}
+.table-actions .btn{font-size:12px;height:32px}
+tbody tr{transition:background .12s}
+tbody tr:hover{background:var(--soft)}
+.empty h3{font-size:15px}
+.empty p,.callout,.notice,.info-row,.form-error{font-size:13px}
+.field>label,.field>span.field-label{font-size:12.5px}
+.field small{font-size:11.5px}
+.section-label{font-size:11px}
+.check{font-size:13px}
+.detail-cell span{font-size:11px}
+.detail-cell strong{font-size:13.5px}
+.timeline li{font-size:13px}
+.timeline small{font-size:11px}
+.tabs button{font-size:13px}
+.quote-toolbar label{font-size:11.5px}
+.stock-info h3{font-size:14px}
+.stock-info .stock-meta{font-size:11.5px}
+.stock-promo{font-size:12px}
+.stock-actions .btn{font-size:12px}
+.template-button{font-size:13px}
+.template-button small{font-size:11.5px}
+.mini-card span{font-size:12px}
+.profile strong{font-size:13px}
+.profile small{font-size:11px}
+.local-tag{font-size:12px}
+.app-footer{font-size:11px}
+.toast{font-size:14px;border-radius:12px}
+.demo-banner{font-size:13px}
+.commission-table td,.commission-table th{font-size:12px}
+.commission-table td strong{font-size:13px}
+.payroll-total>span,.payroll-fortnight span{font-size:13px}
+.payroll-total>small,.payroll-fortnight small{font-size:11.5px}
+.leads-table .inline-select{font-size:12px}
+
+/* Tarjetas con más profundidad y respuesta al pasar el mouse */
+.card{box-shadow:var(--shadow)}
+.metric{transition:box-shadow .2s,transform .2s}
+.metric:hover{box-shadow:var(--shadow-hover);transform:translateY(-2px)}
+.metric-icon{border-radius:11px;padding:9px}
+.stock-card{transition:box-shadow .2s,transform .2s}
+.stock-card:hover{box-shadow:var(--shadow-hover);transform:translateY(-2px)}
+.quick-link{transition:border-color .15s,background .15s}
+.quick-link:hover{border-color:#c7d8f3}
+
+/* Menú lateral */
+.nav-item.active{background:linear-gradient(90deg,#e5eefc,#eef4fd);box-shadow:inset 3px 0 var(--primary)}
+.brand-badge{background:linear-gradient(135deg,#1a3b6a,#0f2445);box-shadow:0 4px 12px #142c5033}
+
+/* Barra superior que se queda fija al bajar */
+.topbar{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--paper) 86%,transparent);backdrop-filter:saturate(1.6) blur(10px);-webkit-backdrop-filter:saturate(1.6) blur(10px)}
+
+/* Banner principal */
+.hero-card{background:radial-gradient(120% 140% at 0% 0%,#24548f 0%,#163a66 45%,#0f2747 100%);box-shadow:0 10px 30px #0f274733}
+.hero-card .eyebrow{font-size:10.5px}
+.hero-card h2{font-weight:650}
+.hero-card p{font-size:13px;max-width:330px}
+.hero-card .btn{font-size:13px;height:38px;box-shadow:0 4px 14px #0007}
+.hero-card::before{content:"";position:absolute;width:340px;height:340px;border-radius:50%;background:radial-gradient(circle,#3d7bd055,transparent 70%);right:-60px;bottom:-140px}
+
+/* Oficina virtual destacada */
+.office-entry,.office-callout{border-radius:var(--radius)}
+
+/* Modo oscuro */
+html[data-theme=dark]{--shadow:0 1px 2px #0006;--shadow-hover:0 14px 36px #0008;--soft:#202c40;--line:#2b364b}
+html[data-theme=dark] .nav-item.active{background:#223958;box-shadow:inset 3px 0 var(--primary)}
+html[data-theme=dark] .topbar{background:color-mix(in srgb,var(--paper) 88%,transparent)}
+html[data-theme=dark] .quick-link:hover{border-color:#3b5276}
+html[data-theme=dark] input:not([type=checkbox]):not([type=radio]):not([type=file]):focus,html[data-theme=dark] select:focus,html[data-theme=dark] textarea:focus{box-shadow:0 0 0 3px #8eb7ff33}
+
+/* Botón "Solo número" con ícono en pantallas pequeñas */
+.quick-lead-shortcut svg{display:none;width:18px;height:18px}
+
+@media(max-width:1180px){.metric-label{font-size:12px;max-width:none}.metric-value{font-size:28px}}
+
+@media(max-width:650px){
+  body{font-size:14.5px}
+  /* Arreglo: el botón "Solo número" quedaba como un cuadro vacío */
+  .topbar-right>.quick-lead-shortcut svg{display:block}
+  .topbar-right>.quick-lead-shortcut{width:38px;height:38px}
+  .topbar-right>.btn-primary,.topbar-right>.icon-button,.mobile-only{width:38px;height:38px}
+  .topbar{height:62px}
+  /* Arreglo: la fecha se partía en dos líneas */
+  .page-heading .heading-actions>.subtext{white-space:nowrap}
+  /* Arreglo: la foto de la moto se salía del banner */
+  .hero-card{flex-direction:column;align-items:stretch;padding:24px 20px 20px;min-height:0}
+  .hero-copy{width:100%}
+  .hero-card p{max-width:none}
+  .hero-card img{position:static;display:block;width:100%;height:150px;margin-top:20px;right:auto;bottom:auto;opacity:1}
+  .metric{padding:16px}
+  .metric-label{font-size:12px;padding-right:34px;line-height:1.35}
+  .metric-value{font-size:26px}
+  .metric-note{font-size:11px}
+  .metric-icon{padding:6px}
+  .metric-icon svg{width:15px;height:15px}
+  .metric:hover,.stock-card:hover{transform:none}
+  .pipeline-line{grid-template-columns:110px 1fr 22px}
+  .quick-links{grid-template-columns:1fr}
+  .page-heading .btn{font-size:12px;height:36px}
+  .stock-info h3{font-size:13px}
+  .stock-info .stock-meta{font-size:11px}
+  .stock-promo{font-size:11.5px}
+  .tabs{width:100%}
+  .app-footer{font-size:10.5px;flex-direction:column;gap:6px}
+  .app-footer span:last-child{max-width:none;text-align:left}
+  .modal-actions .btn{font-size:12.5px}
+  dialog{width:100vw;max-width:100vw;max-height:94vh;margin:auto auto 0;border-radius:18px 18px 0 0}
+  .modal-actions{border-radius:0}
+}
+
+@media(max-width:380px){.hero-card img{opacity:1}.hero-copy{width:100%}}
+
+@media(prefers-reduced-motion:reduce){.metric:hover,.stock-card:hover{transform:none}}
+
+/* Arreglo: Ventas y comisiones se salía de la pantalla en el celular */
+@media(max-width:1000px){.payroll-grid{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:650px){.payroll-summary .card-head{flex-wrap:wrap}.breadcrumb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}.topbar-left{min-width:0}}
+@media(max-width:650px){.quote-toolbar>.btn{font-size:13px}.quote-toolbar label{font-size:12px}}
+.quick-lead-form .field small{font-size:11.5px}
