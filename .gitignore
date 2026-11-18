@@ -1,2 +1,5 @@
 __pycache__/
 *.pyc
+Proyecto/panel/dist/
+Proyecto/panel/qa/*
+!Proyecto/panel/qa/test-*.cjs
