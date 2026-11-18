@@ -16,6 +16,12 @@ COMISIÓN CON MÁS DE 15 MOTOS
 Si en un mes vendés más de 15 motos, se aplica el tramo de 15: el mismo porcentaje (3%) sobre la base por unidad de todas las motos vendidas y el mismo bono ($250). La tabla marca la fila "15 o más" con la cantidad real del mes.
 La ficha del cliente ya no muestra el bloque de cotizaciones guardadas.
 
+OFICINA VIRTUAL: AVISOS Y RENDIMIENTO
+Un círculo rojo con "!" sobre un personaje indica que hay que contactarlo: su seguimiento es hoy o ya venció (rojo más oscuro). Al pasar el mouse se lee el motivo.
+Debajo de los clientes activos aparece cuántos días llevan sin actividad: en amarillo desde 7 días y en rojo desde 14. Cuenta desde el último movimiento registrado en la ficha.
+La vista Lista muestra lo mismo en la columna Seguimiento. Los vendidos y descartados no muestran estos avisos.
+Las etiquetas de sala ya no tapan a los personajes. La oficina deja de dibujar cuando está fuera de la vista o quieta, y la fiesta de vendidos se dibuja a 30 cuadros por segundo, para que la PC no trabaje de más.
+
 INGRESAR CRÉDITO CREDIOPCIONES · PLAN SIETE TRES 47% (VERSIÓN 1.8.0)
 En Solicitudes usá + Ingresar crédito. Un solo formulario llena los tres documentos y cada uno se descarga en PDF con su propio botón: Buró, Cotizador y Solicitud.
 Para la precalificación basta con el nombre completo según DUI y el número de DUI: guardá y descargá el Buró. Los demás datos se pueden completar después con Editar.

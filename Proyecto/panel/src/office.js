@@ -37,6 +37,19 @@ function officeTransition(data,id,target,values){
  eventFor(c,'Oficina virtual: '+previous+' → '+target+(target==='Vendido'?' · '+money(c.price)+' · '+c.recordDate:''));
  return next;
 }
+// Atención: seguimiento vencido o para hoy, y días sin actividad (solo clientes activos).
+const OFFICE_IDLE_WARN=7,OFFICE_IDLE_HIGH=14;
+function officeAttention(c){
+ const active=!['Vendido','No continuó'].includes(c.stage);if(!active)return {due:false,overdue:false,idle:null};
+ const now=today(),due=!!c.nextFollow&&c.nextFollow<=now,overdue=due&&c.nextFollow<now;
+ const dates=[c.createdAt,c.recordDate,...(c.history||[]).map(h=>h.at)].filter(Boolean).map(d=>String(d).slice(0,10)).filter(d=>/^\d{4}-\d{2}-\d{2}$/.test(d)).sort();
+ const last=dates.at(-1),idle=last?Math.max(0,Math.round((Date.parse(now+'T12:00:00Z')-Date.parse(last+'T12:00:00Z'))/864e5)):null;
+ return {due,overdue,idle};
+}
+function officeAttentionText(a,c){
+ const parts=[];if(a.due)parts.push(a.overdue?'Contactar: seguimiento vencido ('+fmtDate(c.nextFollow)+')':'Contactar hoy');
+ if(a.idle!==null&&a.idle>=OFFICE_IDLE_WARN)parts.push(a.idle+' días sin actividad');return parts.join(' · ');
+}
 function officeData(){
  const query=officeUI.search.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
  return db.clients.filter(c=>!c.archived&&(!officeUI.period||recordDate(c).slice(0,7)===officeUI.period)&&(!query||[c.name,c.phone,stock(c.stockId)?.label||''].join(' ').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().includes(query)));
@@ -82,7 +95,7 @@ function officeScaffold(){
  '<div id="office-metrics" class="metrics"></div><div class="card office-workspace">'+
  '<div class="office-top"><div><span class="office-live-dot"></span><strong>La oficina de Daniel</strong><span class="badge" id="office-view-status">3D interactivo</span></div><div class="tabs" role="group" aria-label="Vista de la oficina"><button data-action="office-view" data-id="scene" id="office-scene-tab">Oficina</button><button data-action="office-view" data-id="list" id="office-list-tab">Lista</button></div></div>'+
  '<div class="office-filters"><div class="field"><label for="office-search">Buscar cliente o moto</label><input id="office-search" type="search" maxlength="150" placeholder="Nombre, teléfono o modelo"></div><div class="field"><label for="office-month">Mes del registro / venta</label><input id="office-month" type="month"></div><button class="btn" data-action="office-all-months">Todos los meses</button><button class="btn office-party" data-action="office-party" id="office-party-button">Fiesta de vendidos</button></div>'+
- '<div class="office-body"><div class="office-main"><div id="office-scene-area"><p class="office-hint">Sujetá un personaje y soltalo en otra sala. Arrastrá el piso para girar la oficina.</p><div id="office-scene" class="office-3d" role="group" aria-label="Oficina virtual 3D con seis salas, personajes y cementerio"></div><div class="office-pagination" id="office-scene-pagination"></div></div>'+
+ '<div class="office-body"><div class="office-main"><div id="office-scene-area"><p class="office-hint">Sujetá un personaje y soltalo en otra sala. Arrastrá el piso para girar la oficina. <span class="office-key"><b class="office-key-alert">!</b> contactar hoy</span><span class="office-key"><b class="office-key-age">7 d</b> días sin actividad</span></p><div id="office-scene" class="office-3d" role="group" aria-label="Oficina virtual 3D con seis salas, personajes y cementerio"></div><div class="office-pagination" id="office-scene-pagination"></div></div>'+
  '<div id="office-list-area" hidden><div class="table-wrap" id="office-table"></div><div class="office-pagination" id="office-list-pagination"></div></div><div id="office-legend" class="office-legend"></div><p id="office-empty" class="office-empty" hidden>No hay clientes con estos filtros.</p><p class="office-footnote">En evaluación reúne Documentos, Crédito ingresado y Preaprobado. El estado exacto se conserva en cada ficha. Descartados corresponde a No continuó.</p></div><aside id="office-detail" class="office-detail" aria-label="Cliente seleccionado"></aside></div></div>';
  $('office-scene').addEventListener('office-context-lost',()=>{officeFailed=true;officeUI.view='list';renderOffice();toast('Se pausó el 3D. Podés seguir trabajando desde Lista.',true);});
 }
@@ -104,10 +117,10 @@ function renderOffice(){
   try{officeScene=new globalThis.TVSOfficeScene($('office-scene'),{onSelect:officeSelect,onFilter:officeFilter,onMove:officeMove});}
   catch(error){console.warn('La oficina 3D no pudo iniciar:',error.message);officeFailed=true;officeUI.view='list';$('office-scene').dataset.renderer='unavailable';toast('No se pudo activar el 3D en este equipo. La vista Lista está disponible.',true);}
  }
- officeScene?.update({clients:rows.map(c=>({id:c.id,name:c.name,model:stock(c.stockId)?.label||'Moto por definir',stage:officeRoom(c.stage),color:parseInt(shortHash(c.id),16)%12})),stages:OFFICE_ROOMS,selected:officeUI.selected,filter:officeUI.room||null,party:officeUI.party,page:officeUI.page});
+ officeScene?.update({clients:rows.map(c=>{const a=officeAttention(c);return {id:c.id,name:c.name,model:stock(c.stockId)?.label||'Moto por definir',stage:officeRoom(c.stage),color:parseInt(shortHash(c.id),16)%12,due:a.due,overdue:a.overdue,idle:a.idle,attention:officeAttentionText(a,c)};}),stages:OFFICE_ROOMS,selected:officeUI.selected,filter:officeUI.room||null,party:officeUI.party,page:officeUI.page});
  const listPages=Math.max(1,Math.ceil(visible.length/30));officeUI.listPage=Math.min(officeUI.listPage,listPages-1);
  const list=visible.slice(officeUI.listPage*30,(officeUI.listPage+1)*30);
- $('office-table').innerHTML=list.length?'<table><thead><tr><th>Cliente</th><th>Moto</th><th>Estado exacto</th><th>Seguimiento</th><th></th></tr></thead><tbody>'+list.map(c=>'<tr><td><strong>'+esc(c.name)+'</strong><small>'+esc(phoneLabel(c.phone)||'Sin teléfono')+'</small></td><td>'+esc(stock(c.stockId)?.label||'Por definir')+'</td><td>'+stageBadge(c.stage)+'</td><td>'+esc(c.nextFollow?fmtDate(c.nextFollow):'Sin programar')+'</td><td><button class="btn btn-small" data-action="office-select" data-id="'+c.id+'">Seleccionar</button></td></tr>').join('')+'</tbody></table>':empty('Sin clientes en esta sala','Cambiá el filtro o agregá un cliente.');
+ $('office-table').innerHTML=list.length?'<table><thead><tr><th>Cliente</th><th>Moto</th><th>Estado exacto</th><th>Seguimiento</th><th></th></tr></thead><tbody>'+list.map(c=>'<tr><td><strong>'+esc(c.name)+'</strong><small>'+esc(phoneLabel(c.phone)||'Sin teléfono')+'</small></td><td>'+esc(stock(c.stockId)?.label||'Por definir')+'</td><td>'+stageBadge(c.stage)+'</td><td>'+(()=>{const a=officeAttention(c);return (a.due?badge(a.overdue?'Vencido · '+fmtDate(c.nextFollow):'Contactar hoy','red'):esc(c.nextFollow?fmtDate(c.nextFollow):'Sin programar'))+(a.idle!==null&&a.idle>=OFFICE_IDLE_WARN?'<small>'+a.idle+' días sin actividad</small>':'');})()+'</td><td><button class="btn btn-small" data-action="office-select" data-id="'+c.id+'">Seleccionar</button></td></tr>').join('')+'</tbody></table>':empty('Sin clientes en esta sala','Cambiá el filtro o agregá un cliente.');
  $('office-list-pagination').innerHTML=listPages>1?'<button class="btn btn-small" data-action="office-list-page" data-id="-1" '+(officeUI.listPage===0?'disabled':'')+'>← Anterior</button><span>'+visible.length+' clientes · página '+(officeUI.listPage+1)+' de '+listPages+'</span><button class="btn btn-small" data-action="office-list-page" data-id="1" '+(officeUI.listPage===listPages-1?'disabled':'')+'>Siguiente →</button>':'';
  $('office-scene-area').hidden=officeUI.view!=='scene';$('office-list-area').hidden=officeUI.view!=='list';
  $('office-scene-tab').setAttribute('aria-pressed',String(officeUI.view==='scene'));$('office-list-tab').setAttribute('aria-pressed',String(officeUI.view==='list'));

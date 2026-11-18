@@ -12,7 +12,7 @@ export class Office3D {
     this.materials=new Map();this.geometries=new Map();this.avatars=new Map();this.roomLabels=[];
     this.state={clients:[],stages:[],party:false,selected:null,filter:null};
     this.yaw=.72;this.elevation=.66;this.zoom=1;this.target=new THREE.Vector3(0,.9,0);
-    this.dirty=true;this.lastTime=0;this.reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+    this.frame=0;this.lastRender=0;this.onScreen=true;this.dirty=true;this.lastTime=0;this.reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
     this.scene=new THREE.Scene();this.scene.background=new THREE.Color('#f8faf8');
     this.camera=new THREE.OrthographicCamera(-25,25,17,-17,.1,160);
     const rendererOptions={antialias:true,alpha:false,powerPreference:'high-performance'};
@@ -31,6 +31,9 @@ export class Office3D {
     document.addEventListener('keydown',e=>{if(e.key==='Escape'&&this.grab){e.preventDefault();this.finishGrab(false);}});
     this.resizeObserver=new ResizeObserver(()=>this.resize());this.resizeObserver.observe(host);
     this.resize();this.animate=this.animate.bind(this);this.active=true;this.frame=requestAnimationFrame(this.animate);
+    // Se despierta al volver a la pestaña o al aparecer en pantalla; fuera de la vista no dibuja.
+    document.addEventListener('visibilitychange',()=>{if(!document.hidden){this.lastTime=0;this.dirty=true;}});
+    if(typeof IntersectionObserver==='function'){this.visibilityObserver=new IntersectionObserver(entries=>{const on=entries.some(e=>e.isIntersecting);this.onScreen=on;if(on){this.lastTime=0;this.dirty=true;}});this.visibilityObserver.observe(host);}
     host.dataset.renderer='webgl-3d';
     this.renderer.domElement.addEventListener('webglcontextlost',e=>{
       e.preventDefault();host.dataset.renderer='context-lost';host.dispatchEvent(new CustomEvent('office-context-lost'));
@@ -252,7 +255,10 @@ export class Office3D {
     const plumbob=this.mesh(root,this.geometry('grab-diamond',()=>new THREE.OctahedronGeometry(.21)),this.material('#75c84b',{emissive:'#5b9b33',emissiveIntensity:.3}),0,3.85,0,false);plumbob.scale.y=1.6;plumbob.visible=false;
     const button=document.createElement('button');button.className='client-3d-hit';button.dataset.clientId=c.id;
     button.title='Clic para ver la ficha · Sujetá y arrastrá para cambiar de sala';
-    const name=document.createElement('span');name.className='client-3d-name';button.append(name);
+    const name=document.createElement('span');name.className='client-3d-name';
+    const alert=document.createElement('span');alert.className='client-3d-alert';alert.textContent='!';alert.hidden=true;alert.setAttribute('aria-hidden','true');
+    const age=document.createElement('span');age.className='client-3d-age';age.hidden=true;age.setAttribute('aria-hidden','true');
+    button.append(name,alert,age);
     button.addEventListener('click',e=>{if(e.detail!==0&&this.ignoreClickId===c.id&&Date.now()<this.ignoreClickUntil){e.preventDefault();return;}this.onSelect(c.id);});
     button.addEventListener('dragstart',e=>e.preventDefault());
     button.addEventListener('pointerdown',e=>this.beginGrab(c.id,e));
@@ -263,7 +269,7 @@ export class Office3D {
     button.addEventListener('focus',()=>{ring.visible=true;this.dirty=true;});
     button.addEventListener('blur',()=>{ring.visible=this.state.selected===c.id;this.dirty=true;});
     this.labels.append(button);
-    const rig={root,body,head,hair,hat,arms,legs,ring,grave,plumbob,button,name,stage:c.stage,phase:c.color*.71,target:new THREE.Vector3(),placed:false};
+    const rig={root,body,head,hair,hat,arms,legs,ring,grave,plumbob,button,name,alert,age,stage:c.stage,phase:c.color*.71,target:new THREE.Vector3(),placed:false};
     this.avatars.set(c.id,rig);return rig;
   }
   update(state){
@@ -287,9 +293,11 @@ export class Office3D {
         rig.stage=c.stage;rig.root.visible=!state.filter||state.filter===c.stage;
         rig.button.hidden=!rig.root.visible;rig.button.dataset.clientStage=c.stage;
         rig.button.dataset.dancing=String(!!state.party&&c.stage==='vendido'&&!this.reduced);
-        rig.button.setAttribute('aria-label',`${c.stage==='descartado'?'Tumba de ':''}${c.name}, ${c.model}, ${state.stages[i].name}`);
+        rig.button.setAttribute('aria-label',`${c.stage==='descartado'?'Tumba de ':''}${c.name}, ${c.model}, ${state.stages[i].name}${c.attention?', '+c.attention:''}`);
+        rig.alert.hidden=!c.due;rig.alert.dataset.overdue=String(!!c.overdue);
+        rig.age.hidden=!(c.idle>=7);rig.age.textContent=c.idle>=7?c.idle+' d':'';rig.age.dataset.level=c.idle>=14?'high':'mid';
         rig.body.visible=c.stage!=='descartado';rig.grave.visible=c.stage==='descartado';rig.plumbob.position.y=c.stage==='descartado'?2.6:3.85;rig.button.dataset.representation=c.stage==='descartado'?'grave':'minifigure';
-        rig.button.classList.toggle('selected',state.selected===c.id);rig.name.textContent=c.name;
+        rig.button.classList.toggle('selected',state.selected===c.id);rig.name.replaceChildren(Object.assign(document.createElement('strong'),{textContent:c.name}),Object.assign(document.createElement('small'),{textContent:c.attention||c.model}));rig.name.dataset.attention=String(!!c.attention);
         rig.ring.visible=state.selected===c.id;rig.hat.visible=!!state.party&&c.stage==='vendido';
       });
     });
@@ -411,9 +419,14 @@ export class Office3D {
       rig.button.style.zIndex=String(Math.round((30-p.z)*2));
     }
   }
+  // Marcar la escena como pendiente de dibujo vuelve a encender el ciclo si estaba en pausa.
+  get dirty(){return this._dirty;}
+  set dirty(value){this._dirty=value;if(value)this.wake();}
+  wake(){if(this.active&&!this.frame&&this.animate)this.frame=requestAnimationFrame(this.animate);}
   animate(now){
-    if(this.active)this.frame=requestAnimationFrame(this.animate);
-    if(!this.active||document.hidden||!this.host.offsetWidth||!this.host.offsetHeight)return;
+    this.frame=0;
+    // En pausa: pestaña oculta, oficina fuera de la vista o sin tamaño. Se reanuda con wake().
+    if(!this.active||document.hidden||!this.onScreen||!this.host.offsetWidth||!this.host.offsetHeight)return;
     const dt=Math.min((now-this.lastTime)/1000||.016,.06);this.lastTime=now;const t=now/1000;
     let moving=false;const celebrating=this.state.party&&!this.reduced;
     for(const rig of this.avatars.values()){
@@ -436,13 +449,16 @@ export class Office3D {
       this.lightDiscs.forEach((d,i)=>{d.material.opacity=.18+.15*(1+Math.sin(t*1.8+i*1.7));});
       this.confetti.forEach((c,i)=>{c.position.y=.7+((t*.65+i*.37)%3.4);c.rotation.set(t*.8+i,t*.6,t+i*.4);});
     }
-    if(this.dirty||moving||celebrating){this.renderer.render(this.scene,this.camera);this.projectLabels();this.dirty=false;}
+    // La fiesta se dibuja a 30 cuadros por segundo; los cambios y el arrastre, al instante.
+    const urgent=this._dirty||moving;
+    if(urgent||(celebrating&&now-this.lastRender>=33)){this.renderer.render(this.scene,this.camera);this.projectLabels();this._dirty=false;this.lastRender=now;}
+    if(this.active&&(urgent||celebrating||this.grab))this.frame=requestAnimationFrame(this.animate);
   }
   setActive(active){
     if(this.active===active)return;
     this.active=active;
-    if(active){this.lastTime=0;this.resize();this.dirty=true;this.frame=requestAnimationFrame(this.animate);}
-    else{cancelAnimationFrame(this.frame);if(this.grab)this.finishGrab(false);}
+    if(active){this.lastTime=0;this.resize();this.dirty=true;}
+    else{cancelAnimationFrame(this.frame);this.frame=0;if(this.grab)this.finishGrab(false);}
   }
   showMessage(message){const p=document.createElement('p');p.className='office-3d-message';p.textContent=message;this.host.append(p);}
 }
