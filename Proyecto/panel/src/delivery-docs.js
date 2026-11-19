@@ -264,11 +264,38 @@ function deliveryDrawPlaca(doc,v){
 function deliveryPrint(kind,f){
  const kinds=kind==='todo'?Object.keys(DELIVERY_KINDS):[kind];
  if(!kinds.every(k=>deliveryCheck(k,f)))return false;
- try{const doc=deliveryPDF(kind,f);doc.autoPrint();const url=doc.output('bloburl');const w=window.open(url,'_blank');
-  if(!w){toast('El navegador bloqueó la ventana para imprimir. Permití las ventanas emergentes para este archivo.',true);return false;}
-  setTimeout(()=>URL.revokeObjectURL(url),120000);toast('Se abrió la ventana para imprimir.');return true;}
- catch(err){toast(err.message,true);deliveryError(err.message);return false;}
+ try{
+  const doc=deliveryPDF(kind,f),title=kind==='todo'?'Documentos de entrega':DELIVERY_KINDS[kind].label;
+  // El visor muestra este nombre arriba (en vez de un código)
+  doc.setProperties({title:`${title} - ${cleanSpaces(f.name)}`});doc.viewerPreferences({DisplayDocTitle:true});
+  const blob=doc.output('blob');
+  openPdfViewer(title,blob,deliveryFileName(kind==='todo'?'carta':kind,f,'pdf').replace(DELIVERY_KINDS.carta.file,kind==='todo'?'Documentos de entrega':DELIVERY_KINDS.carta.file));
+  return true;
+ }catch(err){toast(err.message,true);deliveryError(err.message);return false;}
 }
+// Vista para imprimir: ventana en el centro de la misma página con el visor de PDF (imprimir, descargar, ver hojas).
+function openPdfViewer(title,blob,fileName){
+ closePdfViewer();
+ const url=URL.createObjectURL(blob),box=document.createElement('div');
+ box.className='pdf-viewer';box.setAttribute('role','dialog');box.setAttribute('aria-modal','true');box.setAttribute('aria-labelledby','pdf-viewer-title');
+ box.innerHTML=`<div class="pdf-viewer-card"><div class="pdf-viewer-head"><h3 id="pdf-viewer-title">${esc(title)}</h3><button type="button" class="pdf-viewer-x" data-pdf-close aria-label="Cerrar">×</button></div><div class="pdf-viewer-body"><iframe title="${esc(title)}" src="${url}#view=FitH"></iframe></div><div class="pdf-viewer-actions"><span class="subtext">Usá el ícono de la impresora del visor, o el botón Imprimir.</span><button type="button" class="btn" data-pdf-close>Cerrar</button><button type="button" class="btn" data-pdf-download>${icon('download')}Descargar</button><button type="button" class="btn btn-primary" data-pdf-print>Imprimir</button></div></div>`;
+ box._url=url;box._name=fileName;
+ ($('modal').open?$('modal'):document.body).append(box);
+ box.querySelector('[data-pdf-print]').focus();
+}
+function closePdfViewer(){const box=document.querySelector('.pdf-viewer');if(!box)return;box.remove();setTimeout(()=>URL.revokeObjectURL(box._url),1000);}
+document.addEventListener('click',e=>{
+ const box=e.target.closest?.('.pdf-viewer');if(!box)return;
+ if(e.target.closest('[data-pdf-close]')||e.target===box){closePdfViewer();return;}
+ if(e.target.closest('[data-pdf-download]')){const a=document.createElement('a');a.href=box._url;a.download=box._name;document.body.append(a);a.click();a.remove();return;}
+ if(e.target.closest('[data-pdf-print]')){
+  const frame=box.querySelector('iframe');
+  try{frame.contentWindow.focus();frame.contentWindow.print();}
+  catch{toast('Usá el ícono de la impresora en la barra del visor.',true);}
+ }
+},true);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.querySelector('.pdf-viewer')){e.preventDefault();e.stopPropagation();closePdfViewer();}},true);
+document.addEventListener('cancel',e=>{if(document.querySelector('.pdf-viewer'))e.preventDefault();},true);
 function deliveryFont(doc,item,bold){doc.setFont(item.font==='carlito'?'Carlito':item.font==='helvetica'?'helvetica':'times',bold?'bold':'normal');}
 function deliveryDrawItem(doc,item,v){
  // Palabras con su formato (negrita, subrayado, mayúsculas)
@@ -340,8 +367,8 @@ document.addEventListener('click',e=>{
  else if(action==='delivery-pdf'){const f=rec();if(f)downloadDelivery(b.dataset.doc,f,'pdf');}
  else if(action==='delivery-word'){const f=rec();if(f&&downloadDelivery(b.dataset.doc,f,'word')&&$('modal').open&&!$('delivery-form'))$('modal').close();}
  else if(action==='delivery-save-print'){const f=saveDeliveryForm();if(f){deliveryError('');deliveryPrint(b.dataset.doc,f);}}
- else if(action==='delivery-print'){const f=rec();if(f&&deliveryPrint(b.dataset.doc,f)&&$('modal').open&&!$('delivery-form'))$('modal').close();}
- else if(action==='delivery-print-menu'){const f=rec();if(!f)return;openModal('Imprimir',`<p>Se abre el documento con tu formato original y la ventana para imprimir.</p><div class="credit-office-list">${[['placa','Póliza (placa)'],['carta','Carta de entrega (4 hojas)'],['matricula','IPM (impuesto primera matrícula)'],['exoneracion','Carta de exoneración (2 hojas)'],['todo','Todos los documentos juntos']].map(([k,l])=>`<button class="btn" data-action="delivery-print" data-doc="${k}" data-id="${esc(f.id)}">${esc(l)}</button>`).join('')}</div>`,`<button class="btn" data-close>Cerrar</button>`,480);}
+ else if(action==='delivery-print'){const f=rec();if(f){if($('modal').open&&!$('delivery-form'))$('modal').close();deliveryPrint(b.dataset.doc,f);}}
+ else if(action==='delivery-print-menu'){const f=rec();if(!f)return;openModal('Imprimir',`<p>El documento se abre aquí mismo, con tu formato original, listo para imprimir.</p><div class="credit-office-list">${[['placa','Póliza (placa)'],['carta','Carta de entrega (4 hojas)'],['matricula','IPM (impuesto primera matrícula)'],['exoneracion','Carta de exoneración (2 hojas)'],['todo','Todos los documentos juntos']].map(([k,l])=>`<button class="btn" data-action="delivery-print" data-doc="${k}" data-id="${esc(f.id)}">${esc(l)}</button>`).join('')}</div>`,`<button class="btn" data-close>Cerrar</button>`,480);}
  else if(action==='delivery-save-pdf'||action==='delivery-save-word'){const f=saveDeliveryForm();if(f){deliveryError('');downloadDelivery(b.dataset.doc,f,action==='delivery-save-pdf'?'pdf':'word');}}
  else if(action==='delivery-word-menu'){const f=rec();if(!f)return;openModal('Descargar en Word',`<p>Se descargan tus documentos originales con los datos de <strong>${esc(f.name)}</strong>. Abrilos en Word, corregí lo que haga falta y guardalos como PDF.</p><div class="credit-office-list">${Object.entries(DELIVERY_KINDS).filter(([k,d])=>!d.pdfOnly).map(([k,d])=>`<button class="btn" data-action="delivery-word" data-doc="${k}" data-id="${esc(f.id)}">${icon('download')}${esc(d.label)} <span class="credit-office-tag">Word</span></button>`).join('')}</div>`,`<button class="btn" data-close>Cerrar</button>`,520);}
  else if(action==='delivery-delete'){const f=rec();if(!f)return;openModal('Borrar entrega',`<p>¿Querés borrar la entrega de <strong>${esc(f.name)}</strong>?</p><p class="subtext">El crédito y la ficha del cliente no se borran.</p>`,`<button class="btn" data-close>Cancelar</button><button class="btn btn-danger" data-action="delivery-delete-confirm" data-id="${esc(id)}">Sí, borrar</button>`,480);}
