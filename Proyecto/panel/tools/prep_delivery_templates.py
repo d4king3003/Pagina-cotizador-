@@ -21,7 +21,7 @@ FIELDS = {
     'Nombre_cliente_': 'name', 'Modelo_numerico_': 'model', 'POLIZA_NUMERICO': 'poliza', 'DUI_NUMERICO': 'dui', 'Color': 'color',
     'Precio': 'priceWords', 'MOTOR_NUMERICO': 'motor', 'CHASIS_NUMERICO': 'chasis', 'Año': 'year', 'Dia': 'dayWords', 'DIA': 'dayWords',
     'Mes': 'month', 'Ocupacion': 'occupation', 'municipio': 'municipio', 'departamento': 'departamento', 'DUI': 'duiWords',
-    'Poliza': 'polizaWords', 'Modelo': 'modelWords', 'Motor_': 'motorWords', 'Chasis': 'chasisWords', 'NIT': 'duiWords',
+    'Poliza': 'polizaWords', 'Modelo': 'modelWords', 'Motor_': 'motorWords', 'Chasis': 'chasisWords', 'NIT': 'duiWords', 'Edad': 'ageWords',
 }
 # Valores de ejemplo (largo típico) para dibujar las hojas en blanco y medir dónde va cada párrafo.
 SAMPLE = {
@@ -165,6 +165,9 @@ def prepare(src, kind):
                     t.text = ''
                 next(tc.iter(Q + 't')).text = '{{financiera}}'
                 break
+    elif kind == 'compraventa':
+        # El año de la fecha estaba escrito fijo («DOS MIL VEINTISEIS»): usa el año de la fecha del IPM.
+        replace_text(root, 'DOS MIL VEINTISEIS', '{{yearWords}}', 2)
     elif kind == 'exoneracion':
         # Fechas y edad que en la plantilla estaban escritas fijas
         replace_text(root, 'seis de octubre de dos mil veintiseis', '{{docDateWords}}', 1)
@@ -337,6 +340,41 @@ def pack_entries(entries):
     return out
 
 
+def flow_layout(entries):
+    """Documento de solo texto (compraventa): el panel lo compone completo, con saltos de hoja.
+    Por cada párrafo: corridas (texto con marcas, negrita, tamaño), alineación, sangrías, interlineado y espacio después."""
+    root = etree.fromstring(entries['word/document.xml'])
+    body = root.find(Q + 'body')
+    tw = lambda v: round(int(v) / 20, 2)
+    sect = body.find(Q + 'sectPr')
+    mar = sect.find(Q + 'pgMar')
+    size = sect.find(Q + 'pgSz')
+    paras = []
+    for p in body.findall(Q + 'p'):
+        ppr = p.find(Q + 'pPr')
+        get = lambda path, attr, default=None: (ppr.find(path).get(Q + attr) if ppr is not None and ppr.find(path) is not None and ppr.find(path).get(Q + attr) is not None else default)
+        line = get(Q + 'spacing', 'line', '259')
+        rule = get(Q + 'spacing', 'lineRule', 'auto')
+        runs = []
+        for r in p.iter(Q + 'r'):
+            info = run_info(r)
+            rpr = r.find(Q + 'rPr')
+            sz = rpr.find(Q + 'sz') if rpr is not None else None
+            size_pt = int(sz.get(Q + 'val')) / 2 if sz is not None else 11
+            for child in r:
+                if child.tag == Q + 't' and child.text:
+                    runs.append({'t': child.text, 'b': info['b'], 'size': size_pt})
+                elif child.tag == Q + 'tab':
+                    runs.append({'t': '\t', 'b': info['b'], 'size': size_pt})
+        paras.append({'align': {'both': 'justify', 'center': 'center', 'right': 'right'}.get(get(Q + 'jc', 'val', 'left'), 'left'),
+                      'indLeft': tw(get(Q + 'ind', 'left', '0')), 'firstLine': tw(get(Q + 'ind', 'firstLine', '0')),
+                      'line': tw(line) if rule in ('exact', 'atLeast') else round(int(line) / 240, 3), 'lineRule': rule,
+                      'after': tw(get(Q + 'spacing', 'after', '0')), 'runs': runs})
+    return {'flow': True, 'pages': 1, 'size': [tw(size.get(Q + 'w')), tw(size.get(Q + 'h'))],
+            'margins': {'top': tw(mar.get(Q + 'top')), 'bottom': tw(mar.get(Q + 'bottom')), 'left': tw(mar.get(Q + 'left')), 'right': tw(mar.get(Q + 'right'))},
+            'font': 'gothic', 'images': [], 'items': [], 'paragraphs': paras}
+
+
 def main():
     src = Path(sys.argv[1])
     OUT.mkdir(parents=True, exist_ok=True)
@@ -390,6 +428,20 @@ def main():
         subprocess.run(['pdftoppm', '-r', '150', '-jpeg', '-jpegopt', 'quality=88', '-singlefile', str(work / 'placa.pdf'), str(OUT / 'placa-fondo-1')], check=True)
         (OUT / 'placa-layout.json').write_text(json.dumps({'pages': 1, 'size': [960, 540], 'images': ['placa-fondo-1.jpg'], 'items': [], 'placa': True}))
         summary['placa'] = {'pages': 1}
+    # Compraventa de contado: solo texto; el panel la compone entera
+    if (src / 'compraventa.docx').exists():
+        marked = prepare(src / 'compraventa.docx', 'compraventa')
+        (OUT / 'compraventa.json').write_text(json.dumps({'type': 'docx', 'entries': pack_entries(marked)}))
+        lay = flow_layout(marked)
+        (OUT / 'compraventa-layout.json').write_text(json.dumps(lay, ensure_ascii=False, indent=1))
+        summary['compraventa'] = {'paragraphs': len(lay['paragraphs'])}
+        # Letra parecida a Century Gothic (Didact Gothic, licencia OFL), recortada a letras latinas
+        from fontTools import subset
+        opts = subset.Options(); opts.name_IDs = ['*']; opts.notdef_outline = True
+        font = subset.load_font(str(ROOT / 'src/vendor/fonts/DidactGothic-Regular.ttf'), opts)
+        sub = subset.Subsetter(opts); sub.populate(unicodes=list(range(0x20, 0x7f)) + list(range(0xa0, 0x180)) + [0x2013, 0x2014, 0x2018, 0x2019, 0x201c, 0x201d, 0x2026]); sub.subset(font)
+        tmp = work / 'gothic.ttf'; font.save(str(tmp))
+        (OUT / 'gothic.json').write_text(json.dumps({'gothic': base64.b64encode(tmp.read_bytes()).decode()}))
     shutil.rmtree(work)
     print(json.dumps(summary))
 

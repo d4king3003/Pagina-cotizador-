@@ -120,8 +120,9 @@ credit_originals={'templates':{k:json.loads((TPL/f'{k}.json').read_text()) for k
 credit_docs+='\n'+(ROOT/'src/credit-originals.js').read_text().replace('/*CREDIT_ORIGINALS*/null',json.dumps(credit_originals,separators=(',',':')))
 # Entrega de la moto (los prepara tools/prep_delivery_templates.py)
 DLV=ROOT/'assets/delivery'
-delivery_docs={'templates':{k:json.loads((DLV/f'{k}.json').read_text()) for k in ('carta','matricula','exoneracion')},
- 'layouts':{k:json.loads((DLV/f'{k}-layout.json').read_text()) for k in ('carta','matricula','exoneracion')}}
+delivery_docs={'templates':{k:json.loads((DLV/f'{k}.json').read_text()) for k in ('carta','matricula','exoneracion','compraventa')},
+ 'layouts':{k:json.loads((DLV/f'{k}-layout.json').read_text()) for k in ('carta','matricula','exoneracion','compraventa')},
+ 'fonts':json.loads((DLV/'gothic.json').read_text())}
 delivery_docs['layouts']['placa']=json.loads((DLV/'placa-layout.json').read_text())
 delivery_docs['images']={k:['data:image/jpeg;base64,'+base64.b64encode((DLV/n).read_bytes()).decode() for n in delivery_docs['layouts'][k]['images']] for k in ('carta','matricula','exoneracion','placa')}
 credit_docs+='\n'+(ROOT/'src/delivery-docs.js').read_text().replace('/*DELIVERY_DOCS*/null',json.dumps(delivery_docs,separators=(',',':'),ensure_ascii=False))

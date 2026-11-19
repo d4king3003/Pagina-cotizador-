@@ -2,11 +2,14 @@
 // Los datos de la moto (motor, chasis, póliza, color) se pegan desde SAP: como texto o como captura (se lee sin internet).
 const DELIVERY_DOCS=/*DELIVERY_DOCS*/null;
 const DELIVERY_TEXT=['creditId','clientId','name','dui','occupation','municipio','departamento','model','color','year','motor','chasis','poliza','prima','plan','payment','months','balance','deliveryDate','matriculaDate','purchaseDate','age'];
-const DELIVERY_KINDS={placa:{label:'Póliza (placa)',file:'Poliza placa',pdfOnly:true},carta:{label:'Carta de entrega',file:'Carta de entrega'},matricula:{label:'IPM',file:'IPM'},exoneracion:{label:'Carta de exoneración',file:'Carta de exoneracion'}};
+const DELIVERY_KINDS={placa:{label:'Póliza (placa)',file:'Poliza placa',pdfOnly:true},carta:{label:'Carta de entrega',file:'Carta de entrega'},matricula:{label:'IPM',file:'IPM'},exoneracion:{label:'Carta de exoneración',file:'Carta de exoneracion'},compraventa:{label:'Compraventa',file:'Compraventa contado',contadoOnly:true}};
+// Documentos que corresponden a la entrega: la compraventa solo en ventas de contado.
+function deliveryKindsFor(f,saleType=f?.saleType){return Object.keys(DELIVERY_KINDS).filter(k=>!DELIVERY_KINDS[k].contadoOnly||saleType==='contado');}
 const DELIVERY_REQUIRED={
  carta:['name','dui','model','color','year','motor','chasis','poliza','price','deliveryDate'],
  matricula:['name','dui','occupation','municipio','departamento','model','color','year','motor','chasis','poliza','matriculaDate'],
  placa:['poliza'],
+ compraventa:['name','dui','age','occupation','municipio','departamento','poliza','year','model','motor','chasis','color','price','matriculaDate'],
  exoneracion:['name','dui','occupation','municipio','departamento','model','color','motor','chasis','poliza','age','purchaseDate','deliveryDate']};
 const DELIVERY_LABELS={name:'nombre',dui:'DUI',occupation:'ocupación',municipio:'municipio',departamento:'departamento',model:'modelo',color:'color',year:'año',motor:'número de motor',chasis:'número de chasis',poliza:'número de póliza',price:'valor de venta',deliveryDate:'fecha de entrega',matriculaDate:'fecha del IPM',purchaseDate:'fecha de compra',age:'edad'};
 let deliveryDraft=null;
@@ -57,7 +60,7 @@ function deliveryValues(f){
   duiWords:spellChars(f.dui),polizaWords:spellChars(f.poliza).replace(/ - /g,' - '),modelWords:modelWords(f.model),motorWords:spellChars(f.motor),chasisWords:spellChars(f.chasis),
   prima:credit?up(f.prima):'',plan:credit?up(f.plan):'',payment:credit?up(f.payment):'',months:credit?up(f.months):'',balance:credit?up(f.balance):'',
   xContado:credit?'':'X',xCredito:credit?'X':'',financiera:credit?'CREDIOPCIONES':'',
-  docDateWords:dateWordsLower(f.deliveryDate),purchaseDateWords:dateWordsLower(f.purchaseDate||f.deliveryDate),age:String(f.age??'').trim()};
+  docDateWords:dateWordsLower(f.deliveryDate),purchaseDateWords:dateWordsLower(f.purchaseDate||f.deliveryDate),age:String(f.age??'').trim(),ageWords:/^\d{1,3}$/.test(String(f.age??'').trim())?numberWords(Number(f.age)):up(f.age)};
 }
 function validateDeliveryForms(v){
  if(v.deliveryForms===undefined)return;
@@ -177,11 +180,13 @@ function openDeliveryForm(id='',creditId=''){
  ${dIn('Fecha de entrega','deliveryDate',f.deliveryDate,{type:'date',hint:'Fecha de la carta de entrega y de la exoneración.'})}${dIn('Fecha de compra','purchaseDate',f.purchaseDate||f.deliveryDate,{type:'date',hint:'Exoneración: «el día … adquirí una motocicleta».'})}${ipmDateField(f.matriculaDate)}</div>
  <datalist id="credit-models">${db.stock.filter(s=>s.active!==false).map(s=>`<option value="${esc(s.label)}"></option>`).join('')}</datalist>
  </form>`;
- const actions=`<button class="btn" data-close>Cancelar</button><span class="credit-actions-office"><button class="btn btn-quiet" data-action="delivery-save-word" data-doc="carta">Carta Word</button><button class="btn btn-quiet" data-action="delivery-save-word" data-doc="matricula">IPM Word</button><button class="btn btn-quiet" data-action="delivery-save-word" data-doc="exoneracion">Exoneración Word</button></span><span class="credit-actions-office delivery-actions-print"><button class="btn btn-quiet" data-action="delivery-save-print" data-doc="placa">Póliza</button><button class="btn btn-quiet" data-action="delivery-save-print" data-doc="carta">Carta</button><button class="btn btn-quiet" data-action="delivery-save-print" data-doc="matricula">IPM</button><button class="btn btn-quiet" data-action="delivery-save-print" data-doc="exoneracion">Exoneración</button><button class="btn btn-quiet" data-action="delivery-save-print" data-doc="todo">Todo</button></span><span class="credit-actions-pdf"><button class="btn" data-action="delivery-save-pdf" data-doc="placa">${icon('download')}Póliza PDF</button><button class="btn" data-action="delivery-save-pdf" data-doc="carta">${icon('download')}Carta de entrega PDF</button><button class="btn" data-action="delivery-save-pdf" data-doc="matricula">${icon('download')}IPM PDF</button><button class="btn" data-action="delivery-save-pdf" data-doc="exoneracion">${icon('download')}Exoneración PDF</button></span><button class="btn btn-primary" type="submit" form="delivery-form">Guardar</button>`;
+ const actions=`<button class="btn" data-close>Cancelar</button><span class="credit-actions-office"><button class="btn btn-quiet" data-action="delivery-save-word" data-doc="carta">Carta Word</button><button class="btn btn-quiet" data-action="delivery-save-word" data-doc="matricula">IPM Word</button><button class="btn btn-quiet" data-action="delivery-save-word" data-doc="exoneracion">Exoneración Word</button><button class="btn btn-quiet delivery-contado-only" data-action="delivery-save-word" data-doc="compraventa">Compraventa Word</button></span><span class="credit-actions-office delivery-actions-print"><button class="btn btn-quiet" data-action="delivery-save-print" data-doc="placa">Póliza</button><button class="btn btn-quiet" data-action="delivery-save-print" data-doc="carta">Carta</button><button class="btn btn-quiet" data-action="delivery-save-print" data-doc="matricula">IPM</button><button class="btn btn-quiet" data-action="delivery-save-print" data-doc="exoneracion">Exoneración</button><button class="btn btn-quiet delivery-contado-only" data-action="delivery-save-print" data-doc="compraventa">Compraventa</button><button class="btn btn-quiet" data-action="delivery-save-print" data-doc="todo">Todo</button></span><span class="credit-actions-pdf"><button class="btn" data-action="delivery-save-pdf" data-doc="placa">${icon('download')}Póliza PDF</button><button class="btn" data-action="delivery-save-pdf" data-doc="carta">${icon('download')}Carta de entrega PDF</button><button class="btn" data-action="delivery-save-pdf" data-doc="matricula">${icon('download')}IPM PDF</button><button class="btn" data-action="delivery-save-pdf" data-doc="exoneracion">${icon('download')}Exoneración PDF</button><button class="btn delivery-contado-only" data-action="delivery-save-pdf" data-doc="compraventa">${icon('download')}Compraventa PDF</button></span><button class="btn btn-primary" type="submit" form="delivery-form">Guardar</button>`;
  openModal(id?'Editar entrega':'Entrega de la moto',body,actions,860);
  deliverySaleToggle();
 }
-function deliverySaleToggle(){const form=$('delivery-form');if(!form)return;const credit=form.querySelector('input[name="saleType"]:checked')?.value==='credito';form.querySelector('.delivery-credit-only').hidden=!credit;}
+function deliverySaleToggle(){const form=$('delivery-form');if(!form)return;const credit=form.querySelector('input[name="saleType"]:checked')?.value==='credito';form.querySelector('.delivery-credit-only').hidden=!credit;
+ // La compraventa solo se habilita en ventas de contado
+ document.querySelectorAll('#modal .delivery-contado-only').forEach(b=>{b.hidden=credit;});}
 function readDeliveryForm(form){
  const fd=new FormData(form),text=k=>String(fd.get(k)??'').trim();
  const r={};for(const k of DELIVERY_TEXT)r[k]=cleanSpaces(text(k));
@@ -230,12 +235,14 @@ function deliveryWord(kind,f){
 /* ---------- PDF con el documento original de fondo ---------- */
 // kind puede ser 'carta', 'matricula' (IPM), 'exoneracion' o 'todo' (los tres en un solo PDF, para imprimir de una vez).
 function deliveryPDF(kind,f){
- const D=DELIVERY_DOCS,kinds=kind==='todo'?Object.keys(DELIVERY_KINDS):[kind];
+ const D=DELIVERY_DOCS,kinds=kind==='todo'?deliveryKindsFor(f):[kind];
  if(kinds.some(k=>!D?.layouts?.[k]))throw Error('No se encontró el documento original.');
  const J=globalThis.jspdf?.jsPDF;if(!J)throw Error('No se pudo cargar el generador de PDF.');
  const doc=new J({unit:'pt',format:'letter',orientation:'portrait',compress:true});creditFonts(doc);
  const v=deliveryValues(f);let first=true;
+ if(kinds.includes('compraventa')&&D.fonts?.gothic){doc.addFileToVFS('DidactGothic.ttf',D.fonts.gothic);doc.addFont('DidactGothic.ttf','Gothic','normal');}
  for(const k of kinds){const lay=D.layouts[k];
+  if(lay.flow){deliveryDrawFlow(doc,lay,v,first);first=false;continue;}
   for(let p=0;p<lay.pages;p++){
    const [w,h]=lay.size||[612,792];
    if(first){if(lay.placa){doc.deletePage(1);doc.addPage([w,h],'landscape');}}
@@ -246,6 +253,54 @@ function deliveryPDF(kind,f){
    for(const item of lay.items.filter(i=>i.page===p))deliveryDrawItem(doc,item,v);
   }}
  return doc;
+}
+// Documento de solo texto (compraventa): se compone completo con los márgenes, el interlineado y la letra del Word
+// (Century Gothic → Didact Gothic; la negrita se dibuja con un trazo). Si el texto crece, pasa a la hoja siguiente.
+function deliveryDrawFlow(doc,lay,v,first){
+ const [W,H]=lay.size,m=lay.margins,left=m.left,width=W-m.left-m.right,bottom=H-m.bottom;
+ if(first){if(doc.getNumberOfPages()===1&&!doc.__flowUsed){/* primera hoja ya creada (carta) */}}else doc.addPage([W,H],'portrait');
+ doc.__flowUsed=true;
+ const font=doc.getFontList().Gothic?'Gothic':'helvetica';
+ let y=m.top;
+ const newPage=()=>{doc.addPage([W,H],'portrait');y=m.top;};
+ const setRun=w=>{doc.setFont(font,font==='Gothic'?'normal':(w.b?'bold':'normal'));doc.setFontSize(w.size);};
+ const draw=(w,x,base)=>{setRun(w);if(w.b&&font==='Gothic'){doc.setLineWidth(w.size*.035);doc.setDrawColor(0,0,0);doc.text(w.t,x,base,{renderingMode:'fillThenStroke'});}else doc.text(w.t,x,base);return doc.getTextWidth(w.t);};
+ doc.setTextColor(0,0,0);
+ for(const para of lay.paragraphs){
+  const runs=para.runs.map(r=>({...r,t:r.t.replace(/\{\{(\w+)\}\}/g,(mm,k)=>v[k]??'')}));
+  const raw=runs.map(r=>r.t).join('');
+  const size=Math.max(...runs.map(r=>r.size),10),lh=para.lineRule==='auto'?para.line*size*1.17:para.line;
+  const baseOff=lh-(lh-size)/2-size*.22;
+  if(!raw.trim()){y+=lh;if(y+lh>bottom)newPage();continue;}
+  // Líneas de firma y rótulos separados por tabuladores: columnas
+  if(/\t| {4,}/.test(raw)){
+   const segs=raw.split(/\t+| {4,}/).map(t=>t.trim()).filter(Boolean),colW=(width-para.indLeft)/Math.max(2,segs.length);
+   if(y+lh>bottom)newPage();
+   segs.forEach((t,i)=>{const w={t,b:runs.some(r=>r.b&&r.t.includes(t)),size};setRun(w);const tw=doc.getTextWidth(t);draw(w,left+para.indLeft+colW*i+(colW-tw)/2,y+baseOff);});
+   y+=lh+para.after;continue;
+  }
+  // Palabras con su formato
+  const words=[];
+  for(const r of runs){for(const part of r.t.split(/( +)/)){if(!part)continue;if(/^ +$/.test(part)){if(words.length)words[words.length-1].space=true;continue;}words.push({t:part,b:!!r.b,size:r.size,glue:words.length>0&&!words[words.length-1].space});}}
+  const spaceW=w=>{setRun(w);return doc.getTextWidth(' ');};
+  const wordW=w=>{setRun(w);return doc.getTextWidth(w.t)*(w.b&&font==='Gothic'?1.02:1);};
+  const lines=[];let line=[],lw=0,first=true;
+  const avail=()=>width-para.indLeft-(first?para.firstLine:0);
+  for(const w of words){const add=(line.length&&!w.glue?spaceW(w):0)+wordW(w);
+   if(line.length&&!w.glue&&lw+add>avail()){lines.push({words:line,w:lw,first});line=[];lw=0;first=false;}
+   lw+=(line.length&&!w.glue?spaceW(w):0)+wordW(w);line.push(w);}
+  if(line.length)lines.push({words:line,w:lw,first});
+  lines.forEach((ln,li)=>{
+   if(y+lh>bottom+.5)newPage();
+   const x0=left+para.indLeft+(ln.first?para.firstLine:0),avail=width-para.indLeft-(ln.first?para.firstLine:0);
+   const gaps=ln.words.filter((w,i)=>i&&!w.glue).length,last=li===lines.length-1;
+   const extra=para.align==='justify'&&!last&&gaps?(avail-ln.w)/gaps:0;
+   let x=para.align==='center'?x0+(avail-ln.w)/2:para.align==='right'?x0+avail-ln.w:x0;
+   ln.words.forEach((w,i)=>{if(i&&!w.glue)x+=spaceW(w)+extra;draw(w,x,y+baseOff);x+=wordW(w);});
+   y+=lh;
+  });
+  y+=para.after;
+ }
 }
 // Póliza tipo placa: los textos van donde los pone el PowerPoint original (Arial Narrow ≈ Helvetica angosta).
 const PLACA_TEXTS=[
@@ -267,7 +322,7 @@ function deliveryDrawPlaca(doc,v){
 }
 // Imprimir: abre el PDF en una pestaña con la ventana de impresión lista.
 function deliveryPrint(kind,f){
- const kinds=kind==='todo'?Object.keys(DELIVERY_KINDS):[kind];
+ const kinds=kind==='todo'?deliveryKindsFor(f):[kind];
  if(!kinds.every(k=>deliveryCheck(k,f)))return false;
  try{
   const doc=deliveryPDF(kind,f),title=kind==='todo'?'Documentos de entrega':DELIVERY_KINDS[kind].label;
@@ -382,9 +437,9 @@ document.addEventListener('click',e=>{
  else if(action==='delivery-word'){const f=rec();if(f&&downloadDelivery(b.dataset.doc,f,'word')&&$('modal').open&&!$('delivery-form'))$('modal').close();}
  else if(action==='delivery-save-print'){const f=saveDeliveryForm();if(f){deliveryError('');deliveryPrint(b.dataset.doc,f);}}
  else if(action==='delivery-print'){const f=rec();if(f){if($('modal').open&&!$('delivery-form'))$('modal').close();deliveryPrint(b.dataset.doc,f);}}
- else if(action==='delivery-print-menu'){const f=rec();if(!f)return;openModal('Imprimir',`<p>El documento se abre aquí mismo, con tu formato original, listo para imprimir o descargar.</p><div class="credit-office-list">${[['placa','Póliza (placa)'],['carta','Carta de entrega (4 hojas)'],['matricula','IPM (impuesto primera matrícula)'],['exoneracion','Carta de exoneración (2 hojas)'],['todo','Todos los documentos juntos']].map(([k,l])=>`<button class="btn" data-action="delivery-print" data-doc="${k}" data-id="${esc(f.id)}">${esc(l)}</button>`).join('')}</div>`,`<button class="btn" data-close>Cerrar</button>`,480);}
+ else if(action==='delivery-print-menu'){const f=rec();if(!f)return;openModal('Imprimir',`<p>El documento se abre aquí mismo, con tu formato original, listo para imprimir o descargar.</p><div class="credit-office-list">${[['placa','Póliza (placa)'],['carta','Carta de entrega (4 hojas)'],['matricula','IPM (impuesto primera matrícula)'],['exoneracion','Carta de exoneración (2 hojas)'],['compraventa','Compraventa (contado)'],['todo','Todos los documentos juntos']].filter(([k])=>k==='todo'||deliveryKindsFor(f).includes(k)).map(([k,l])=>`<button class="btn" data-action="delivery-print" data-doc="${k}" data-id="${esc(f.id)}">${esc(l)}</button>`).join('')}</div>`,`<button class="btn" data-close>Cerrar</button>`,480);}
  else if(action==='delivery-save-pdf'||action==='delivery-save-word'){const f=saveDeliveryForm();if(f){deliveryError('');downloadDelivery(b.dataset.doc,f,action==='delivery-save-pdf'?'pdf':'word');}}
- else if(action==='delivery-word-menu'){const f=rec();if(!f)return;openModal('Descargar en Word',`<p>Se descargan tus documentos originales con los datos de <strong>${esc(f.name)}</strong>. Abrilos en Word, corregí lo que haga falta y guardalos como PDF.</p><div class="credit-office-list">${Object.entries(DELIVERY_KINDS).filter(([k,d])=>!d.pdfOnly).map(([k,d])=>`<button class="btn" data-action="delivery-word" data-doc="${k}" data-id="${esc(f.id)}">${icon('download')}${esc(d.label)} <span class="credit-office-tag">Word</span></button>`).join('')}</div>`,`<button class="btn" data-close>Cerrar</button>`,520);}
+ else if(action==='delivery-word-menu'){const f=rec();if(!f)return;openModal('Descargar en Word',`<p>Se descargan tus documentos originales con los datos de <strong>${esc(f.name)}</strong>. Abrilos en Word, corregí lo que haga falta y guardalos como PDF.</p><div class="credit-office-list">${Object.entries(DELIVERY_KINDS).filter(([k,d])=>!d.pdfOnly&&deliveryKindsFor(f).includes(k)).map(([k,d])=>`<button class="btn" data-action="delivery-word" data-doc="${k}" data-id="${esc(f.id)}">${icon('download')}${esc(d.label)} <span class="credit-office-tag">Word</span></button>`).join('')}</div>`,`<button class="btn" data-close>Cerrar</button>`,520);}
  else if(action==='delivery-delete'){const f=rec();if(!f)return;openModal('Borrar entrega',`<p>¿Querés borrar la entrega de <strong>${esc(f.name)}</strong>?</p><p class="subtext">El crédito y la ficha del cliente no se borran.</p>`,`<button class="btn" data-close>Cancelar</button><button class="btn btn-danger" data-action="delivery-delete-confirm" data-id="${esc(id)}">Sí, borrar</button>`,480);}
  else if(action==='delivery-delete-confirm'){const next=clone(db);next.deliveryForms=(next.deliveryForms||[]).filter(f=>f.id!==id);if(commit(next,'Entrega borrada.'))$('modal').close();}
 });

@@ -1,0 +1,1291 @@
+{
+ "flow": true,
+ "pages": 1,
+ "size": [
+  612.0,
+  792.0
+ ],
+ "margins": {
+  "top": 70.85,
+  "bottom": 70.85,
+  "left": 85.05,
+  "right": 85.05
+ },
+ "font": "gothic",
+ "images": [],
+ "items": [],
+ "paragraphs": [
+  {
+   "align": "justify",
+   "indLeft": 0.0,
+   "firstLine": 0.0,
+   "line": 24.0,
+   "lineRule": "exact",
+   "after": 0.0,
+   "runs": [
+    {
+     "t": "NOSOTROS:",
+     "b": true,
+     "size": 11
+    },
+    {
+     "t": " ",
+     "b": true,
+     "size": 11
+    },
+    {
+     "t": "KARLA ALEJANDRA SALINAS ALFARO",
+     "b": true,
+     "size": 11
+    },
+    {
+     "t": ", ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "mayor de edad, Estudiante, Salvadoreño,",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": " ",
+     "b": false,
+     "size": 10.0
+    },
+    {
+     "t": "del domicilio del distrito de Tonacatepeque, municipio de San Salvador Este, departamento de San Salvador, con Documento Único de Identidad número ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "CERO SEIS CUATRO UNO SIETE CUATRO CINCO UNO – CERO",
+     "b": true,
+     "size": 11
+    },
+    {
+     "t": ", actuando en nombre y representación en mi calidad de ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "Apoderado Especial Administrativo  de la sociedad ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "MOTOPREMIUM",
+     "b": true,
+     "size": 11
+    },
+    {
+     "t": ", SOCIEDAD ANÓNIMA DE CAPITAL VARIABLE,",
+     "b": true,
+     "size": 11
+    },
+    {
+     "t": " que puede abreviarse",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": " ",
+     "b": true,
+     "size": 11
+    },
+    {
+     "t": "MOTOPREMIUM",
+     "b": true,
+     "size": 11
+    },
+    {
+     "t": ", S. A. de C. V.,",
+     "b": true,
+     "size": 11
+    },
+    {
+     "t": " de naturaleza Anónima, sujeta al régimen de capital variable, de nacionalidad salvadoreña, del domicilio de San Salvador",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": ",",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": " ",
+     "b": true,
+     "size": 11
+    },
+    {
+     "t": "a quien en adelante se denominará ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "\"EL VENDEDOR\"",
+     "b": true,
+     "size": 11
+    },
+    {
+     "t": ", y ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "{{name}}",
+     "b": true,
+     "size": 11
+    },
+    {
+     "t": " ",
+     "b": true,
+     "size": 11
+    },
+    {
+     "t": "de ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "{{ageWords}}",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": " años de edad, ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "{{occupation}}",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": ", del domicilio de ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "{{municipio}}",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": ", departamento de ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "{{departamento}}",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": ", denominado ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "\"EL COMPRADOR\"",
+     "b": true,
+     "size": 11
+    },
+    {
+     "t": ", ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "OTORGAMOS",
+     "b": true,
+     "size": 11
+    },
+    {
+     "t": ": Que por este acto celebramos contrato de compra venta sujeto a las siguientes cláusulas: ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "I)",
+     "b": true,
+     "size": 11
+    },
+    {
+     "t": " Que el vendedor según póliza número ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "{{polizaWords}}",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": " es dueño y actual poseedor de una motocicleta NUEVA con las siguientes ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "carac",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "terísticas: País de Origen ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "INDIA",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": " ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": " ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "; Marca:  ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "TVS",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "; Año: ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "{{year}}",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "; Clase: ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "MOTOCICLETA",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": " Tipo",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": " ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": ":",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": " DEPORTIVA ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": " ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "; Modelo: ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "{{modelWords}}",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "; Motor Número: ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "{{motorWords}}",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": " Chasis Número: ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "{{chasisWords}}",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "; Color:",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": " ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "{{color}}",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "; Capacidad: Un asiento para dos personas; Combustible: GASOLINA. ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "II)",
+     "b": true,
+     "size": 11
+    },
+    {
+     "t": " Que por el precio de  ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "{{priceWords}}",
+     "b": true,
+     "size": 11
+    },
+    {
+     "t": " ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "DOLARES DE LOS ESTADOS UNIDOS DE AMERICA",
+     "b": true,
+     "size": 11
+    },
+    {
+     "t": ", que en este acto recibe el primero en su carácter expresado a su satisfacción, vende al comprador la motocicleta relacionada, haciéndole la tradición del dominio, posesión y demás derechos anexos que sobre dicha motocicleta le corresponden, entregándosela materialmente junto con las llaves y la tarjeta de circulación respectiva. ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "III)",
+     "b": true,
+     "size": 11
+    },
+    {
+     "t": " Por su parte el señor ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "{{name}}",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": " acepta la venta y tradición del dominio, posesión y demás derechos anexos que sobre la mencionada motocicleta vendida se le hacen dándose por ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "recibido de la misma, así como de sus llaves, comprometiéndose a hacer todos los trámites de traspaso y a pagar los derechos correspondientes. ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "IV)",
+     "b": true,
+     "size": 11
+    },
+    {
+     "t": " El vendedor se obliga al saneamiento de la venta si fuera necesario. ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "V)",
+     "b": true,
+     "size": 11
+    },
+    {
+     "t": " Ambos contratantes para los efectos legales de este instrumento señalan como domicilio especial la ciudad de San Salvador, a cuyos Tribunales se someten en caso de acción judicial por reclamación de vicio ocultos de la motocicleta vendida o por perturbación de su dominio. En fe de lo cual firmamos el presente documento en triplicado, en la ciudad de San Salvador, a los",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": " ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "{{dayWords}}",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": " ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "días del mes de ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "{{month}}",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": " ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "del año",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": " {{yearWords}}",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": " ",
+     "b": false,
+     "size": 11
+    }
+   ]
+  },
+  {
+   "align": "justify",
+   "indLeft": 0.0,
+   "firstLine": 0.0,
+   "line": 24.0,
+   "lineRule": "exact",
+   "after": 0.0,
+   "runs": []
+  },
+  {
+   "align": "justify",
+   "indLeft": 0.0,
+   "firstLine": 0.0,
+   "line": 24.0,
+   "lineRule": "exact",
+   "after": 0.0,
+   "runs": []
+  },
+  {
+   "align": "justify",
+   "indLeft": 0.0,
+   "firstLine": 0.0,
+   "line": 24.0,
+   "lineRule": "exact",
+   "after": 0.0,
+   "runs": []
+  },
+  {
+   "align": "justify",
+   "indLeft": 0.0,
+   "firstLine": 0.0,
+   "line": 24.0,
+   "lineRule": "exact",
+   "after": 0.0,
+   "runs": []
+  },
+  {
+   "align": "justify",
+   "indLeft": 0.0,
+   "firstLine": 0.0,
+   "line": 24.0,
+   "lineRule": "exact",
+   "after": 0.0,
+   "runs": [
+    {
+     "t": "         ____________________________",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "\t",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "                    _____________________________                                                                                                                                                            ",
+     "b": false,
+     "size": 11
+    }
+   ]
+  },
+  {
+   "align": "justify",
+   "indLeft": 35.4,
+   "firstLine": 0.0,
+   "line": 24.0,
+   "lineRule": "exact",
+   "after": 0.0,
+   "runs": [
+    {
+     "t": "MOTOPREMIUM",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "\t",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "\t",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "\t",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "\t",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "\t",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "\t",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "COMPRADOR",
+     "b": false,
+     "size": 11
+    }
+   ]
+  },
+  {
+   "align": "justify",
+   "indLeft": 0.0,
+   "firstLine": 0.0,
+   "line": 24.0,
+   "lineRule": "exact",
+   "after": 0.0,
+   "runs": []
+  },
+  {
+   "align": "justify",
+   "indLeft": 0.0,
+   "firstLine": 0.0,
+   "line": 24.0,
+   "lineRule": "exact",
+   "after": 0.0,
+   "runs": [
+    {
+     "t": "En la ciudad de San Salvador, a ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "las OCHO",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": " ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "horas del día ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "{{dayWords}}",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": " ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "de ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "{{month}}",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": " ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "del",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": " ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "año",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": " {{yearWords}}",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": ".",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": " Ante mí, ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "JAIRO OBED CABRERA ABARCA",
+     "b": true,
+     "size": 11
+    },
+    {
+     "t": ", Notario de este domicilio, comparecen:",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": " ",
+     "b": true,
+     "size": 11
+    },
+    {
+     "t": "IVAN MOISES VILLALTA RAMIREZ",
+     "b": true,
+     "size": 11
+    },
+    {
+     "t": ", ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "mayor de edad, Estudiante, Salvadoreño, del domicilio de Apopa, departamento de San Salvador, con Documento Único de Identidad número cero cuatro seis seis dos uno nueve uno - siete; y Número de Identificación Tributaria cero seis uno cuatro- cero cinco cero ocho nueve dos – uno dos siete- cuatro, actuando en nombre y representación en mi calidad de ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "Apoderado Especial Administrativo  de la sociedad ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "MOTOPREMIUM",
+     "b": true,
+     "size": 11
+    },
+    {
+     "t": ", SOCIEDAD ANÓNIMA DE CAPITAL VARIABLE,",
+     "b": true,
+     "size": 11
+    },
+    {
+     "t": " que puede abreviarse",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": " ",
+     "b": true,
+     "size": 11
+    },
+    {
+     "t": "MOTOPREMIUM",
+     "b": true,
+     "size": 11
+    },
+    {
+     "t": ", S. A. de C. V.,",
+     "b": true,
+     "size": 11
+    },
+    {
+     "t": " de naturaleza Anónima, sujeta al régimen de capital variable, de nacionalidad salvadoreña, del domicilio de San Salvador",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": ", cuya personería más ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "adelante diré, con Número de Identificación Tributaria ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "cero seis uno cuatro- dos cero cero seis dos dos- uno cero cinco- cero",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "; y ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "{{name}}",
+     "b": true,
+     "size": 11
+    },
+    {
+     "t": ", ",
+     "b": true,
+     "size": 11
+    },
+    {
+     "t": "de ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "{{ageWords}}",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": " años de edad,  ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "{{occupation}}",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": ",  del domicilio de  ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "{{municipio}}",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": ", departamento de ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "{{departamento}}",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": ", a quien no conozco, pero identifico por medio de su Documento Único de identidad que he tenido a la vista número ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "{{duiWords}}",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": ", con Número de Identificación Tributaria ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "{{duiWords}}",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": ", ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "Y ME DICEN",
+     "b": true,
+     "size": 11
+    },
+    {
+     "t": ": ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "I)",
+     "b": true,
+     "size": 11
+    },
+    {
+     "t": " Que las firmas que aparecen al calce del documento que antecede y que se leen: ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "\"Ilegible\" e \"Ilegible",
+     "b": true,
+     "size": 11
+    },
+    {
+     "t": "”",
+     "b": true,
+     "size": 11
+    },
+    {
+     "t": " ",
+     "b": true,
+     "size": 11
+    },
+    {
+     "t": "son suyas y como tales las reconocen por haber sido puestas de su puño y letra así como las obligaciones allí expresadas. El documento en referencia está fechado en esta ciudad, el día de hoy redactado en una hoja de papel común y en el que manifiestan: ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "II)",
+     "b": true,
+     "size": 11
+    },
+    {
+     "t": " Que ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "MOTOPREMIUM",
+     "b": true,
+     "size": 11
+    },
+    {
+     "t": ", SOCIEDAD ANONIMA DE CAPITAL VARIABLE",
+     "b": true,
+     "size": 11
+    },
+    {
+     "t": ", según póliza número ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "{{polizaWords}}",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": " es dueño y actual poseedor de una motocicleta NUEVA con las siguientes características: País de Origen",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": " ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "INDIA",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": " ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "; Marca: ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "TVS",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "; Año: ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "{{year}}",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "; Clase: ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "MOTOCICLETA",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "; Tipo:",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": " ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "DEPORTIVO",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "; Modelo: ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "{{modelWords}}",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "; Motor Número: ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "{{motorWords}}",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "; Chasis Número:",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "  ",
+     "b": false,
+     "size": 12.0
+    },
+    {
+     "t": "{{chasisWords}}",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "; Color:",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": " ",
+     "b": false,
+     "size": 12.0
+    },
+    {
+     "t": "{{color}}",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "; Capacidad: Un asiento para dos personas; Combustible: Gasolina. ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "II)",
+     "b": true,
+     "size": 11
+    },
+    {
+     "t": " Que por el precio de ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "{{priceWords}}",
+     "b": true,
+     "size": 11
+    },
+    {
+     "t": " DOLARES DE LOS ESTADOS UNIDOS DE AMERICA",
+     "b": true,
+     "size": 11
+    },
+    {
+     "t": ", que declara haber recibido, le vende al comprador, haciéndole tradición del dominio, posesión y demás derechos que le corresponden, entregándole dicha motocicleta junto con las llaves; que el señor ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "{{name}}",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": ",  acepta la venta y tradición que se la hace sobre la motocicleta vendida, dándose por recibido de la misma, así como de sus llaves, comprometiéndose a hacer los trámites de traspaso y a pagar los derechos correspondientes; señalando como domicilio especial esta ciudad; a cuyos ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "Tribunales se someten. Yo el suscrito Notario DOY FE: ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "a)",
+     "b": true,
+     "size": 11
+    },
+    {
+     "t": " Que las expresadas firmas son auténticas por haber sido puestas por los comparecientes a mi presencia; ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "b)",
+     "b": true,
+     "size": 11
+    },
+    {
+     "t": " ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "DOY FE de ser legítima y suficiente la personería con que actúa ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "el señor ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "KARLA ALEJANDRA SALINAS ALFARO",
+     "b": true,
+     "size": 11
+    },
+    {
+     "t": " ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": " ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "en nombre y representación de",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": " Motopremium",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": ", S.A. de C.V. por haber tenido a la vista ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "Testimonio de Escritura Pública de Poder Especial Administrativo, otorgado a su favor por el señor GERARDO VALIENTE ALVAREZ, en su calidad de Administrador Único Propietario y Representante Legal de la Sociedad, ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "en el Distrito de San Salvador y Capital de la República, Municipio de San Salvador Centro, Departamento de San Salvador",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": ", ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "a las catorce horas con cuarenta minutos, del día veintitrés de septiembre del año dos mil veintiséis",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": ", ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "ante los oficios notariales del Licenciado ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "ROBERTO ENRIQUE HERNÁNDEZ VALENCIA",
+     "b": true,
+     "size": 11
+    },
+    {
+     "t": ", inscrito en el Registro de Comercio bajo el número SETECIENTOS NUEVE, del Libro DOS MIL DOSCIENTOS SETENTA, del Registro de Otros Contratos Mercantiles, en San Salvador, de fecha veintiocho de septiembre de dos mil veintiséis, concediéndole al compareciente amplias facultades para el otorgamiento de actos como el presente, en el poder relacionado se encuentra plenamente establecida y comprobada la existencia legal de la Sociedad, así como la personería jurídica del Representante Legal de la misma. Expliqué a los comparecientes los efectos legales de esta acta notarial que consta en dos hojas de papel simple y que se inició al pie del documento en mención, y leído que les hube íntegramente lo escrito, en un solo acto, ratificaron su contenido por estar redactado conforme su voluntad y firman conmigo, de todo lo cual ",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "DOY FE. –",
+     "b": true,
+     "size": 11
+    }
+   ]
+  },
+  {
+   "align": "justify",
+   "indLeft": 0.0,
+   "firstLine": 0.0,
+   "line": 24.0,
+   "lineRule": "exact",
+   "after": 0.0,
+   "runs": []
+  },
+  {
+   "align": "justify",
+   "indLeft": 0.0,
+   "firstLine": 0.0,
+   "line": 24.0,
+   "lineRule": "exact",
+   "after": 0.0,
+   "runs": []
+  },
+  {
+   "align": "justify",
+   "indLeft": 0.0,
+   "firstLine": 0.0,
+   "line": 24.0,
+   "lineRule": "exact",
+   "after": 0.0,
+   "runs": []
+  },
+  {
+   "align": "justify",
+   "indLeft": 0.0,
+   "firstLine": 0.0,
+   "line": 24.0,
+   "lineRule": "exact",
+   "after": 0.0,
+   "runs": [
+    {
+     "t": "        _________________________",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "\t",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "                                     ______________________",
+     "b": false,
+     "size": 11
+    }
+   ]
+  },
+  {
+   "align": "justify",
+   "indLeft": 0.0,
+   "firstLine": 35.4,
+   "line": 24.0,
+   "lineRule": "exact",
+   "after": 0.0,
+   "runs": [
+    {
+     "t": "MOTOPREMIUM",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "\t",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "\t",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "\t",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "\t",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "\t",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "\t",
+     "b": false,
+     "size": 11
+    },
+    {
+     "t": "COMPRADOR",
+     "b": false,
+     "size": 11
+    }
+   ]
+  }
+ ]
+}
