@@ -110,7 +110,7 @@ function clientPrefill(clientId){
 }
 function readCreditForm(form){
  const fd=new FormData(form),text=k=>String(fd.get(k)??'').trim(),number=k=>{const raw=text(k);if(raw==='')return null;const n=Number(raw);if(!Number.isFinite(n)||n<0||n>1e10)throw Error('Revisá el valor numérico de '+k+'.');return Math.round(n*100)/100;};
- const r={};for(const k of CREDIT_TEXT)r[k]=text(k);for(const k of CREDIT_NUMBERS)r[k]=number(k);
+ const r={};for(const k of CREDIT_TEXT)r[k]=k==='detail'?text(k):text(k).replace(/[\u00A0\u2000-\u200B\u202F\u205F\u3000\uFEFF\t ]+/g,' ');for(const k of CREDIT_NUMBERS)r[k]=number(k);
  r.clientId=text('clientId');r.months=Number(text('months'))||18;r.downIncludesFee=true;
  const refs=kind=>Array.from({length:CREDIT_REF_COUNT},(_,i)=>({name:text(`${kind}-${i}-name`),phone:text(`${kind}-${i}-phone`),relation:CREDIT_RELATION[kind]}));
  r.famRefs=refs('fam');r.friendRefs=refs('friend');

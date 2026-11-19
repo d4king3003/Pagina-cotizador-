@@ -11,7 +11,7 @@ function creditCotizadorCheck(f){
  const problem=creditDownProblem(f.price,Number(creditTotalDown(f))||0);if(problem)throw Error('No se puede descargar el Cotizador. '+problem);
 }
 function creditValues(kind,f){
- const txt=v=>v===null||v===undefined?'':String(v).trim();
+ const txt=v=>v===null||v===undefined?'':String(v).replace(/[\s\u00A0\u2000-\u200B\u202F\u205F\u3000\uFEFF]+/g,' ').trim();
  if(kind==='buro')return {date:creditDate(),name:txt(f.name),dui:txt(f.dui)};
  if(kind==='cotizador'){
   const q=creditQuote(f),pay=Object.fromEntries(q.terms.map(t=>['q'+t.months,creditMoney(t.payment)]));

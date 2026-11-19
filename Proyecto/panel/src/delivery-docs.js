@@ -43,8 +43,13 @@ function deliveryFromCredit(f){
  return {creditId:f.id,clientId:f.clientId||'',saleType:'credito',name:f.name,dui:f.dui,occupation:f.position||'',model:f.model||'',year:f.year||'',price:f.price??null,
   prima:f.price?'$'+creditMoney(q.fee+q.prima):'',plan:'SIETE TRES 47%',payment:chosen&&f.price?'$'+creditMoney(chosen.payment):'',months:f.price?String(f.months):'',balance:f.price?'$'+creditMoney(q.amount):'',age:ageFrom(f.birth)};
 }
+// Espacios especiales copiados de otros sistemas (no se ven en el PDF) pasan a ser espacios normales.
+const cleanSpaces=v=>String(v??'').replace(/[\s\u00A0\u2000-\u200B\u202F\u205F\u3000\uFEFF]+/g,' ').trim();
 function deliveryValues(f){
- const up=v=>String(v??'').trim().toUpperCase(),d=dateParts(f.deliveryDate),m=dateParts(f.matriculaDate),credit=f.saleType==='credito';
+ // Si la entrega está unida a un crédito, la prima, la cuota, el plazo y el saldo salen del crédito tal como está hoy.
+ const c=f.saleType==='credito'&&f.creditId?(db.creditForms||[]).find(x=>x.id===f.creditId):null;
+ if(c&&c.price){const fresh=deliveryFromCredit(c);f={...f,prima:fresh.prima,plan:fresh.plan,payment:fresh.payment,months:fresh.months,balance:fresh.balance};}
+ const up=v=>cleanSpaces(v).toUpperCase(),d=dateParts(f.deliveryDate),m=dateParts(f.matriculaDate),credit=f.saleType==='credito';
  return {name:up(f.name),dui:up(f.dui),occupation:up(f.occupation),municipio:up(f.municipio),departamento:up(f.departamento),model:up(f.model),color:up(f.color),year:up(f.year),
   motor:up(f.motor),chasis:up(f.chasis),poliza:up(f.poliza),priceWords:f.price!=null&&f.price!==''?moneyWords(f.price):'',
   dateLong:d?`${d.d} DE ${ES_MONTHS[d.m-1]} DE ${d.y}`:'',
@@ -146,6 +151,8 @@ function ipmDateFromForm(form){
 function openDeliveryForm(id='',creditId=''){
  let f=id?(db.deliveryForms||[]).find(x=>x.id===id):null;
  if(!f){f=emptyDelivery();if(creditId){const c=(db.creditForms||[]).find(x=>x.id===creditId);if(c)Object.assign(f,deliveryFromCredit(c));}}
+ // Al abrir una entrega unida a un crédito, el financiamiento se muestra actualizado (prima con gastos de formalización)
+ else if(f.saleType==='credito'&&f.creditId){const c=(db.creditForms||[]).find(x=>x.id===f.creditId);if(c&&c.price){const fresh=deliveryFromCredit(c);f={...f,prima:fresh.prima,plan:fresh.plan,payment:fresh.payment,months:fresh.months,balance:fresh.balance};}}
  deliveryDraft={id:f.id};
  const credits=[...(db.creditForms||[])].sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt)));
  const creditOpts=`<option value="">Contado / sin crédito ingresado</option>`+credits.map(c=>`<option value="${esc(c.id)}"${c.id===f.creditId?' selected':''}>${esc(c.name)} · ${esc(c.model||'sin moto')}</option>`).join('');
@@ -173,7 +180,7 @@ function openDeliveryForm(id='',creditId=''){
 function deliverySaleToggle(){const form=$('delivery-form');if(!form)return;const credit=form.querySelector('input[name="saleType"]:checked')?.value==='credito';form.querySelector('.delivery-credit-only').hidden=!credit;}
 function readDeliveryForm(form){
  const fd=new FormData(form),text=k=>String(fd.get(k)??'').trim();
- const r={};for(const k of DELIVERY_TEXT)r[k]=text(k);
+ const r={};for(const k of DELIVERY_TEXT)r[k]=cleanSpaces(text(k));
  r.matriculaDate=ipmDateFromForm(form)||r.matriculaDate||today();
  r.saleType=text('saleType')==='contado'?'contado':'credito';
  const raw=text('price');r.price=raw===''?null:Math.round(Number(raw)*100)/100;
