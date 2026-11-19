@@ -49,7 +49,7 @@ $('panel-download-quote-image').addEventListener('click', downloadPanelQuoteImag
 state.price = ''; setValue($('price'),'');
 render();
 window.parent.postMessage({type:'tvs-calc-ready'}, '*');
-$('panel-save-bottom').addEventListener('click',()=>window.parent.postMessage({type:'tvs-calc-save'},'*'));
+$('panel-save-bottom')?.addEventListener('click',()=>window.parent.postMessage({type:'tvs-calc-save'},'*'));
 let heightTimer;
 const resizeForPanel = () => { clearTimeout(heightTimer); heightTimer = setTimeout(() => window.parent.postMessage({type:'tvs-calc-height',height:document.body.getBoundingClientRect().height+14}, '*'), 30); };
 new ResizeObserver(resizeForPanel).observe(document.body);
@@ -90,7 +90,7 @@ body{background:transparent!important}.topbar,footer,.actions{display:none!impor
 @media(max-width:720px){.workspace{padding:0 4px}.page-heading h1{font-size:23px}.financial-active select{max-width:160px}.internal-label{font-size:9px}}
 </style></head>''')
 panel_footer = '<div style="margin:18px 4px 8px;padding:18px;border:1px solid var(--line);border-radius:12px;background:var(--paper);display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap"><p style="font-size:11px;color:var(--muted);margin:0">Guardá la propuesta para compartirla o descargar su PDF.</p><button type="button" id="panel-save-bottom" class="button button-primary" style="flex:none">Guardar cotización</button></div>'
-embedded = embedded.replace("<script>\n'use strict';", panel_footer + "<script>\n'use strict';")
+
 # Verify that no financing function or plan table was edited by integration.
 def engine(html):
     script=re.findall(r'<script[^>]*>(.*?)</script>',html,re.S)[-1]
@@ -106,6 +106,7 @@ technical=(ROOT/'src/fichas.js').read_text()
 office=(ROOT/'src/office.js').read_text()
 quick_lead=(ROOT/'src/quick-lead.js').read_text()+'\n'+(ROOT/'src/client-actions.js').read_text()
 credit_logos={'credi':'data:image/png;base64,'+base64.b64encode((ROOT/'assets/credit/crediopciones.png').read_bytes()).decode(),'buro':'data:image/jpeg;base64,'+base64.b64encode((ROOT/'assets/credit/crediopciones-buro.jpg').read_bytes()).decode()}
+extras=(ROOT/'src/extras.js').read_text()
 credit_docs=(ROOT/'src/credit-docs.js').read_text().replace('/*CREDIT_LOGOS*/null',json.dumps(credit_logos))
 app_source=app_source.replace('/*INITIAL_BACKUP*/null',(ROOT/'data/initial-backup.json').read_text().replace('</','<\\/'))
 cash=(ROOT/'src/cash-quote.js').read_text().replace('/*CASH_SPEC_DATA*/null',(ROOT/'data/cash-specs.json').read_text().replace('</','<\\/')).replace('/*CASH_BRANDING*/null',json.dumps(branding,ensure_ascii=False).replace('</','<\\/'))
@@ -117,7 +118,7 @@ for sheet in catalog:
     sheet['thumbnail']='data:image/jpeg;base64,'+base64.b64encode(preview).decode()
     assets.append('<script type="application/octet-stream" id="technical-sheet-'+sheet['id']+'">'+base64.b64encode(image).decode()+'</script>')
 assets.insert(0,'<script type="application/json" id="technical-sheets-catalog">'+json.dumps(catalog,ensure_ascii=False).replace('</','<\\/')+'</script>')
-app_source=app_source.replace('let db=loadDB();',monthly+'\n'+technical+'\n'+cash+'\n'+office+'\n'+quick_lead+'\n'+credit_docs+'\nlet db=loadDB();')
+app_source=app_source.replace('let db=loadDB();',monthly+'\n'+technical+'\n'+cash+'\n'+office+'\n'+quick_lead+'\n'+credit_docs+'\n'+extras+'\nlet db=loadDB();')
 (ROOT/'qa/app-compiled.js').write_text(app_source)
 office_render_source=office_bundle()
 (ROOT/'qa/office-renderer.js').write_text(office_render_source)

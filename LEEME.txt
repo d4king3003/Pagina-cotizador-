@@ -1,4 +1,4 @@
-PANEL DE VENTAS DANIEL CAMPOS · VERSIÓN 1.9.0 · TEMA SHOWROOM TVS
+PANEL DE VENTAS DANIEL CAMPOS · VERSIÓN 1.10.0 · RESPALDO, WHATSAPP Y BUSCADOR
 4 de noviembre de 2026
 
 PAQUETE PARA WINDOWS
@@ -6,6 +6,14 @@ Usá Extraer todo en Windows y abrí Panel-Ventas-Daniel.html con Chrome o Edge.
 También se entrega el HTML por separado: ese archivo incluye toda la aplicación y se puede abrir directamente.
 El ZIP evita duplicar las imágenes de las fichas técnicas. Todas están incluidas dentro del HTML con sus bytes originales.
 Para trabajar con el código fuente, ejecutá python Proyecto/panel/build.py. Si faltan las imágenes sueltas, se recuperan automáticamente del HTML antes de generar la aplicación. Conservá el HTML en la carpeta principal.
+
+RESPALDO, WHATSAPP Y BUSCADOR (VERSIÓN 1.10)
+Respaldo: si en esta PC nunca descargaste un respaldo, o pasaron 7 días desde el último, aparece un aviso arriba con el botón Descargar respaldo. Más tarde lo oculta hasta mañana. El aviso es por PC, porque cada navegador guarda sus propios datos.
+Cotizar: se quitó Guardar cotización; las cotizaciones se envían como imagen. Promoción o nota y Válida hasta se conservan para las cotizaciones de contado.
+Resumen: Clientes en proceso cuenta solo el mes actual y la tarjeta Créditos ingresados reemplaza a Cotizaciones del mes.
+WhatsApp: el botón verde de la ficha del cliente y de la Oficina virtual abre su chat en WhatsApp Web. Se usa siempre la misma pestaña: la primera vez la abre y las siguientes la reutilizan. Una pestaña de WhatsApp que abriste por tu cuenta no se puede reutilizar, por seguridad del navegador.
+Buscador: Ctrl+K o el botón Buscar abre un buscador por nombre, teléfono, DUI o moto. Usá las flechas y Enter para abrir la ficha.
+La tabla de Clientes cabe completa desde pantallas de 1280 px.
 
 TEMA SHOWROOM TVS (VERSIÓN 1.9.0)
 Nuevo aspecto pensado para trabajar en la PC: menú lateral azul marino con la sección activa marcada en rojo TVS, títulos y cifras con tipografía Plus Jakarta Sans y textos con Inter. Las dos fuentes van incluidas en el HTML y funcionan sin internet.
@@ -97,7 +105,6 @@ En Editar ficha técnica se completa un resumen del catálogo incluido para los 
 El resumen técnico proviene de las fichas proporcionadas. No se agregan precios actuales, características de otros años, garantías ni cifras ambiguas. Las fichas completas originales siguen en Fichas técnicas.
 La vista previa reúne logo de TVS, logo del modelo cuando está disponible, foto, ficha en dos columnas, beneficios y desglose del precio. El botón del ojo permite ocultar o mostrar la ficha. También podés ocultar la fecha y vigencia de la imagen.
 Copiar como imagen genera un PNG real: abrí WhatsApp y pegá con Ctrl+V. Descargar PNG guarda exactamente la misma imagen. Si el navegador bloquea el portapapeles, aparece la imagen para usar clic derecho > Copiar imagen o descargarla.
-Guardar cotización conserva el precio, descuento, gastos, ficha editada y opciones de esa propuesta. En Cotizaciones podés abrirla, copiar o descargar su PNG y volver a cotizar con esos datos.
 Nueva cotización al contado limpia el formulario para preparar otra propuesta.
 Los créditos, clientes, ventas, comisiones y fichas originales se conservan.
 

@@ -227,3 +227,47 @@ html[data-theme-switching] :not(.toast),html[data-theme-switching] :not(.toast):
 
 /* Oficina 3D más grande en PC (va al final para ganar a office.css) */
 @media(min-width:900px){#office-scene{height:clamp(600px,calc(100vh - 170px),920px)}}
+
+/* ---------- Aviso de respaldo ---------- */
+.backup-banner{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin:0;padding:12px 38px;background:#fff6e0;color:#6b4a00;border-bottom:1px solid #f0d99a;font-size:13px;line-height:1.5}
+.backup-banner>span:first-child{display:flex;align-items:center;gap:10px}
+.backup-banner svg{flex:none;color:#a06d00}
+.backup-banner strong{margin-right:4px}
+.backup-banner-actions{display:flex;gap:8px;flex:none}
+.backup-banner .btn-quiet{color:#6b4a00}
+html[data-theme=dark] .backup-banner{background:#3b3018;color:#f1d79b;border-color:#6e5b33}
+html[data-theme=dark] .backup-banner svg,html[data-theme=dark] .backup-banner .btn-quiet{color:#f1d79b}
+@media(max-width:650px){.backup-banner{padding:12px 16px}}
+
+/* ---------- WhatsApp: verde de WhatsApp con su ícono ---------- */
+.btn.btn-whatsapp{background:#25d366;border-color:#25d366;color:#fff;box-shadow:0 1px 2px #128c7e33,0 4px 12px #25d36640}
+.btn.btn-whatsapp .wa-icon{width:18px;height:18px;color:#fff}
+@media (hover:hover) and (pointer:fine){.btn.btn-whatsapp:hover{background:#1ebe5a;border-color:#1ebe5a;color:#fff}}
+html[data-theme=dark] .btn.btn-whatsapp{background:#25d366;border-color:#25d366;color:#fff}
+
+/* ---------- Buscador rápido (Ctrl+K) ---------- */
+.search-shortcut{gap:8px;color:var(--muted)}
+.search-shortcut svg{width:16px;height:16px}
+.search-shortcut kbd{font:600 10.5px/1 var(--font-ui);padding:4px 6px;border-radius:6px;border:1px solid var(--line-strong);background:var(--soft);color:var(--muted)}
+dialog[data-instant],dialog[data-instant]::backdrop{transition:none!important}
+.qs input{font-size:16px!important;min-height:48px!important}
+.qs-results{margin-top:12px;display:flex;flex-direction:column;gap:4px;max-height:52vh;overflow:auto}
+.qs-item{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:1px solid transparent;background:transparent;border-radius:10px;padding:10px 12px;color:var(--ink);font-size:14px}
+.qs-item strong{display:block;font-weight:600}
+.qs-item small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+.qs-item .avatar{width:34px;height:34px;font-size:11px}
+.qs-item.active{background:var(--primary-soft);border-color:#c7d6f5}
+@media (hover:hover) and (pointer:fine){.qs-item:hover{background:var(--soft)}}
+.qs-hint{margin:6px 2px!important}
+@media(max-width:1180px){.search-shortcut kbd{display:none}}
+@media(max-width:650px){.topbar-right>.search-shortcut{font-size:0;padding:0;width:38px;gap:0}.topbar-right>.search-shortcut span{display:none}}
+
+/* ---------- Clientes: que la tabla quepa también en pantallas de 1280 px ---------- */
+@media(max-width:1300px){
+  .leads-table th,.leads-table td{padding:11px 7px}
+  .leads-table th:first-child,.leads-table td:first-child{padding-left:14px}
+  .leads-table td:first-child{min-width:132px}
+  .leads-table .inline-select{max-width:132px;font-size:11.5px;padding-left:8px}
+  .leads-table .table-actions{gap:4px}
+  .leads-table .table-actions .btn{padding:0 7px;font-size:11.5px}
+}

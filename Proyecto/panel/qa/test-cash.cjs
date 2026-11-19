@@ -53,14 +53,12 @@ if(!executablePath)throw Error('Indicá CASH_CHROMIUM con la ruta de Chromium pa
  assert.equal((await page.locator('#cash-spec-toggle').textContent()).trim(),'');
  await page.locator('#cash-copy').click();const hidden=png((await clipboard()).dataURL);assert.ok(!hidden.equals(shown));assert.equal(await total(),'$2,551.55');
  await page.locator('#cash-spec-toggle').click();await loaded();
- await page.locator('#save-quote-button').click();await page.locator('#modal').waitFor({state:'visible'});assert.ok((await page.locator('#modal').textContent()).includes('$2,551.55'));assert.ok((await page.locator('#modal').textContent()).includes('159.7'));
- await page.locator('[data-action="cash-saved-copy"]').click();assert.ok(png((await clipboard()).dataURL).equals(shown),'La imagen guardada conserva la cotización original');
- await page.locator('[data-action="requote"]').click();await loaded();assert.equal(await page.locator('#cash-price').inputValue(),'2649');assert.equal(await page.locator('#cash-discount').inputValue(),'5');assert.equal(await total(),'$2,551.55');
  await page.locator('#cash-copy').click();assert.ok(png((await clipboard()).dataURL).equals(shown),'Volver a cotizar conserva datos y ficha');
- const dbBefore=await page.evaluate(()=>JSON.parse(localStorage.getItem('tvs-daniel-panel-v1')));const q=dbBefore.quotes.at(-1);assert.equal(q.price,2551.55);assert.equal(q.cashData.basePrice,2649);assert.equal(q.cashData.specs.length,8);
+ const dbBefore=(await page.evaluate(()=>JSON.parse(localStorage.getItem('tvs-daniel-panel-v1'))))||JSON.parse(fs.readFileSync(path.join(root,'data/initial-backup.json'),'utf8'));// Ya no se guardan cotizaciones: se envían como imagen.
+assert.equal(dbBefore.quotes.length,JSON.parse(fs.readFileSync(path.join(root,'data/initial-backup.json'),'utf8')).quotes.length);assert.equal(await page.locator('#save-quote-button').count(),0);
  await page.evaluate(()=>window.denyImageClipboard=true);await page.locator('#cash-copy').click();await page.locator('#modal').waitFor({state:'visible'});assert.ok((await page.locator('#modal').textContent()).includes('clic derecho'));assert.equal(await page.locator('#modal a[download]').count(),1);await page.locator('#modal [data-close]').first().click();
  await page.evaluate(()=>window.denyImageClipboard=false);
- await page.locator('#cash-discount').fill('101');assert.equal(await page.locator('#cash-copy').isDisabled(),true);assert.equal(await page.locator('#save-quote-button').isDisabled(),true);assert.ok((await page.locator('#cash-form-status').textContent()).includes('100%'));
+ await page.locator('#cash-discount').fill('101');assert.equal(await page.locator('#cash-copy').isDisabled(),true);assert.ok((await page.locator('#cash-form-status').textContent()).includes('100%'));
  await page.locator('#cash-discount').fill('5');await loaded();
  await page.locator('#quote-stock').selectOption('moto-raider-125');await page.locator('#cash-price').fill('1949');assert.equal(await page.locator('#cash-discount').inputValue(),'0');
  await page.getByText('Editar ficha técnica',{exact:true}).click();assert.ok((await page.locator('#cash-spec-motor').inputValue()).includes('3 válvulas'));
@@ -72,8 +70,8 @@ if(!executablePath)throw Error('Indicá CASH_CHROMIUM con la ruta de Chromium pa
  await page.setViewportSize({width:430,height:930});await loaded();assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+2));
  await page.screenshot({path:path.join(root,'qa/cash-mobile.png'),fullPage:true});
  await page.locator('[data-action="cash-new"]').click();assert.equal(await page.locator('#cash-price').inputValue(),'');assert.equal(await page.locator('#quote-stock').inputValue(),'');assert.equal(await page.locator('#cash-copy').isDisabled(),true);
- const dbAfter=await page.evaluate(()=>JSON.parse(localStorage.getItem('tvs-daniel-panel-v1')));assert.equal(dbAfter.clients.length,dbBefore.clients.length);assert.equal(dbAfter.sales.length,dbBefore.sales.length);assert.equal(dbAfter.quotes.length,dbBefore.quotes.length);
+ const dbAfter=(await page.evaluate(()=>JSON.parse(localStorage.getItem('tvs-daniel-panel-v1'))))||JSON.parse(fs.readFileSync(path.join(root,'data/initial-backup.json'),'utf8'));assert.equal(dbAfter.clients.length,dbBefore.clients.length);assert.equal(dbAfter.sales.length,dbBefore.sales.length);assert.equal(dbAfter.quotes.length,dbBefore.quotes.length);
  assert.equal(network.length,0);assert.deepEqual(errors,[]);
- const report={mathAndValidation:'passed',realBrowser:'Chromium / file://',networkRequests:network.length,clipboardRealPNG:'passed',downloadSamePNG:'passed',twoColumnSpecs:'passed',hideAndShowSpecs:'passed',savedQuoteAndRequotePNG:'passed',clipboardDeniedFallback:'passed',clientAndSalesDataPreserved:'passed',customSpecsEscaped:'passed',mobile430px:'passed',darkMode:'passed',technicalSource:'included catalogue; editable per quote'};
+ const report={mathAndValidation:'passed',realBrowser:'Chromium / file://',networkRequests:network.length,clipboardRealPNG:'passed',downloadSamePNG:'passed',twoColumnSpecs:'passed',hideAndShowSpecs:'passed',noQuoteSavedOnlyImage:'passed',clipboardDeniedFallback:'passed',clientAndSalesDataPreserved:'passed',customSpecsEscaped:'passed',mobile430px:'passed',darkMode:'passed',technicalSource:'included catalogue; editable per quote'};
  fs.writeFileSync(path.join(root,'qa/cash-validation.json'),JSON.stringify(report,null,2));console.log(JSON.stringify(report));await browser.close();
 })().catch(error=>{console.error(error);process.exit(1);});
