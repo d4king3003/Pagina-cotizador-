@@ -17,7 +17,7 @@ const stages=['interesado','cotizado','evaluacion','aprobado','vendido','descart
 const clients=stages.map((s,i)=>({id:'c-'+i,name:'Ejemplo '+i,model:'Raider 125',stage:s.id,color:i}));
 const state={clients,stages,party:true,selected:null,filter:null,page:0};office.update(state);office.animate(700);
 assert.equal(office.avatars.size,6);assert.equal(host.dataset.renderer,'webgl-3d');assert.ok(renderer.rendered);
-for(const c of clients){const rig=office.avatars.get(c.id);assert.equal(rig.button.dataset.dancing,String(c.stage==='vendido'));assert.equal(rig.grave.visible,c.stage==='descartado');assert.equal(rig.body.visible,c.stage!=='descartado');if(c.stage!=='vendido')assert.equal(rig.body.position.y,0);}
+for(const c of clients){const rig=office.avatars.get(c.id);assert.equal(rig.button.dataset.dancing,String(c.stage==='vendido'));assert.equal(rig.grave.visible,c.stage==='descartado');assert.equal(rig.body.visible,c.stage!=='descartado');if(c.stage!=='vendido')assert.equal(rig.body.position.y,rig.sitting?-.5:0);}
 assert.equal(host.dataset.dancingClients,'1');assert.ok(office.avatars.get('c-4').hat.visible);assert.ok(!office.avatars.get('c-3').hat.visible);
 const rig=office.avatars.get('c-3');const project=p=>{const v=p.clone().project(office.camera);return {clientX:(v.x*.5+.5)*1100,clientY:(-.5*v.y+.5)*600,pointerId:1,button:0,preventDefault(){},stopPropagation(){}};};
 const start=rig.root.position.clone(),destination=start.clone();destination.x=0;destination.z=5.75;
@@ -32,7 +32,7 @@ let maxLeg=0,maxJump=0,burstSeen=false,arrivedAt=-1;
 for(let i=0;i<360;i++){tick(16);maxLeg=Math.max(maxLeg,Math.abs(seller.legs[0].rotation.x));maxJump=Math.max(maxJump,seller.body.position.y);if(office.burst.visible)burstSeen=true;if(arrivedAt<0&&seller.root.position.distanceTo(seller.target)<.001)arrivedAt=i;}
 assert.ok(maxLeg>.3,'camina moviendo las piernas');assert.ok(arrivedAt>20,'recorre el camino, no aparece de golpe');assert.ok(maxJump>.3,'salta al registrar la venta');assert.ok(burstSeen,'aparece el confeti');
 assert.equal(office.burst.visible,false,'el confeti termina');assert.equal(seller.pendingCheer,false);assert.equal(Math.abs(seller.root.rotation.y)<.01,true,'vuelve a mirar al frente');
-office.reduced=true;office.update({...state,clients});assert.equal(host.dataset.dancingClients,'0');office.animate(1300);for(const r of office.avatars.values())assert.equal(r.body.position.y,0);
+office.reduced=true;office.update({...state,clients});assert.equal(host.dataset.dancingClients,'0');office.animate(1300);for(const r of office.avatars.values())assert.equal(r.body.position.y,r.sitting?-.5:0);
 office.setActive(false);assert.equal(office.active,false);office.setActive(true);assert.equal(office.active,true);
 const report={actualBundledThreeScene:'passed with renderer stub',meshCharactersAndGraves:'passed',onlySoldDance:'passed',pointerRayAndRoomDrop:'passed',cancelDrag:'passed',roomPagination20Clients8PerRoom:'passed',reducedMotion:'passed',walkAndSaleCelebration:'passed',hiddenRoutePausesAnimation:'passed',visualWebGL:'not verified: cloud browser GPU disabled'};
 fs.writeFileSync(path.join(root,'qa/office-scene-validation.json'),JSON.stringify(report,null,2));console.log(JSON.stringify(report));

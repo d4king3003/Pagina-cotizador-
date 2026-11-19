@@ -5,6 +5,8 @@ const clamp=THREE.MathUtils.clamp;
 const roomCenter=i=>({x:-12+(i%3)*12,z:-5.75+Math.floor(i/3)*11.5});
 // Personajes 30 % más grandes; 8 por sala en dos filas al frente, lejos de muebles y decoración.
 const AVATAR_SCALE=1.3,PER_ROOM=8;
+// Sillón de En evaluación: tres plazas. Al sentarse, la cadera baja hasta el cojín.
+const SOFA={x:-.5,z:-3.0},SEATS=[[-1.7,-2.8],[-.5,-2.8],[.7,-2.8]],EVAL_STANDING=[[-3.8,1.3],[-1.3,1.8],[1.2,1.3],[3.7,1.8],[-2.5,4.1]],SIT_DROP=-.5,SEAT_TURN_MS=7000;
 const slots=[[-3.9,-.6],[-1.3,-.1],[1.3,-.6],[3.9,-.1],[-2.6,2.7],[0,3.1],[2.6,2.7],[4.6,3.5]];
 
 /** All visible office objects are meshes in a lit, orbitable WebGL scene. */
@@ -32,6 +34,11 @@ export class Office3D {
     this.dragStatus=document.createElement('div');this.dragStatus.className='office-drag-status';this.dragStatus.setAttribute('role','status');this.dragStatus.setAttribute('aria-live','polite');this.dragStatus.hidden=true;host.append(this.dragStatus);
     document.addEventListener('keydown',e=>{if(e.key==='Escape'&&this.grab){e.preventDefault();this.finishGrab(false);}});
     this.resizeObserver=new ResizeObserver(()=>this.resize());this.resizeObserver.observe(host);
+    if(typeof setInterval==='function')this.seatTimer=setInterval(()=>{
+      if(!this.active||document.hidden||!this.onScreen||this.reduced||this.grab)return;
+      const waiting=this.state.clients.filter(c=>c.stage==='evaluacion').length;
+      if(waiting>SEATS.length&&(!this.state.filter||this.state.filter==='evaluacion')){this.seatShift=(this.seatShift||0)+1;this.update(this.state);}
+    },SEAT_TURN_MS);
     this.resize();this.animate=this.animate.bind(this);this.active=true;this.frame=requestAnimationFrame(this.animate);
     // Se despierta al volver a la pestaña o al aparecer en pantalla; fuera de la vista no dibuja.
     document.addEventListener('visibilitychange',()=>{if(!document.hidden){this.lastTime=0;this.dirty=true;}});
@@ -150,6 +157,10 @@ export class Office3D {
       for(const dx of [-3.7,-2.75]){const x=p.x+dx,z=p.z-4.5;this.box(b,.85,1.7,.75,x,1.15,z,'#9aa7ad');
         for(let k=0;k<3;k++){this.box(b,.78,.03,.02,x,.6+k*.5,z+.38,'#7e8b91');this.box(b,.2,.05,.03,x,.82+k*.5,z+.39,'#5d686d');}}
       for(let k=0;k<3;k++)this.box(b,.5,.08,.36,p.x+2.3,1.64+k*.08,p.z-3.5,['#f1c84b','#5b8fd1','#e2231a'][k]);}
+    {const p=at(2),x=p.x+SOFA.x,z=p.z+SOFA.z,fabric='#7c6aa6';
+      this.box(b,3.75,.45,1.05,x,.55,z,fabric);this.box(b,3.75,.95,.26,x,1.05,z-.44,fabric);
+      for(const dx of [-1.8,1.8])this.box(b,.22,.66,1.05,x+dx,.68,z,'#6a5a93');
+      for(const s of SEATS)this.box(b,1.12,.13,.82,p.x+s[0],.84,z+.06,'#9483c2');}
     // Aprobados: moto lista para entregar, con lazo rojo
     {const p=at(3),g=this.motorcycle(p.x-2.6,p.z-3.6);
       const bow=this.material('#e2231a',{roughness:.45});
@@ -316,6 +327,10 @@ export class Office3D {
       const hand=this.mesh(arm,this.geometry('lego-hand',()=>new THREE.TorusGeometry(.105,.045,7,15,Math.PI*1.5)),this.material(yellow,{roughness:.28}),0,-.63,.015);
       hand.rotation.z=-Math.PI/4;arms.push(arm);
     }
+    // Celular sostenido con las dos manos frente al pecho, con la pantalla encendida (Seguimiento)
+    const phone=new THREE.Group();phone.position.set(0,1.64,.7);phone.rotation.x=-1.05;body.add(phone);phone.visible=false;
+    this.box(phone,.27,.05,.44,0,0,0,'#1d232b',{roughness:.35}).castShadow=false;
+    this.box(phone,.23,.014,.37,0,.031,0,'#bfe9ff',{emissive:'#7fd0ff',emissiveIntensity:1.1,roughness:.2}).castShadow=false;
     const head=new THREE.Group();head.position.y=2.23;body.add(head);
     this.cylinder(head,.35,.35,.49,0,0,0,yellow,{roughness:.27});this.cylinder(head,.13,.13,.11,0,.30,0,yellow,{roughness:.27});
     for(const x of [-.115,.115])this.sphere(head,.035,x,.055,Math.sqrt(.35*.35-x*x)+.008,'#272b31',{roughness:.7}).scale.set(1,1,.5);
@@ -371,7 +386,7 @@ export class Office3D {
     button.addEventListener('focus',()=>{ring.visible=true;this.dirty=true;});
     button.addEventListener('blur',()=>{ring.visible=this.state.selected===c.id;this.dirty=true;});
     this.labels.append(button);
-    const rig={root,body,head,hair,hat,helmet,arms,legs,ring,grave,plumbob,button,name,alert,age,stage:c.stage,phase:c.color*.71,target:new THREE.Vector3(),placed:false};
+    const rig={root,body,head,hair,hat,helmet,phone,arms,legs,ring,grave,plumbob,button,name,alert,age,stage:c.stage,phase:c.color*.71,target:new THREE.Vector3(),placed:false};
     this.avatars.set(c.id,rig);return rig;
   }
   // Cada sala lleva el color de su etiqueta: piso algo más intenso y un borde del mismo color.
@@ -402,8 +417,15 @@ export class Office3D {
       const room=roomCenter(i);this.roomLabels[i].n.textContent=group.length;
       this.roomLabels[i].button.setAttribute('aria-label',`${state.stages[i].name}: ${group.length} clientes`);
       this.roomLabels[i].button.setAttribute('aria-pressed',String(state.filter===state.stages[i].id));
-      group.slice((state.page||0)*PER_ROOM,(state.page||0)*PER_ROOM+PER_ROOM).forEach((c,k)=>{
-        present.add(c.id);const rig=this.avatars.get(c.id)||this.makeAvatar(c);const offset=slots[k];
+      const pageList=group.slice((state.page||0)*PER_ROOM,(state.page||0)*PER_ROOM+PER_ROOM),seatOf=new Map();
+      if(state.stages[i].id==='evaluacion'&&pageList.length){
+        const n=pageList.length,shift=n>SEATS.length?(this.seatShift||0)%n:0;
+        for(let s=0;s<Math.min(SEATS.length,n);s++)seatOf.set(pageList[(s+shift)%n].id,s);
+      }
+      let standing=0;
+      pageList.forEach((c,k)=>{
+        present.add(c.id);const rig=this.avatars.get(c.id)||this.makeAvatar(c);const seat=seatOf.get(c.id);
+        const offset=seat!==undefined?SEATS[seat]:(state.stages[i].id==='evaluacion'?EVAL_STANDING:slots)[standing++];rig.seated=seat!==undefined;
         rig.target.set(room.x+offset[0],.33,room.z+offset[1]);
         if(!rig.placed){rig.root.position.copy(rig.target);rig.placed=true;}
         if(rig.placed&&rig.stage&&rig.stage!=='vendido'&&c.stage==='vendido')this.celebrateSale(rig);
@@ -534,7 +556,7 @@ export class Office3D {
     const project=(x,y,z)=>{v.set(x,y,z).project(this.camera);return {x:(v.x*.5+.5)*this.width,y:(-.5*v.y+.5)*this.height};};
     this.roomLabels.forEach(({button,i})=>{const c=roomCenter(i),p=project(c.x,3.4,c.z-3.6);button.hidden=p.x<0||p.x>this.width||p.y<0||p.y>this.height-50;button.style.left=clamp(p.x,45,this.width-45)+'px';button.style.top=clamp(p.y,18,this.height-50)+'px';});
     for(const rig of this.avatars.values()){
-      const p=rig.root.position,grave=rig.stage==='descartado',head=project(p.x,p.y+(grave?2.0:3.2)*AVATAR_SCALE,p.z),foot=project(p.x,p.y,p.z);
+      const p=rig.root.position,grave=rig.stage==='descartado',head=project(p.x,p.y+((grave?2.0:3.2)+(rig.sitting?SIT_DROP:0))*AVATAR_SCALE,p.z),foot=project(p.x,p.y,p.z);
       const h=clamp(Math.abs(foot.y-head.y)+10,27,210),w=clamp(h*(grave?.8:.55),22,110);
       rig.button.style.left=head.x+'px';rig.button.style.top=((foot.y+head.y)/2)+'px';rig.button.style.width=w+'px';rig.button.style.height=h+'px';
       rig.button.style.zIndex=String(Math.round((30-p.z)*2));
@@ -576,6 +598,13 @@ export class Office3D {
       rig.arms[0].rotation.x=dance?Math.cos(beat)*.25:0;rig.arms[1].rotation.x=dance?-Math.cos(beat)*.25:0;
       rig.legs[0].rotation.x=dance?Math.sin(beat)*.25:0;rig.legs[1].rotation.x=dance?-Math.sin(beat)*.25:0;
       rig.head.rotation.y=dance?Math.sin(beat)*.15:0;
+      const settled=!walking&&!grabbed&&!dance&&rig.root.position.distanceToSquared(rig.target)<.0004;
+      rig.sitting=settled&&rig.seated&&rig.stage==='evaluacion';
+      const onPhone=!grabbed&&!dance&&rig.stage==='cotizado';
+      rig.phone.visible=onPhone&&!walking;
+      // Escribiendo en el celular: brazos al frente, manos juntas y cabeza mirando la pantalla
+      if(onPhone&&!walking){rig.arms[0].rotation.x=-1.25;rig.arms[1].rotation.x=-1.25;rig.arms[0].rotation.z=.36;rig.arms[1].rotation.z=-.36;rig.head.rotation.x=.32;}else rig.head.rotation.x=0;
+      if(rig.sitting){rig.body.position.y=SIT_DROP;rig.legs[0].rotation.x=-1.5;rig.legs[1].rotation.x=-1.5;rig.arms[0].rotation.x=-.45;if(!onPhone)rig.arms[1].rotation.x=-.45;}
       if(walking){const w=rig.walk;rig.legs[0].rotation.x=Math.sin(w)*.65;rig.legs[1].rotation.x=-Math.sin(w)*.65;rig.arms[0].rotation.x=-Math.sin(w)*.5;rig.arms[1].rotation.x=Math.sin(w)*.5;rig.arms[0].rotation.z=-.14;rig.arms[1].rotation.z=.14;rig.body.position.y=Math.abs(Math.sin(w))*.07;rig.body.rotation.z=0;}
       if(rig.cheerUntil&&(this.reduced||t<rig.cheerStart||t>=rig.cheerUntil))rig.cheerUntil=0;
       if(rig.cheerUntil){const k=(t-rig.cheerStart)/1.4,hop=Math.abs(Math.sin(k*Math.PI*2));rig.body.position.y=hop*.75*(1-k*.4);rig.arms[0].rotation.z=-2.6;rig.arms[1].rotation.z=2.6;moving=true;}

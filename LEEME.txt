@@ -34,6 +34,8 @@ Los personajes son un 30 % más grandes. Cada sala muestra hasta 8 personajes po
 Cada sala tiene su decoración: sala de espera en Interesados, teléfono y reloj en Seguimiento, archivadores en En evaluación, una moto con lazo rojo en Aprobados y una vitrina con moto y trofeo en Vendidos.
 Los clientes vendidos llevan casco TVS (durante la fiesta usan gorro). Hay más peinados y algunos personajes con lentes.
 La luz es más cálida, con sombras suaves y ventanas en las paredes.
+Los clientes de Seguimiento aparecen escribiendo en su celular.
+En En evaluación hay un sillón de tres plazas: hasta tres clientes se sientan a esperar. Si hay más, cada 7 segundos uno se levanta y otro camina a sentarse. Con reducir animaciones activado no hay turnos.
 
 INGRESAR CRÉDITO CREDIOPCIONES · PLAN SIETE TRES 47% (VERSIÓN 1.8.0)
 En Solicitudes usá + Ingresar crédito. Un solo formulario llena los tres documentos y cada uno se descarga en PDF con su propio botón: Buró, Cotizador y Solicitud.
