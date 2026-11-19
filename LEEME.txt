@@ -12,7 +12,7 @@ Meta del mes: en el Resumen y en Ventas y comisiones hay una barra de avance hac
 Gráficas en Ventas y comisiones: ventas por mes (últimos 6 meses, el mes elegido resaltado), modelos más vendidos y de dónde vienen tus clientes (con cuántos compraron). Al pasar el mouse se ven los detalles.
 Repetidos: si guardás un cliente con un teléfono que ya existe, el aviso dice de quién es y ofrece Abrir la ficha existente. En Ingresar crédito, un DUI repetido avisa y permite abrir el existente o guardar otro.
 Ingresar crédito: al elegir la moto se completan solos el precio y el año guardados en Motos y precios. En Cotizar el precio ya se llenaba solo: para que funcione, cargá los precios en Motos y precios.
-Oficina virtual estilo pista de baile: las salas son 1,5 veces más grandes y la fila de abajo (Aprobados, Vendidos y Descartados) es más larga. Caben hasta 12 personajes por sala y 24 en Vendidos. La pista de Vendidos no tiene escritorio; la moto en vitrina está a un lado y la cabina de DJ al frente. Los personajes son más altos y delgados. En la fiesta bailan con las manos al frente, cerca de la cara, cada uno mirando hacia un lado, bajo una bola disco grande de espejo colgada de una barra. Ver Vendidos acerca la cámara a la pista.
+Oficina virtual estilo pista de baile: las salas son 1,5 veces más grandes y la fila de abajo (Aprobados, Vendidos y Descartados) es más larga. Caben hasta 12 personajes por sala y 24 en Vendidos. La pista de Vendidos no tiene escritorio; la moto en vitrina está a un lado y la cabina de DJ al frente. Las motos de Aprobados y Vendidos tienen forma de moto de calle tipo TVS Raider: llantas alineadas con rines de rayos, freno de disco, tanque negro con detalles plata, asiento de dos niveles, faro, espejos y escape plateado. Los personajes son más altos y delgados. En la fiesta bailan con las manos al frente, cerca de la cara, cada uno mirando hacia un lado, bajo una bola disco grande de espejo colgada de una barra. Ver Vendidos acerca la cámara a la pista.
 Oficina virtual: el botón Nombres muestra el nombre corto de cada personaje (se recuerda en esta PC). Los pisos tienen textura: madera, alfombra o baldosa según la sala.
 
 RESPALDO, WHATSAPP Y BUSCADOR (VERSIÓN 1.10)
@@ -48,7 +48,7 @@ Con reducir animaciones activado en Windows, los personajes cambian de sala al i
 OFICINA VIRTUAL: MÁS GRANDE Y DECORADA
 La oficina ocupa casi todo el alto de la pantalla en la PC y la cámara está más cerca. El botón ⛶ la muestra en pantalla completa; Esc o ✕ vuelven a la vista normal.
 Los personajes son un 30 % más grandes. Cada sala muestra hasta 8 personajes por página (antes 9) para que no se encimen.
-Cada sala tiene su decoración: sala de espera en Interesados, teléfono y reloj en Seguimiento, archivadores en En evaluación, una moto con lazo rojo en Aprobados y una vitrina con moto y trofeo en Vendidos.
+Cada sala tiene su decoración: sala de espera en Interesados, teléfono y reloj en Seguimiento, archivadores en En evaluación, una moto con lazo rojo en Aprobados y una vitrina con moto en Vendidos.
 Los clientes vendidos llevan casco TVS (durante la fiesta usan gorro). Hay más peinados y algunos personajes con lentes.
 La luz es más cálida, con sombras suaves y ventanas en las paredes.
 Los clientes de Seguimiento aparecen escribiendo en su celular.

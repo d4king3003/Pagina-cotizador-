@@ -108,7 +108,7 @@ export class Office3D {
       this.floorMeshes.push(this.box(this.building,11.65,.10,roomDepth(i)-.38,p.x,.25,p.z,color,{roughness:.96}));
       // Vendidos sin escritorio: la pista queda libre
       if(i!==5&&i!==4)this.desk(p.x+3.4,back+2.1);
-      if(i!==5)this.plant(p.x-4.7,back+1.75);
+      if(i!==5)this.plant(i===4?p.x+4.7:p.x-4.7,back+1.75);
     });
     this.makeCemetery();
     const gridPositions=[];
@@ -188,7 +188,7 @@ export class Office3D {
     // Vendidos: vitrina con moto TVS al lado (sin escritorio ni trofeo: la pista queda libre)
     {const p=at(4),x=p.x-3.8,z=p.z-ROW2/2+2.7;
       this.cylinder(b,1.45,1.55,.22,x,.42,z,'#f4f6fb',{roughness:.3});const ring=this.mesh(b,this.geometry('podium-ring',()=>new THREE.TorusGeometry(1.5,.05,8,40)),this.material('#e2231a',{roughness:.4}),x,.54,z,false);ring.rotation.x=Math.PI/2;
-      const g=this.motorcycle(x,z);g.position.y=.53;
+      const g=this.motorcycle(x,z);g.position.y=.53;g.scale.setScalar(1.3);
     }
   }
   sign(text,w,h,bg,color,x,y,z){
@@ -251,18 +251,63 @@ export class Office3D {
     for(let i=0;i<3;i++)this.box(grave,.5-i*.08,.025,.025,0,.96-i*.12,-.465,'#879286');
     grave.visible=false;return grave;
   }
+  // Moto de calle estilo TVS Raider: llantas alineadas a lo largo (eje x, el frente hacia +x),
+  // rines de 5 rayos, tanque negro con detalles plata, asiento de dos niveles, faro, espejos y escape plateado.
   motorcycle(x,z){
     const g=new THREE.Group();g.position.set(x,.34,z);g.rotation.y=.4;this.building.add(g);
-    for(const dx of [-.72,.72]){
-      const tire=this.mesh(g,this.geometry('bike-tire',()=>new THREE.TorusGeometry(.4,.11,8,20)),this.material('#303b42'),dx,.45,0);tire.rotation.y=Math.PI/2;
-      const rim=this.cylinder(g,.29,.29,.05,dx,.45,0,'#b0b9b6',{metalness:.5,roughness:.3});rim.rotation.z=Math.PI/2;
+    const black='#16181b',matte='#25282d',silver='#a6abb1',chrome={metalness:.6,roughness:.25};
+    // Barra entre dos puntos del plano lateral (x,y), a la profundidad z
+    const rod=(x1,y1,x2,y2,z,r,color,extra={})=>{const dx=x2-x1,dy=y2-y1,len=Math.hypot(dx,dy);
+      const m=this.mesh(g,this.geometry(`bike-rod:${r}`,()=>new THREE.CylinderGeometry(1,1,1,10)),this.material(color,extra),(x1+x2)/2,(y1+y2)/2,z);
+      m.scale.set(r,len,r);m.rotation.z=-Math.atan2(dx,dy);return m;};
+    const R=.5,rearX=-.78,frontX=.78;
+    for(const wx of [rearX,frontX]){
+      // Llanta en el plano de la moto (sin girar: el toroide ya queda de canto)
+      this.mesh(g,this.geometry('bike-tire-v2',()=>new THREE.TorusGeometry(.4,.1,10,30)),this.material('#1c1d20',{roughness:.85}),wx,R,0);
+      this.mesh(g,this.geometry('bike-rim-v2',()=>new THREE.TorusGeometry(.31,.025,6,28)),this.material('#2b2e33',{roughness:.4}),wx,R,0,false);
+      const hub=this.mesh(g,this.geometry('bike-hub',()=>new THREE.CylinderGeometry(.075,.075,.16,14)),this.material(matte),wx,R,0,false);hub.rotation.x=Math.PI/2;
+      for(let k=0;k<5;k++){const a=k/5*Math.PI*2;rod(wx,R,wx+Math.cos(a)*.31,R+Math.sin(a)*.31,0,.024,'#2b2e33');}
     }
-    this.box(g,1.15,.33,.46,-.1,.92,0,'#d93649');this.box(g,.72,.15,.48,-.39,1.17,0,'#343d42');
-    this.box(g,.25,.58,.08,.58,.92,0,'#74888d').rotation.z=-.4;
-    this.box(g,.1,.12,.75,.67,1.37,0,'#58686e');this.sphere(g,.13,.76,1.14,.02,'#f2e3aa',{emissive:'#ffe5a3',emissiveIntensity:.2});
-    this.box(g,.65,.24,.33,-.05,.58,0,'#748388');
+    // Freno de disco y mordaza dorada adelante
+    const disc=this.mesh(g,this.geometry('bike-disc',()=>new THREE.CylinderGeometry(.22,.22,.015,24)),this.material('#c9ccd1',chrome),frontX,R,.09,false);disc.rotation.x=Math.PI/2;
+    this.box(g,.09,.13,.05,frontX-.14,R+.16,.11,'#c79a2e');
+    // Horquilla delantera inclinada y guardafangos
+    for(const fz of [-.11,.11])rod(frontX,R,.56,1.28,fz,.035,'#2b2e33');
+    this.box(g,.44,.04,.17,frontX+.03,1.0,0,black).rotation.z=-.2;
+    // Basculante trasero
+    for(const sz of [-.12,.12])rod(rearX,R,-.12,.72,sz,.03,matte);
+    // Motor, chasis y cubierta del motor
+    this.box(g,.5,.38,.3,-.02,.74,0,'#2a2c30');
+    const cover=this.mesh(g,this.geometry('bike-engine-cover',()=>new THREE.CylinderGeometry(.14,.14,.04,18)),this.material('#3b3e44',{metalness:.3,roughness:.4}),-.05,.7,.16,false);cover.rotation.x=Math.PI/2;
+    rod(-.25,1.05,.48,1.2,0,.04,matte);
+    // Tanque negro brillante con aletas plata a los lados
+    this.box(g,.62,.3,.44,.2,1.22,0,black,{roughness:.28,metalness:.25});
+    this.box(g,.42,.2,.46,.36,1.05,0,silver,{roughness:.35,metalness:.3}).rotation.z=.25;
+    // Asiento de dos niveles y agarradera
+    this.box(g,.56,.1,.36,-.33,1.2,0,'#1f2023',{roughness:.7});
+    this.box(g,.42,.1,.32,-.78,1.3,0,'#1f2023',{roughness:.7});
+    this.box(g,.62,.16,.3,-.8,1.16,0,black,{roughness:.3});
+    this.box(g,.5,.07,.31,-.78,1.08,0,silver);
+    for(const rz of [-.18,.18])this.box(g,.42,.03,.03,-.86,1.4,rz,'#c9ccd1',chrome);
+    // Calavera trasera y portaplaca
+    this.box(g,.05,.06,.22,-1.08,1.2,0,'#d42a2a',{emissive:'#ff3b30',emissiveIntensity:.35});
+    this.box(g,.04,.22,.2,-1.13,.98,0,black);
+    // Faro delantero con luz
+    this.box(g,.22,.26,.36,.62,1.27,0,black,{roughness:.3});
+    this.box(g,.04,.13,.26,.74,1.27,0,'#eaf4ff',{emissive:'#cfe6ff',emissiveIntensity:.8});
+    // Manubrio, puños y espejos
+    const bar=this.mesh(g,this.geometry('bike-bar',()=>new THREE.CylinderGeometry(.022,.022,.78,10)),this.material(black),.5,1.47,0,false);bar.rotation.x=Math.PI/2;
+    for(const hz of [-.36,.36]){
+      this.box(g,.07,.07,.11,.5,1.47,hz,'#2b2e33');
+      rod(.5,1.47,.46,1.78,hz*.85,.012,black);
+      this.box(g,.05,.1,.16,.46,1.82,hz*.92,black,{roughness:.3});
+    }
+    // Escape plateado a un lado, inclinado hacia arriba
+    const pipe=this.mesh(g,this.geometry('bike-pipe',()=>new THREE.CylinderGeometry(.085,.075,.66,16)),this.material('#c9ccd1',chrome),-.55,.76,.22);pipe.rotation.z=Math.PI/2+.22;
+    const tip=this.mesh(g,this.geometry('bike-pipe-tip',()=>new THREE.CylinderGeometry(.06,.06,.06,14)),this.material('#3b3e44',chrome),-.88,.84,.22,false);tip.rotation.z=Math.PI/2+.22;
     return g;
   }
+
   makeParty(){
     this.partyGroup=new THREE.Group();this.partyGroup.scale.setScalar(WORLD);this.scene.add(this.partyGroup);this.partyGroup.visible=false;
     this.partyMaterial=this.material('#1b2a4e',{roughness:.85});
