@@ -1,0 +1,4 @@
+Letras de la compraventa (parecidas a Century Gothic), entregadas por el usuario en century-gothic-similar-fonts.zip:
+- weezerfont.ttf: texto normal.
+- SansSerifBldFLF.otf (c)1986-92 Richard A. Ware: negritas.
+Se usan solo dentro del panel para el PDF de la compraventa.

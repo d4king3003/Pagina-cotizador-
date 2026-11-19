@@ -255,7 +255,7 @@ function deliveryPDF(kind,f){
  return doc;
 }
 // Documento de solo texto (compraventa): se compone completo con los márgenes, el interlineado y la letra del Word
-// (Century Gothic → Didact Gothic; negrita → Jost Bold). Si el texto crece, pasa a la hoja siguiente.
+// (Century Gothic → weezerfont; negrita → SansSerifBldFLF, las letras que entregó el usuario). Si el texto crece, pasa a la hoja siguiente.
 function deliveryDrawFlow(doc,lay,v,first){
  const [W,H]=lay.size,m=lay.margins,left=m.left,width=W-m.left-m.right,bottom=H-m.bottom;
  if(first){if(doc.getNumberOfPages()===1&&!doc.__flowUsed){/* primera hoja ya creada (carta) */}}else doc.addPage([W,H],'portrait');

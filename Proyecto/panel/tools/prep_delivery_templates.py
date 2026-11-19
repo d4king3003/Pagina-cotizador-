@@ -375,6 +375,39 @@ def flow_layout(entries):
             'font': 'gothic', 'images': [], 'items': [], 'paragraphs': paras}
 
 
+def subset_font(src, out):
+    """Recorta la fuente a letras latinas; si es OpenType con curvas cúbicas (CFF) la pasa a TrueType, que es lo que acepta el PDF."""
+    from fontTools import subset
+    from fontTools.ttLib import TTFont, newTable
+    font = TTFont(str(src))
+    if 'CFF ' in font:
+        from fontTools.pens.cu2quPen import Cu2QuPen
+        from fontTools.pens.ttGlyphPen import TTGlyphPen
+        order, gs = font.getGlyphOrder(), font.getGlyphSet()
+        glyf = newTable('glyf'); glyf.glyphOrder = order; glyf.glyphs = {}
+        for name in order:
+            pen = TTGlyphPen(gs)
+            gs[name].draw(Cu2QuPen(pen, 1.0, reverse_direction=True))
+            glyf[name] = pen.glyph()
+        font['glyf'] = glyf; font['loca'] = newTable('loca')
+        del font['CFF ']
+        if 'VORG' in font: del font['VORG']
+        font['head'].glyphDataFormat = 0
+        maxp = font['maxp']; maxp.tableVersion = 0x00010000
+        for k in ('maxZones', 'maxTwilightPoints', 'maxStorage', 'maxFunctionDefs', 'maxInstructionDefs', 'maxStackElements', 'maxSizeOfInstructions', 'maxComponentElements', 'maxPoints', 'maxContours', 'maxCompositePoints', 'maxCompositeContours', 'maxComponentDepth'):
+            setattr(maxp, k, 0)
+        maxp.maxZones = 1
+        font['post'].formatType = 2.0; font['post'].extraNames = []; font['post'].mapping = {}
+        font.sfntVersion = '\x00\x01\x00\x00'
+        tmp = out.with_suffix('.full.ttf'); font.save(str(tmp)); font = TTFont(str(tmp))
+    opts = subset.Options(); opts.name_IDs = ['*']; opts.notdef_outline = True; opts.glyph_names = True
+    sub = subset.Subsetter(opts)
+    sub.populate(unicodes=list(range(0x20, 0x7f)) + list(range(0xa0, 0x180)) + [0x2013, 0x2014, 0x2018, 0x2019, 0x201c, 0x201d, 0x2026])
+    sub.subset(font)
+    font.save(str(out))
+    return base64.b64encode(out.read_bytes()).decode()
+
+
 def main():
     src = Path(sys.argv[1])
     OUT.mkdir(parents=True, exist_ok=True)
@@ -435,18 +468,9 @@ def main():
         lay = flow_layout(marked)
         (OUT / 'compraventa-layout.json').write_text(json.dumps(lay, ensure_ascii=False, indent=1))
         summary['compraventa'] = {'paragraphs': len(lay['paragraphs'])}
-        # Letra parecida a Century Gothic (Didact Gothic, licencia OFL), recortada a letras latinas
-        from fontTools import subset
-        opts = subset.Options(); opts.name_IDs = ['*']; opts.notdef_outline = True
-        font = subset.load_font(str(ROOT / 'src/vendor/fonts/DidactGothic-Regular.ttf'), opts)
-        sub = subset.Subsetter(opts); sub.populate(unicodes=list(range(0x20, 0x7f)) + list(range(0xa0, 0x180)) + [0x2013, 0x2014, 0x2018, 0x2019, 0x201c, 0x201d, 0x2026]); sub.subset(font)
-        tmp = work / 'gothic.ttf'; font.save(str(tmp))
-        fonts = {'gothic': base64.b64encode(tmp.read_bytes()).decode()}
-        # Negrita: Jost Bold (licencia OFL), muy parecida a Century Gothic Bold
-        bold = subset.load_font(str(ROOT / 'src/vendor/fonts/Jost-Bold.ttf'), opts)
-        sub = subset.Subsetter(opts); sub.populate(unicodes=list(range(0x20, 0x7f)) + list(range(0xa0, 0x180)) + [0x2013, 0x2014, 0x2018, 0x2019, 0x201c, 0x201d, 0x2026]); sub.subset(bold)
-        tmpb = work / 'gothic-bold.ttf'; bold.save(str(tmpb))
-        fonts['gothicBold'] = base64.b64encode(tmpb.read_bytes()).decode()
+        # Letras parecidas a Century Gothic (las entregó el usuario): weezerfont para el texto y SansSerifBldFLF para las negritas
+        fonts = {'gothic': subset_font(ROOT / 'src/vendor/fonts/weezerfont.ttf', work / 'gothic.ttf'),
+                 'gothicBold': subset_font(ROOT / 'src/vendor/fonts/SansSerifBldFLF.otf', work / 'gothic-bold.ttf')}
         (OUT / 'gothic.json').write_text(json.dumps(fonts))
     shutil.rmtree(work)
     print(json.dumps(summary))
