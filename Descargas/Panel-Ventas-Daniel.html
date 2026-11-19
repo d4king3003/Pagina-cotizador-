@@ -85056,7 +85056,7 @@ const CREDIT_SELL_TERMS=SIETE_TRES.terms.filter(n=>n<=40);
 const CREDIT_RELATION={fam:'FAMILIAR',friend:'CONOCIDA'};
 const CREDIT_TEXT=['name','dui','phone','model','year','vendor','agency','agencyPhone','birth','sex','nationality','address','addressRef','company','position','startDate','workAddress','workRef','workPhone','detail'];
 const CREDIT_NUMBERS=['price','down','income','otherIncome'];
-let creditDraft=null,creditDupOk=false;
+let creditDraft=null,creditDupOk=false,creditPhoneChoice='',creditPendingAction=null;
 
 function emptyCreditForm(){
  const last=[...(db.creditForms||[])].sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt)))[0];
@@ -85177,18 +85177,29 @@ function checkCreditRecord(r){
 // si ya va más adelante (Preaprobado, Aprobado o Vendido).
 const CREDIT_LATER_STAGES=['Preaprobado','Aprobado','Vendido'];
 function creditPhoneKey(v){const d=String(v||'').replace(/\D/g,'');return d.length>=8?d.slice(-8):'';}
-function creditSyncClient(next,rec,isNew){
+function creditSyncClient(next,rec,isNew,phoneChoice=''){
  const stage=creditMissing('solicitud',rec).length?'Documentos':'Credito ingresado';
  const nameKey=norm(rec.name),phoneKey=creditPhoneKey(rec.phone);
- let c=rec.clientId?next.clients.find(x=>x.id===rec.clientId):null;
- c??=phoneKey?next.clients.find(x=>creditPhoneKey(x.phone)===phoneKey):null;
- c??=nameKey?next.clients.find(x=>!x.namePending&&norm(x.name)===nameKey):null;
+ const phoneOwner=phoneKey?next.clients.find(x=>creditPhoneKey(x.phone)===phoneKey):null;
+ let c=null,overwrite=false;
+ if(phoneOwner&&phoneChoice==='overwrite'){c=phoneOwner;overwrite=true;}
+ else if(phoneChoice==='new')c=rec.clientId&&rec.clientId!==phoneOwner?.id?next.clients.find(x=>x.id===rec.clientId):null;
+ else{
+  c=rec.clientId?next.clients.find(x=>x.id===rec.clientId):null;
+  c??=phoneOwner;
+  c??=nameKey?next.clients.find(x=>!x.namePending&&norm(x.name)===nameKey):null;
+ }
  const modelKey=norm(rec.model||'').replace(/^TVS/,''),st=modelKey?next.stock.find(s=>norm(s.label).replace(/^TVS/,'')===modelKey):null;
  if(!c){
   c={id:uid(),name:rec.name,phone:rec.phone||'',stockId:st?.id||'',stage,source:'Otro',paymentMode:'Crédito',nextFollow:'',notes:'',recordDate:today(),price:rec.price??null,documentation:'',plates:'',saleId:'',archived:false,createdAt:new Date().toISOString(),history:[]};
   next.clients.push(c);
   if(typeof eventFor==='function')eventFor(c,'Cliente agregado desde Ingresar crédito.');
  }else{
+  if(overwrite){
+   // Sobrescribir: la ficha queda con los datos de la solicitud de crédito.
+   if(typeof eventFor==='function')eventFor(c,`Ficha sobrescrita con los datos del crédito (antes: ${c.name}).`);
+   c.name=rec.name;c.namePending=false;c.phone=rec.phone||c.phone;if(st)c.stockId=st.id;if(rec.price!=null)c.price=rec.price;c.paymentMode='Crédito';
+  }
   if(c.namePending&&rec.name){c.name=rec.name;c.namePending=false;}
   if(!c.phone&&rec.phone)c.phone=rec.phone;
   if(!c.stockId&&st)c.stockId=st.id;
@@ -85208,11 +85219,23 @@ function saveCreditForm(){
  const dupCredit=stored&&stored.dui===rec.dui?null:(db.creditForms||[]).find(f=>f.dui===rec.dui&&f.id!==creditDraft?.id);
  if(dupCredit&&!creditDupOk){showCreditError('');const el=$('credit-error');el.innerHTML=`<strong>Ya hay un crédito con el DUI ${esc(rec.dui)}:</strong> ${esc(dupCredit.name)}. <span class="dup-actions"><button type="button" class="btn btn-small" data-action="credit-edit" data-id="${esc(dupCredit.id)}">Abrir el existente</button><button type="button" class="btn btn-small btn-quiet" data-action="credit-dup-ok">Guardar otro de todos modos</button></span>`;return null;}
  creditDupOk=false;
+ // Número repetido: si el teléfono ya es de otro cliente, se pregunta si se sobrescribe esa ficha
+ const phoneKey=creditPhoneKey(rec.phone),owners=phoneKey?db.clients.filter(c=>creditPhoneKey(c.phone)===phoneKey):[];
+ const linked=stored?.clientId||rec.clientId,owner=owners[0];
+ // Si el crédito ya está unido a una ficha con ese número, no se vuelve a preguntar.
+ if(owner&&!owners.some(o=>o.id===linked)&&!creditPhoneChoice){
+  showCreditError('');const el=$('credit-error');
+  el.innerHTML=`<strong>El número ${esc(rec.phone)} ya existe en Clientes del mes:</strong> ${esc(owner.name)} (${esc(owner.stage)}${owner.archived?', archivado':''}). ¿Querés sobrescribir esa ficha con los datos de esta solicitud? <span class="dup-actions"><button type="button" class="btn btn-small btn-primary" data-action="credit-phone-overwrite">Sí, sobrescribir</button><button type="button" class="btn btn-small" data-action="credit-phone-new">No, crear otro cliente</button></span>`;
+  el.hidden=false;el.scrollIntoView({block:'nearest'});
+  toast('Ese número ya existe. Elegí si sobrescribís la ficha.',true);
+  return null;
+ }
+ const phoneChoice=creditPhoneChoice;creditPhoneChoice='';
  const next=clone(db);next.creditForms??=[];const now=new Date().toISOString();
  const old=next.creditForms.find(f=>f.id===creditDraft?.id);
  if(old){Object.assign(old,rec,{updatedAt:now});rec=old;}
  else{rec=Object.assign({id:uid(),createdAt:now,updatedAt:now},rec);next.creditForms.push(rec);creditDraft={id:rec.id};}
- const synced=creditSyncClient(next,rec,!old);
+ const synced=creditSyncClient(next,rec,!old,phoneChoice);
  if(rec.clientId){const c=next.clients.find(c=>c.id===rec.clientId);if(c&&typeof eventFor==='function')eventFor(c,old?'Datos de crédito Crediopciones actualizados.':'Crédito Crediopciones ingresado (Siete Tres 47%).');}
  if(!commit(next,old?'Crédito actualizado.':'Crédito guardado.'))return null;
  return (db.creditForms||[]).find(f=>f.id===rec.id)||rec;
@@ -85402,6 +85425,8 @@ document.addEventListener('change',e=>{
 });
 // Tocar una cuota elige ese plazo (igual que cambiarlo en "Plazo elegido").
 document.addEventListener('click',e=>{const b=e.target.closest('[data-credit-term]');if(!b)return;const form=$('credit-form');if(!form)return;form.months.value=b.dataset.creditTerm;updateCreditPreview();$('credit-preview')?.querySelector(`[data-credit-term="${b.dataset.creditTerm}"]`)?.focus({preventScroll:true});});
+document.addEventListener('click',e=>{const b=e.target.closest('#modal [data-action="credit-save-pdf"],#modal [data-action="credit-save-office"],#modal button[form="credit-form"]');if(!b)return;
+ creditPendingAction=b.dataset.action==='credit-save-pdf'?{type:'pdf',doc:b.dataset.doc}:b.dataset.action==='credit-save-office'?{type:'office',doc:b.dataset.doc}:{type:'save'};},true);
 document.addEventListener('submit',e=>{if(e.target.id!=='credit-form')return;e.preventDefault();if(saveCreditForm())$('modal').close();});
 document.addEventListener('click',e=>{
  const b=e.target.closest('[data-action^="credit-"]');if(!b)return;const action=b.dataset.action,id=b.dataset.id||'';
@@ -85411,6 +85436,14 @@ document.addEventListener('click',e=>{
  else if(action==='credit-pdf'){const f=(db.creditForms||[]).find(f=>f.id===id);if(f)downloadCreditPDF(b.dataset.doc,f);}
  else if(action==='credit-save-pdf'){const f=saveCreditForm();if(f){$('credit-error')&&($('credit-error').hidden=true);downloadCreditPDF(b.dataset.doc,f);}}
  else if(action==='credit-dup-ok'){creditDupOk=true;const f=saveCreditForm();if(f)$('modal').close();}
+ else if(action==='credit-phone-overwrite'||action==='credit-phone-new'){
+  creditPhoneChoice=action==='credit-phone-overwrite'?'overwrite':'new';
+  const f=saveCreditForm();if(!f)return;
+  const pend=creditPendingAction;creditPendingAction=null;$('credit-error')&&($('credit-error').hidden=true);
+  if(pend?.type==='pdf')downloadCreditPDF(pend.doc,f);
+  else if(pend?.type==='office'&&typeof downloadCreditOffice==='function')downloadCreditOffice(pend.doc,f);
+  else $('modal').close();
+ }
  else if(action==='credit-delete'){const f=(db.creditForms||[]).find(f=>f.id===id);if(!f)return;openModal('Borrar crédito',`<p>¿Querés borrar los datos de crédito de <strong>${esc(f.name)}</strong> (DUI ${esc(f.dui)})?</p><p class="subtext">La ficha del cliente y sus cotizaciones no se borran.</p>`,`<button class="btn" data-close>Cancelar</button><button class="btn btn-danger" data-action="credit-delete-confirm" data-id="${esc(id)}">Sí, borrar</button>`,480);}
  else if(action==='credit-delete-confirm'){const next=clone(db);next.creditForms=(next.creditForms||[]).filter(f=>f.id!==id);if(commit(next,'Crédito borrado.'))$('modal').close();}
 });
