@@ -29,8 +29,9 @@ for(const [set,vp,dsf,theme] of setups){
   const rows=await p.$$('.credit-panel tbody tr');
   for(let i=0;i<rows.length;i++)for(const doc of ['buro','cotizador','solicitud']){
    const btn=(await p.$$('.credit-panel tbody tr'))[i];if(!btn)continue;
-   const dl=p.waitForEvent('download',{timeout:2500}).catch(()=>null);await (await btn.$(`[data-doc="${doc}"]`)).click();const d=await dl;
-   if(d){const f=`${out}/pdf-${i}-${doc}.pdf`;await d.saveAs(f);console.log('  PDF',i,doc,'descargado');}else{console.log('  PDF',i,doc,'bloqueado:',(await p.$eval('#toast',e=>e.textContent)).slice(0,90));}
+   // Imprimir: menú y ventana con el PDF en la misma página
+   await (await btn.$('[data-action="credit-print-menu"]')).click();await p.waitForTimeout(200);await p.click(`[data-action="credit-print"][data-doc="${doc}"]`);await p.waitForTimeout(600);
+   if(await p.$('.pdf-viewer')){console.log('  PDF',i,doc,'en la ventana');await p.click('.pdf-viewer [data-pdf-close].btn');}else{console.log('  PDF',i,doc,'bloqueado:',(await p.$eval('#toast',e=>e.textContent)).slice(0,90));}
    if(await p.$eval('#modal',m=>m.open))await p.click('#modal [data-close]');await p.waitForTimeout(250);}
   await p.evaluate(()=>location.hash='clientes');await p.waitForTimeout(600);
   const names=await p.$$eval('.leads-table tbody tr td:first-child strong',l=>l.slice(0,6).map(x=>x.textContent));console.log('  primeros clientes:',names);

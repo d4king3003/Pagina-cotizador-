@@ -85148,8 +85148,8 @@ renderRequests=function(){
 };
 function creditPanel(){
  const list=[...(db.creditForms||[])].sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt)));
- const rows=list.map(f=>{const q=creditQuote(f),chosen=q.terms.find(t=>t.months===f.months);return `<tr><td><strong>${esc(f.name)}</strong><small>DUI ${esc(f.dui)}${f.phone?' · '+esc(f.phone):''} · ${esc(fmtDate(String(f.updatedAt).slice(0,10)))}</small></td><td>${f.model?esc(f.model):'<span class="subtext">Sin moto</span>'}<small>${f.price?'$'+creditMoney(f.price)+' · prima $'+creditMoney(creditNetDown(f)):'Sin precio'}</small></td><td>${chosen&&f.price?'$'+creditMoney(chosen.payment)+'<small>'+f.months+' cuotas</small>':'—'}</td><td><div class="table-actions credit-pdf-actions"><button class="btn" data-action="credit-pdf" data-doc="buro" data-id="${esc(f.id)}">${icon('download')}Buró</button><button class="btn" data-action="credit-pdf" data-doc="cotizador" data-id="${esc(f.id)}">${icon('download')}Cotizador</button><button class="btn" data-action="credit-pdf" data-doc="solicitud" data-id="${esc(f.id)}">${icon('download')}Solicitud</button><button class="btn" data-action="credit-office-menu" data-id="${esc(f.id)}" title="Descargar el Excel o Word original lleno, para corregirlo y guardarlo como PDF">Excel/Word</button><button class="btn" data-action="credit-edit" data-id="${esc(f.id)}">Editar</button><button class="btn btn-quiet" data-action="credit-delete" data-id="${esc(f.id)}" aria-label="Borrar crédito de ${esc(f.name)}">Borrar</button></div></td></tr>`;}).join('');
- return `<section class="card credit-panel" aria-labelledby="credit-panel-title"><div class="card-head"><div><h2 id="credit-panel-title">Ingresar crédito · Crediopciones</h2><p class="subtext">Plan Siete Tres 47%. Llená los datos una vez y descargá el Buró, el Cotizador o la Solicitud en PDF con el formato original de Crediopciones. Con Excel/Word descargás el archivo original lleno, para corregirlo y guardarlo como PDF.</p></div><button class="btn btn-primary" data-action="credit-new">+ Ingresar crédito</button></div>${list.length?`<div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Moto</th><th>Cuota</th><th><span class="sr-only">Documentos y acciones</span></th></tr></thead><tbody>${rows}</tbody></table></div>`:`<div class="empty compact">${icon('document')}<h3>Todavía no hay créditos ingresados</h3><p>Para la precalificación basta con el nombre y el DUI: guardá y descargá el Buró.</p></div>`}</section>`;
+ const rows=list.map(f=>{const q=creditQuote(f),chosen=q.terms.find(t=>t.months===f.months);return `<tr><td><strong>${esc(f.name)}</strong><small>DUI ${esc(f.dui)}${f.phone?' · '+esc(f.phone):''} · ${esc(fmtDate(String(f.updatedAt).slice(0,10)))}</small></td><td>${f.model?esc(f.model):'<span class="subtext">Sin moto</span>'}<small>${f.price?'$'+creditMoney(f.price)+' · prima $'+creditMoney(creditNetDown(f)):'Sin precio'}</small></td><td>${chosen&&f.price?'$'+creditMoney(chosen.payment)+'<small>'+f.months+' cuotas</small>':'—'}</td><td><div class="table-actions credit-pdf-actions"><button class="btn" data-action="credit-print-menu" data-id="${esc(f.id)}">Imprimir</button><button class="btn" data-action="credit-office-menu" data-id="${esc(f.id)}" title="Descargar el Excel o Word original lleno, para corregirlo y guardarlo como PDF">Excel/Word</button><button class="btn" data-action="credit-edit" data-id="${esc(f.id)}">Editar</button><button class="btn btn-quiet" data-action="credit-delete" data-id="${esc(f.id)}" aria-label="Borrar crédito de ${esc(f.name)}">Borrar</button></div></td></tr>`;}).join('');
+ return `<section class="card credit-panel" aria-labelledby="credit-panel-title"><div class="card-head"><div><h2 id="credit-panel-title">Ingresar crédito · Crediopciones</h2><p class="subtext">Plan Siete Tres 47%. Llená los datos una vez; con Imprimir ves el Buró, el Cotizador o la Solicitud con el formato original de Crediopciones, listos para imprimir o descargar. Con Excel/Word descargás el archivo original lleno, para corregirlo a mano.</p></div><button class="btn btn-primary" data-action="credit-new">+ Ingresar crédito</button></div>${list.length?`<div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Moto</th><th>Cuota</th><th><span class="sr-only">Documentos y acciones</span></th></tr></thead><tbody>${rows}</tbody></table></div>`:`<div class="empty compact">${icon('document')}<h3>Todavía no hay créditos ingresados</h3><p>Para la precalificación basta con el nombre y el DUI: guardá y descargá el Buró.</p></div>`}</section>`;
 }
 
 /* ---------- Formulario ---------- */
@@ -85179,7 +85179,7 @@ function openCreditForm(id='',clientId=''){
  <div class="form-grid">${cRefRows('fam','Referencias familiares que no vivan con el cliente',f.famRefs)}${cRefRows('friend','Referencias de amigos o compañeros de trabajo',f.friendRefs)}</div>
  <div class="form-grid" style="margin-top:18px"><div class="field full"><label for="cf-detail">Detalle</label><textarea id="cf-detail" name="detail" maxlength="5000" placeholder="Horario para localizar al cliente, verificación de campo, croquis, contacto para la constancia laboral…">${esc(f.detail)}</textarea></div></div>
  ${stockList}</form>`;
- const actions=`<button class="btn" data-close>Cancelar</button><span class="credit-actions-pdf"><button class="btn" data-action="credit-save-pdf" data-doc="buro">${icon('download')}Buró PDF</button><button class="btn" data-action="credit-save-pdf" data-doc="cotizador">${icon('download')}Cotizador PDF</button><button class="btn" data-action="credit-save-pdf" data-doc="solicitud">${icon('download')}Solicitud PDF</button></span><span class="credit-actions-office" aria-label="Para editar en Excel o Word"><button class="btn btn-quiet" data-action="credit-save-office" data-doc="buro">Buró Word</button><button class="btn btn-quiet" data-action="credit-save-office" data-doc="cotizador">Cotizador Excel</button><button class="btn btn-quiet" data-action="credit-save-office" data-doc="solicitud">Solicitud Excel</button></span><button class="btn btn-primary" type="submit" form="credit-form">Guardar</button>`;
+ const actions=`<button class="btn" data-close>Cancelar</button><span class="credit-actions-office delivery-actions-print"><button class="btn btn-quiet" data-action="credit-save-print" data-doc="buro">Buró</button><button class="btn btn-quiet" data-action="credit-save-print" data-doc="cotizador">Cotizador</button><button class="btn btn-quiet" data-action="credit-save-print" data-doc="solicitud">Solicitud</button><button class="btn btn-quiet" data-action="credit-save-print" data-doc="todo">Todo</button></span><span class="credit-actions-pdf"><button class="btn" data-action="credit-save-pdf" data-doc="buro">${icon('download')}Buró PDF</button><button class="btn" data-action="credit-save-pdf" data-doc="cotizador">${icon('download')}Cotizador PDF</button><button class="btn" data-action="credit-save-pdf" data-doc="solicitud">${icon('download')}Solicitud PDF</button></span><span class="credit-actions-office" aria-label="Para editar en Excel o Word"><button class="btn btn-quiet" data-action="credit-save-office" data-doc="buro">Buró Word</button><button class="btn btn-quiet" data-action="credit-save-office" data-doc="cotizador">Cotizador Excel</button><button class="btn btn-quiet" data-action="credit-save-office" data-doc="solicitud">Solicitud Excel</button></span><button class="btn btn-primary" type="submit" form="credit-form">Guardar</button>`;
  creditDupOk=false;
  openModal(base?'Editar crédito':'Ingresar crédito · Crediopciones',body,actions,860);
  updateCreditPreview();
@@ -85471,8 +85471,8 @@ document.addEventListener('change',e=>{
 });
 // Tocar una cuota elige ese plazo (igual que cambiarlo en "Plazo elegido").
 document.addEventListener('click',e=>{const b=e.target.closest('[data-credit-term]');if(!b)return;const form=$('credit-form');if(!form)return;form.months.value=b.dataset.creditTerm;updateCreditPreview();$('credit-preview')?.querySelector(`[data-credit-term="${b.dataset.creditTerm}"]`)?.focus({preventScroll:true});});
-document.addEventListener('click',e=>{const b=e.target.closest('#modal [data-action="credit-save-pdf"],#modal [data-action="credit-save-office"],#modal button[form="credit-form"]');if(!b)return;
- creditPendingAction=b.dataset.action==='credit-save-pdf'?{type:'pdf',doc:b.dataset.doc}:b.dataset.action==='credit-save-office'?{type:'office',doc:b.dataset.doc}:{type:'save'};},true);
+document.addEventListener('click',e=>{const b=e.target.closest('#modal [data-action="credit-save-pdf"],#modal [data-action="credit-save-office"],#modal [data-action="credit-save-print"],#modal button[form="credit-form"]');if(!b)return;
+ creditPendingAction=b.dataset.action==='credit-save-print'?{type:'print',doc:b.dataset.doc}:b.dataset.action==='credit-save-pdf'?{type:'pdf',doc:b.dataset.doc}:b.dataset.action==='credit-save-office'?{type:'office',doc:b.dataset.doc}:{type:'save'};},true);
 document.addEventListener('submit',e=>{if(e.target.id!=='credit-form')return;e.preventDefault();if(saveCreditForm())$('modal').close();});
 document.addEventListener('click',e=>{
  const b=e.target.closest('[data-action^="credit-"]');if(!b)return;const action=b.dataset.action,id=b.dataset.id||'';
@@ -85487,6 +85487,7 @@ document.addEventListener('click',e=>{
   const f=saveCreditForm();if(!f)return;
   const pend=creditPendingAction;creditPendingAction=null;$('credit-error')&&($('credit-error').hidden=true);
   if(pend?.type==='pdf')downloadCreditPDF(pend.doc,f);
+  else if(pend?.type==='print'&&typeof creditPrint==='function')creditPrint(pend.doc,f);
   else if(pend?.type==='office'&&typeof downloadCreditOffice==='function')downloadCreditOffice(pend.doc,f);
   else $('modal').close();
  }
@@ -85602,12 +85603,13 @@ function creditDrawItem(doc,item,value){
  const top=item.mid?item.mid-fit.lines.length*fit.size*fit.lh/2+(fit.lh-1)*fit.size/2:item.top;
  doc.text(fit.lines,item.x,top,{baseline:'top',align:item.align,lineHeightFactor:fit.lh});
 }
-function creditOriginalPDF(kind,f){
+function creditOriginalPDF(kind,f,into=null){
  const O=CREDIT_ORIGINALS,lay=O?.layouts?.[kind],img=O?.images?.[kind];if(!lay||!img)return CREDIT_DOCS_FALLBACK[kind](f);
  if(kind==='cotizador')creditCotizadorCheck(f);
  const J=globalThis.jspdf?.jsPDF;if(!J)throw Error('No se pudo cargar el generador de PDF.');
- const doc=new J({unit:'pt',format:[lay.page[0],lay.page[1]],orientation:'portrait',compress:true});
- creditFonts(doc);
+ let doc=into;
+ if(doc)doc.addPage([lay.page[0],lay.page[1]],'portrait');
+ else{doc=new J({unit:'pt',format:[lay.page[0],lay.page[1]],orientation:'portrait',compress:true});creditFonts(doc);}
  doc.addImage(img,'JPEG',0,0,lay.page[0],lay.page[1],undefined,'FAST');
  const v=creditValues(kind,f);
  if(kind==='buro')creditDrawBuro(doc,lay,v);
@@ -85629,6 +85631,40 @@ function creditDrawBuro(doc,lay,v){
  for(const w of words){if(line.length&&lineWidth([...line,w])>width){draw(line,false);line=[];w.glue=false;}line.push(w);}
  if(line.length)draw(line,true);
 }
+
+/* ---------- Imprimir (ventana en la misma página) ---------- */
+const CREDIT_PRINT_KINDS=['buro','cotizador','solicitud'];
+function creditPrint(kind,f){
+ const kinds=kind==='todo'?CREDIT_PRINT_KINDS:[kind];
+ for(const k of kinds){
+  const missing=creditMissing(k,f);
+  if(missing.length){
+   const list=missing.map(creditFieldLabel);
+   toast(`No se puede imprimir ${CREDIT_DOC_NAMES[k]}. Faltan ${list.length} ${list.length===1?'campo':'campos'}.`,true);
+   if(!($('modal').open&&$('credit-form'))&&f.id)openCreditForm(f.id);
+   if($('credit-form')){showCreditError(`No se puede imprimir ${CREDIT_DOC_NAMES[k]}: faltan ${list.join(', ')}.`);markCreditMissing(missing);}
+   return false;
+  }
+ }
+ try{
+  let doc=null;for(const k of kinds)doc=creditOriginalPDF(k,f,doc);
+  const title=kind==='todo'?'Documentos de crédito':({buro:'Buró',cotizador:'Cotizador Siete Tres',solicitud:'Solicitud de crédito'})[kind];
+  doc.setProperties({title:`${title} - ${String(f.name).replace(/\s+/g,' ').trim()}`});doc.viewerPreferences({DisplayDocTitle:true});
+  openPdfViewer(title,doc.output('blob'),creditFileName(kind==='todo'?'Documentos de credito':CREDIT_DOCS[kind][0],f));
+  return true;
+ }catch(err){if(!($('modal').open&&$('credit-form'))&&f.id)openCreditForm(f.id);toast(err.message,true);if($('credit-form'))showCreditError(err.message);return false;}
+}
+function creditPrintMenu(id){
+ const f=(db.creditForms||[]).find(x=>x.id===id);if(!f)return;
+ openModal('Imprimir',`<p>El documento se abre aquí mismo, con el formato original de Crediopciones, listo para imprimir o descargar.</p><div class="credit-office-list">${[['buro','Buró'],['cotizador','Cotizador Siete Tres'],['solicitud','Solicitud de crédito'],['todo','Los tres documentos juntos']].map(([k,l])=>`<button class="btn" data-action="credit-print" data-doc="${k}" data-id="${esc(f.id)}">${esc(l)}</button>`).join('')}</div>`,`<button class="btn" data-close>Cerrar</button>`,480);
+}
+document.addEventListener('click',e=>{
+ const b=e.target.closest('[data-action="credit-print-menu"],[data-action="credit-print"],[data-action="credit-save-print"]');if(!b)return;
+ const id=b.dataset.id||'';
+ if(b.dataset.action==='credit-print-menu')creditPrintMenu(id);
+ else if(b.dataset.action==='credit-print'){const f=(db.creditForms||[]).find(x=>x.id===id);if(f){if($('modal').open&&!$('credit-form'))$('modal').close();creditPrint(b.dataset.doc,f);}}
+ else{const f=saveCreditForm();if(f){$('credit-error')&&($('credit-error').hidden=true);creditPrint(b.dataset.doc,f);}}
+});
 
 /* ---------- Descargas ---------- */
 const CREDIT_DOCS_FALLBACK={buro:makeBuroPDF,cotizador:makeCotizadorPDF,solicitud:makeSolicitudPDF};
@@ -85789,7 +85825,7 @@ async function handleSAPInput(dataTransfer){
 /* ---------- Pantalla ---------- */
 function deliveryPanel(){
  const list=[...(db.deliveryForms||[])].sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt)));
- const rows=list.map(f=>`<tr><td><strong>${esc(f.name)}</strong><small>DUI ${esc(f.dui)} · ${f.saleType==='credito'?'Crédito':'Contado'} · entrega ${esc(fmtDate(f.deliveryDate))}</small></td><td>${esc(f.model||'—')}<small>${f.chasis?'Chasis '+esc(f.chasis):'Sin chasis'}${f.poliza?' · Póliza '+esc(f.poliza):''}</small></td><td><div class="table-actions credit-pdf-actions"><button class="btn" data-action="delivery-pdf" data-doc="placa" data-id="${esc(f.id)}">${icon('download')}Póliza</button><button class="btn" data-action="delivery-pdf" data-doc="carta" data-id="${esc(f.id)}">${icon('download')}Carta</button><button class="btn" data-action="delivery-pdf" data-doc="matricula" data-id="${esc(f.id)}">${icon('download')}IPM</button><button class="btn" data-action="delivery-pdf" data-doc="exoneracion" data-id="${esc(f.id)}">${icon('download')}Exoneración</button><button class="btn" data-action="delivery-print-menu" data-id="${esc(f.id)}">Imprimir</button><button class="btn" data-action="delivery-word-menu" data-id="${esc(f.id)}" title="Descargar los Word originales llenos, para corregirlos a mano">Word</button><button class="btn" data-action="delivery-edit" data-id="${esc(f.id)}">Editar</button><button class="btn btn-quiet" data-action="delivery-delete" data-id="${esc(f.id)}" aria-label="Borrar entrega de ${esc(f.name)}">Borrar</button></div></td></tr>`).join('');
+ const rows=list.map(f=>`<tr><td><strong>${esc(f.name)}</strong><small>DUI ${esc(f.dui)} · ${f.saleType==='credito'?'Crédito':'Contado'} · entrega ${esc(fmtDate(f.deliveryDate))}</small></td><td>${esc(f.model||'—')}<small>${f.chasis?'Chasis '+esc(f.chasis):'Sin chasis'}${f.poliza?' · Póliza '+esc(f.poliza):''}</small></td><td><div class="table-actions credit-pdf-actions"><button class="btn" data-action="delivery-print-menu" data-id="${esc(f.id)}">Imprimir</button><button class="btn" data-action="delivery-word-menu" data-id="${esc(f.id)}" title="Descargar los Word originales llenos, para corregirlos a mano">Word</button><button class="btn" data-action="delivery-edit" data-id="${esc(f.id)}">Editar</button><button class="btn btn-quiet" data-action="delivery-delete" data-id="${esc(f.id)}" aria-label="Borrar entrega de ${esc(f.name)}">Borrar</button></div></td></tr>`).join('');
  return `<section class="card credit-panel delivery-panel" aria-labelledby="delivery-panel-title"><div class="card-head"><div><h2 id="delivery-panel-title">Entrega de la moto</h2><p class="subtext">Póliza (placa), carta de entrega, IPM (impuesto de primera matrícula) y carta de exoneración con los formatos originales. Pegá la captura de SAP para llenar motor, chasis, póliza y color.</p></div><button class="btn btn-primary" data-action="delivery-new">+ Nueva entrega</button></div>${list.length?`<div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Moto</th><th><span class="sr-only">Documentos y acciones</span></th></tr></thead><tbody>${rows}</tbody></table></div>`:`<div class="empty compact">${icon('document')}<h3>Todavía no hay entregas</h3><p>Elegí un crédito ingresado (o una venta de contado) y pegá la captura de SAP.</p></div>`}</section>`;
 }
 renderRequests=(base=>function(){base();$('view-financieras').insertAdjacentHTML('beforeend',deliveryPanel());})(renderRequests);
@@ -86029,7 +86065,7 @@ document.addEventListener('click',e=>{
  else if(action==='delivery-word'){const f=rec();if(f&&downloadDelivery(b.dataset.doc,f,'word')&&$('modal').open&&!$('delivery-form'))$('modal').close();}
  else if(action==='delivery-save-print'){const f=saveDeliveryForm();if(f){deliveryError('');deliveryPrint(b.dataset.doc,f);}}
  else if(action==='delivery-print'){const f=rec();if(f){if($('modal').open&&!$('delivery-form'))$('modal').close();deliveryPrint(b.dataset.doc,f);}}
- else if(action==='delivery-print-menu'){const f=rec();if(!f)return;openModal('Imprimir',`<p>El documento se abre aquí mismo, con tu formato original, listo para imprimir.</p><div class="credit-office-list">${[['placa','Póliza (placa)'],['carta','Carta de entrega (4 hojas)'],['matricula','IPM (impuesto primera matrícula)'],['exoneracion','Carta de exoneración (2 hojas)'],['todo','Todos los documentos juntos']].map(([k,l])=>`<button class="btn" data-action="delivery-print" data-doc="${k}" data-id="${esc(f.id)}">${esc(l)}</button>`).join('')}</div>`,`<button class="btn" data-close>Cerrar</button>`,480);}
+ else if(action==='delivery-print-menu'){const f=rec();if(!f)return;openModal('Imprimir',`<p>El documento se abre aquí mismo, con tu formato original, listo para imprimir o descargar.</p><div class="credit-office-list">${[['placa','Póliza (placa)'],['carta','Carta de entrega (4 hojas)'],['matricula','IPM (impuesto primera matrícula)'],['exoneracion','Carta de exoneración (2 hojas)'],['todo','Todos los documentos juntos']].map(([k,l])=>`<button class="btn" data-action="delivery-print" data-doc="${k}" data-id="${esc(f.id)}">${esc(l)}</button>`).join('')}</div>`,`<button class="btn" data-close>Cerrar</button>`,480);}
  else if(action==='delivery-save-pdf'||action==='delivery-save-word'){const f=saveDeliveryForm();if(f){deliveryError('');downloadDelivery(b.dataset.doc,f,action==='delivery-save-pdf'?'pdf':'word');}}
  else if(action==='delivery-word-menu'){const f=rec();if(!f)return;openModal('Descargar en Word',`<p>Se descargan tus documentos originales con los datos de <strong>${esc(f.name)}</strong>. Abrilos en Word, corregí lo que haga falta y guardalos como PDF.</p><div class="credit-office-list">${Object.entries(DELIVERY_KINDS).filter(([k,d])=>!d.pdfOnly).map(([k,d])=>`<button class="btn" data-action="delivery-word" data-doc="${k}" data-id="${esc(f.id)}">${icon('download')}${esc(d.label)} <span class="credit-office-tag">Word</span></button>`).join('')}</div>`,`<button class="btn" data-close>Cerrar</button>`,520);}
  else if(action==='delivery-delete'){const f=rec();if(!f)return;openModal('Borrar entrega',`<p>¿Querés borrar la entrega de <strong>${esc(f.name)}</strong>?</p><p class="subtext">El crédito y la ficha del cliente no se borran.</p>`,`<button class="btn" data-close>Cancelar</button><button class="btn btn-danger" data-action="delivery-delete-confirm" data-id="${esc(id)}">Sí, borrar</button>`,480);}

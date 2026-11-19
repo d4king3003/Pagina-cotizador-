@@ -106,12 +106,13 @@ function creditDrawItem(doc,item,value){
  const top=item.mid?item.mid-fit.lines.length*fit.size*fit.lh/2+(fit.lh-1)*fit.size/2:item.top;
  doc.text(fit.lines,item.x,top,{baseline:'top',align:item.align,lineHeightFactor:fit.lh});
 }
-function creditOriginalPDF(kind,f){
+function creditOriginalPDF(kind,f,into=null){
  const O=CREDIT_ORIGINALS,lay=O?.layouts?.[kind],img=O?.images?.[kind];if(!lay||!img)return CREDIT_DOCS_FALLBACK[kind](f);
  if(kind==='cotizador')creditCotizadorCheck(f);
  const J=globalThis.jspdf?.jsPDF;if(!J)throw Error('No se pudo cargar el generador de PDF.');
- const doc=new J({unit:'pt',format:[lay.page[0],lay.page[1]],orientation:'portrait',compress:true});
- creditFonts(doc);
+ let doc=into;
+ if(doc)doc.addPage([lay.page[0],lay.page[1]],'portrait');
+ else{doc=new J({unit:'pt',format:[lay.page[0],lay.page[1]],orientation:'portrait',compress:true});creditFonts(doc);}
  doc.addImage(img,'JPEG',0,0,lay.page[0],lay.page[1],undefined,'FAST');
  const v=creditValues(kind,f);
  if(kind==='buro')creditDrawBuro(doc,lay,v);
@@ -133,6 +134,40 @@ function creditDrawBuro(doc,lay,v){
  for(const w of words){if(line.length&&lineWidth([...line,w])>width){draw(line,false);line=[];w.glue=false;}line.push(w);}
  if(line.length)draw(line,true);
 }
+
+/* ---------- Imprimir (ventana en la misma página) ---------- */
+const CREDIT_PRINT_KINDS=['buro','cotizador','solicitud'];
+function creditPrint(kind,f){
+ const kinds=kind==='todo'?CREDIT_PRINT_KINDS:[kind];
+ for(const k of kinds){
+  const missing=creditMissing(k,f);
+  if(missing.length){
+   const list=missing.map(creditFieldLabel);
+   toast(`No se puede imprimir ${CREDIT_DOC_NAMES[k]}. Faltan ${list.length} ${list.length===1?'campo':'campos'}.`,true);
+   if(!($('modal').open&&$('credit-form'))&&f.id)openCreditForm(f.id);
+   if($('credit-form')){showCreditError(`No se puede imprimir ${CREDIT_DOC_NAMES[k]}: faltan ${list.join(', ')}.`);markCreditMissing(missing);}
+   return false;
+  }
+ }
+ try{
+  let doc=null;for(const k of kinds)doc=creditOriginalPDF(k,f,doc);
+  const title=kind==='todo'?'Documentos de crédito':({buro:'Buró',cotizador:'Cotizador Siete Tres',solicitud:'Solicitud de crédito'})[kind];
+  doc.setProperties({title:`${title} - ${String(f.name).replace(/\s+/g,' ').trim()}`});doc.viewerPreferences({DisplayDocTitle:true});
+  openPdfViewer(title,doc.output('blob'),creditFileName(kind==='todo'?'Documentos de credito':CREDIT_DOCS[kind][0],f));
+  return true;
+ }catch(err){if(!($('modal').open&&$('credit-form'))&&f.id)openCreditForm(f.id);toast(err.message,true);if($('credit-form'))showCreditError(err.message);return false;}
+}
+function creditPrintMenu(id){
+ const f=(db.creditForms||[]).find(x=>x.id===id);if(!f)return;
+ openModal('Imprimir',`<p>El documento se abre aquí mismo, con el formato original de Crediopciones, listo para imprimir o descargar.</p><div class="credit-office-list">${[['buro','Buró'],['cotizador','Cotizador Siete Tres'],['solicitud','Solicitud de crédito'],['todo','Los tres documentos juntos']].map(([k,l])=>`<button class="btn" data-action="credit-print" data-doc="${k}" data-id="${esc(f.id)}">${esc(l)}</button>`).join('')}</div>`,`<button class="btn" data-close>Cerrar</button>`,480);
+}
+document.addEventListener('click',e=>{
+ const b=e.target.closest('[data-action="credit-print-menu"],[data-action="credit-print"],[data-action="credit-save-print"]');if(!b)return;
+ const id=b.dataset.id||'';
+ if(b.dataset.action==='credit-print-menu')creditPrintMenu(id);
+ else if(b.dataset.action==='credit-print'){const f=(db.creditForms||[]).find(x=>x.id===id);if(f){if($('modal').open&&!$('credit-form'))$('modal').close();creditPrint(b.dataset.doc,f);}}
+ else{const f=saveCreditForm();if(f){$('credit-error')&&($('credit-error').hidden=true);creditPrint(b.dataset.doc,f);}}
+});
 
 /* ---------- Descargas ---------- */
 const CREDIT_DOCS_FALLBACK={buro:makeBuroPDF,cotizador:makeCotizadorPDF,solicitud:makeSolicitudPDF};
