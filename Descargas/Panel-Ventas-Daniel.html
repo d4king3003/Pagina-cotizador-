@@ -85567,6 +85567,9 @@ function whatsappNumber(phone){
 function openClientWhatsApp(id){
  const c=client(id);if(!c)return;const n=whatsappNumber(c.phone);
  if(!n){toast('Este cliente no tiene un número válido para WhatsApp. Revisá su teléfono en Editar.',true);return;}
+ // Con la extensión «Números a WhatsApp Web - Daniel» (v1.2 o más) se usa la pestaña de WhatsApp Web que ya está abierta.
+ if(window.__danielWhatsappWebInstalled){window.dispatchEvent(new CustomEvent('daniel-whatsapp-web-open-v1',{detail:n}));return;}
+ // Sin la extensión, WhatsApp Web no deja que el panel reutilice su pestaña: se abre una.
  const w=window.open('https://web.whatsapp.com/send?phone='+n,'tvs-whatsapp');
  if(w){try{w.focus();}catch{}}else toast('El navegador bloqueó la ventana. Permití las ventanas emergentes para este archivo.',true);
 }
