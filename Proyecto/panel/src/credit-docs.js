@@ -3,6 +3,8 @@
 const CREDIT_LOGOS=/*CREDIT_LOGOS*/null;
 const SIETE_TRES={rate:0.47,periods:12,fee:0.07,terms:[12,18,24,30,36,40,48]};
 const CREDIT_REF_COUNT=2;
+// En el panel solo se ofrecen plazos de 12 a 40 meses (lo que se puede vender). Los documentos siguen mostrando hasta 48.
+const CREDIT_SELL_TERMS=SIETE_TRES.terms.filter(n=>n<=40);
 // Parentesco fijo, como en la hoja SOLICITUD.
 const CREDIT_RELATION={fam:'FAMILIAR',friend:'CONOCIDA'};
 const CREDIT_TEXT=['name','dui','phone','model','year','vendor','agency','agencyPhone','birth','sex','nationality','address','addressRef','company','position','startDate','workAddress','workRef','workPhone','detail'];
@@ -84,7 +86,7 @@ function openCreditForm(id='',clientId=''){
  <h3 class="credit-step"><span>1</span>Buró · precalificación</h3><p class="subtext credit-step-note">Con estos dos datos ya podés guardar y descargar el Buró.</p>
  <div class="form-grid">${cIn('Nombre completo según DUI','name',f.name,{req:true,full:true})}${cIn('Número de DUI','dui',f.dui,{req:true,hint:'9 dígitos, ejemplo 01234567-8',mode:'numeric',max:10})}${cIn('Teléfono celular','phone',f.phone,{type:'tel',mode:'tel',max:50})}</div>
  <h3 class="credit-step"><span>2</span>Cotizador Siete Tres 47%</h3><p class="subtext credit-step-note">Para descargar el Cotizador se necesitan el nombre, el teléfono celular y todos los campos de esta sección.</p>
- <div class="form-grid">${cIn('Moto (modelo)','model',f.model,{list:'credit-models',full:true})}${cIn('Año','year',f.year,{mode:'numeric',max:10})}${cIn('Valor de la moto $','price',f.price,{type:'number',mode:'decimal'})}${cIn('Prima total que da el cliente $','down',creditTotalDown(f),{type:'number',mode:'decimal',hint:'Incluye los gastos de formalización: el panel los resta. Dejá 0 si no hay prima.'})}${selectField('Plazo elegido','months',options(SIETE_TRES.terms.map(n=>[n,n+' cuotas']),f.months))}<div class="field"><span class="field-label">Cuota del plazo elegido</span><output id="credit-chosen" class="credit-chosen">—</output></div>
+ <div class="form-grid">${cIn('Moto (modelo)','model',f.model,{list:'credit-models',full:true})}${cIn('Año','year',f.year,{mode:'numeric',max:10})}${cIn('Valor de la moto $','price',f.price,{type:'number',mode:'decimal'})}${cIn('Prima total que da el cliente $','down',creditTotalDown(f),{type:'number',mode:'decimal',hint:'Incluye los gastos de formalización: el panel los resta. Dejá 0 si no hay prima.'})}${selectField('Plazo elegido','months',options((CREDIT_SELL_TERMS.includes(Number(f.months))?CREDIT_SELL_TERMS:SIETE_TRES.terms).map(n=>[n,n+' cuotas']),f.months))}<div class="field"><span class="field-label">Cuota del plazo elegido</span><output id="credit-chosen" class="credit-chosen">—</output></div>
  <div class="field full"><div class="credit-preview" id="credit-preview" aria-live="polite"></div></div>
  ${cIn('Vendedor','vendor',f.vendor)}${cIn('Agencia','agency',f.agency)}${cIn('Teléfono de la agencia','agencyPhone',f.agencyPhone,{type:'tel',mode:'tel',max:50})}</div>
  <h3 class="credit-step"><span>3</span>Solicitud de crédito</h3><p class="subtext credit-step-note">Para descargar la Solicitud se necesitan todos los campos, menos otros ingresos, punto de referencia y teléfono del trabajo, y el detalle.</p>
@@ -147,7 +149,7 @@ function updateCreditPreview(){
  if(problem){box.innerHTML=`<p class="form-error" style="margin:0">${esc(problem)}</p>`;out.textContent='—';return;}
  const q=creditQuote({price,down,downIncludesFee:true}),months=Number(form.months.value);
  out.textContent='$'+creditMoney(q.terms.find(t=>t.months===months)?.payment);
- box.innerHTML=`<div class="credit-summary"><span>Total que da el cliente <strong>$${creditMoney(down)}</strong></span><span>Gastos de formalización <strong>−$${creditMoney(q.fee)}</strong></span><span class="credit-net">Prima (sin gastos) <strong>$${creditMoney(q.prima)}</strong> <small>${(q.primaRate*100).toFixed(2)}%</small></span><span>Monto a financiar <strong>$${creditMoney(q.amount)}</strong></span></div><div class="credit-terms" role="group" aria-label="Elegí el plazo">${q.terms.map(t=>`<button type="button" class="${t.months===months?'active':''}" data-credit-term="${t.months}" aria-pressed="${t.months===months}"><small>${t.months} cuotas</small>$${creditMoney(t.payment)}</button>`).join('')}</div>`;
+ box.innerHTML=`<div class="credit-summary"><span>Total que da el cliente <strong>$${creditMoney(down)}</strong></span><span>Gastos de formalización <strong>−$${creditMoney(q.fee)}</strong></span><span class="credit-net">Prima (sin gastos) <strong>$${creditMoney(q.prima)}</strong> <small>${(q.primaRate*100).toFixed(2)}%</small></span><span>Monto a financiar <strong>$${creditMoney(q.amount)}</strong></span></div><div class="credit-terms" role="group" aria-label="Elegí el plazo">${q.terms.filter(t=>CREDIT_SELL_TERMS.includes(t.months)||t.months===months).map(t=>`<button type="button" class="${t.months===months?'active':''}" data-credit-term="${t.months}" aria-pressed="${t.months===months}"><small>${t.months} cuotas</small>$${creditMoney(t.payment)}</button>`).join('')}</div>`;
 }
 
 /* ---------- PDF ---------- */
