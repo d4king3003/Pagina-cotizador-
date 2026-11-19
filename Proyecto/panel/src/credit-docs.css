@@ -82,3 +82,9 @@ html[data-theme=dark] .delivery-form input.delivery-filled{background:#1b2d27}
 @keyframes credit-confirm-pop{from{opacity:0;transform:translateY(6px) scale(.98)}}
 @media(prefers-reduced-motion:reduce){.credit-confirm,.credit-confirm-card{animation:none}}
 @media(max-width:520px){.credit-confirm-actions .btn{flex:1}}
+
+/* Fecha del IPM en letras */
+.ipm-date{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.ipm-date select{width:auto;min-width:0;flex:0 1 auto;font-weight:600;letter-spacing:.2px}
+.ipm-date span{font-size:12px;color:var(--muted)}
+@media(max-width:560px){.ipm-date select{flex:1 1 100%}}
