@@ -12,6 +12,7 @@ Respaldo: si en esta PC nunca descargaste un respaldo, o pasaron 7 días desde e
 Cotizar: se quitó Guardar cotización; las cotizaciones se envían como imagen. Promoción o nota y Válida hasta se conservan para las cotizaciones de contado.
 Resumen: Clientes en proceso cuenta solo el mes actual y la tarjeta Créditos ingresados reemplaza a Cotizaciones del mes.
 WhatsApp: el botón verde de la ficha del cliente y de la Oficina virtual abre su chat en WhatsApp Web. Se usa siempre la misma pestaña: la primera vez la abre y las siguientes la reutilizan. Una pestaña de WhatsApp que abriste por tu cuenta no se puede reutilizar, por seguridad del navegador.
+En Clientes del mes, la columna Updates tiene un botón verde con el logo de WhatsApp para escribirle al cliente. Si no tiene teléfono, el botón aparece desactivado.
 Buscador: Ctrl+K o el botón Buscar abre un buscador por nombre, teléfono, DUI o moto. Usá las flechas y Enter para abrir la ficha.
 La tabla de Clientes cabe completa desde pantallas de 1280 px.
 
