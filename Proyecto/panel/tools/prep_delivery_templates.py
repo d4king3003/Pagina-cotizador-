@@ -356,14 +356,19 @@ def flow_layout(entries):
         line = get(Q + 'spacing', 'line', '259')
         rule = get(Q + 'spacing', 'lineRule', 'auto')
         runs = []
+        # Espaciado entre letras (w:spacing del texto, en veinteavos de punto): la plantilla lo comprime
+        pcs = ppr.find(Q + 'rPr/' + Q + 'spacing') if ppr is not None else None
+        para_cs = int(pcs.get(Q + 'val')) / 20 if pcs is not None and pcs.get(Q + 'val') else 0
         for r in p.iter(Q + 'r'):
             info = run_info(r)
             rpr = r.find(Q + 'rPr')
             sz = rpr.find(Q + 'sz') if rpr is not None else None
             size_pt = int(sz.get(Q + 'val')) / 2 if sz is not None else 11
+            rcs = rpr.find(Q + 'spacing') if rpr is not None else None
+            cs = int(rcs.get(Q + 'val')) / 20 if rcs is not None and rcs.get(Q + 'val') else para_cs
             for child in r:
                 if child.tag == Q + 't' and child.text:
-                    runs.append({'t': child.text, 'b': info['b'], 'size': size_pt})
+                    runs.append({'t': child.text, 'b': info['b'], 'size': size_pt, 'cs': cs})
                 elif child.tag == Q + 'tab':
                     runs.append({'t': '\t', 'b': info['b'], 'size': size_pt})
         paras.append({'align': {'both': 'justify', 'center': 'center', 'right': 'right'}.get(get(Q + 'jc', 'val', 'left'), 'left'),

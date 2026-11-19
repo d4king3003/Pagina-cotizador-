@@ -258,50 +258,63 @@ function deliveryPDF(kind,f){
 // (Century Gothic → weezerfont; negrita → SansSerifBldFLF, las letras que entregó el usuario). Si el texto crece, pasa a la hoja siguiente.
 function deliveryDrawFlow(doc,lay,v,first){
  const [W,H]=lay.size,m=lay.margins,left=m.left,width=W-m.left-m.right,bottom=H-m.bottom;
- if(first){if(doc.getNumberOfPages()===1&&!doc.__flowUsed){/* primera hoja ya creada (carta) */}}else doc.addPage([W,H],'portrait');
- doc.__flowUsed=true;
+ if(!first)doc.addPage([W,H],'portrait');
  const font=doc.getFontList().Gothic?'Gothic':'helvetica';
- let y=m.top;
+ let y=m.top,pendingBlank=0;
  const newPage=()=>{doc.addPage([W,H],'portrait');y=m.top;};
  const hasBold=!!doc.getFontList().Gothic?.includes('bold');
  const setRun=w=>{doc.setFont(font,w.b&&(font!=='Gothic'||hasBold)?'bold':'normal');doc.setFontSize(w.size);};
- const draw=(w,x,base)=>{setRun(w);if(w.b&&font==='Gothic'&&!hasBold){doc.setLineWidth(w.size*.035);doc.setDrawColor(0,0,0);doc.text(w.t,x,base,{renderingMode:'fillThenStroke'});}else doc.text(w.t,x,base);return doc.getTextWidth(w.t);};
+ // Ancho con el espaciado entre letras de la plantilla (comprimido −0,1 pt, como en el Word)
+ const textW=(t,w)=>{setRun(w);return doc.getTextWidth(t)+(w.cs||0)*t.length;};
+ const draw=(w,x,base)=>{setRun(w);const o={charSpace:w.cs||0};if(w.b&&font==='Gothic'&&!hasBold){doc.setLineWidth(w.size*.035);doc.setDrawColor(0,0,0);o.renderingMode='fillThenStroke';}doc.text(w.t,x,base,o);};
  doc.setTextColor(0,0,0);
- for(const para of lay.paragraphs){
-  const runs=para.runs.map(r=>({...r,t:r.t.replace(/\{\{(\w+)\}\}/g,(mm,k)=>v[k]??'')}));
-  const raw=runs.map(r=>r.t).join('');
+ const paras=lay.paragraphs.map(para=>{const runs=para.runs.map(r=>({...r,t:r.t.replace(/\{\{(\w+)\}\}/g,(mm,k)=>v[k]??'')}));const raw=runs.map(r=>r.t).join('');
+  return {para,runs,raw,blank:!raw.trim(),cols:/\t| {4,}/.test(raw)};});
+ paras.forEach((P,pi)=>{
+  const {para,runs,raw}=P;
   const size=Math.max(...runs.map(r=>r.size),10),lh=para.lineRule==='auto'?para.line*size*1.17:para.line;
   const baseOff=lh-(lh-size)/2-size*.22;
-  if(!raw.trim()){y+=lh;if(y+lh>bottom)newPage();continue;}
-  // Líneas de firma y rótulos separados por tabuladores: columnas
-  if(/\t| {4,}/.test(raw)){
+  // Renglones en blanco: se guardan y se aplican antes del siguiente texto
+  if(P.blank){pendingBlank+=lh;return;}
+  if(P.cols){
+   // Firmas: la línea y el rótulo van juntos y en la misma hoja que el final del texto.
+   // Si no caben, se achica el espacio en blanco de arriba; solo si aun así no caben, pasan a la hoja siguiente.
+   let group=1;while(paras[pi+group]?.cols)group++;
+   const prevCols=pi>0&&paras[pi-1].cols;
+   if(!prevCols){const need=group*lh;if(y+pendingBlank+need>bottom){pendingBlank=Math.max(0,bottom-y-need);if(y+need>bottom){newPage();pendingBlank=0;}}}
+   y+=pendingBlank;pendingBlank=0;
    const segs=raw.split(/\t+| {4,}/).map(t=>t.trim()).filter(Boolean),colW=(width-para.indLeft)/Math.max(2,segs.length);
-   if(y+lh>bottom)newPage();
-   segs.forEach((t,i)=>{const w={t,b:runs.some(r=>r.b&&r.t.includes(t)),size};setRun(w);const tw=doc.getTextWidth(t);draw(w,left+para.indLeft+colW*i+(colW-tw)/2,y+baseOff);});
-   y+=lh+para.after;continue;
+   const cs=runs.find(r=>r.cs!=null)?.cs||0;
+   segs.forEach((t,i)=>{const w={t,b:runs.some(r=>r.b&&r.t.includes(t)),size,cs};draw(w,left+para.indLeft+colW*i+(colW-textW(t,w))/2,y+baseOff);});
+   y+=lh+para.after;return;
   }
+  if(pendingBlank){y+=pendingBlank;pendingBlank=0;if(y+lh>bottom)newPage();}
   // Palabras con su formato
   const words=[];
-  for(const r of runs){for(const part of r.t.split(/( +)/)){if(!part)continue;if(/^ +$/.test(part)){if(words.length)words[words.length-1].space=true;continue;}words.push({t:part,b:!!r.b,size:r.size,glue:words.length>0&&!words[words.length-1].space});}}
-  const spaceW=w=>{setRun(w);return doc.getTextWidth(' ');};
-  const wordW=w=>{setRun(w);return doc.getTextWidth(w.t);};
-  const lines=[];let line=[],lw=0,first=true;
-  const avail=()=>width-para.indLeft-(first?para.firstLine:0);
+  for(const r of runs){for(const part of r.t.split(/( +)/)){if(!part)continue;if(/^ +$/.test(part)){if(words.length)words[words.length-1].space=true;continue;}words.push({t:part,b:!!r.b,size:r.size,cs:r.cs||0,glue:words.length>0&&!words[words.length-1].space});}}
+  const spaceW=w=>textW(' ',w),wordW=w=>textW(w.t,w);
+  const lines=[];let line=[],lw=0,firstLine=true;
+  const avail=()=>width-para.indLeft-(firstLine?para.firstLine:0);
   for(const w of words){const add=(line.length&&!w.glue?spaceW(w):0)+wordW(w);
-   if(line.length&&!w.glue&&lw+add>avail()){lines.push({words:line,w:lw,first});line=[];lw=0;first=false;}
+   if(line.length&&!w.glue&&lw+add>avail()+.01){lines.push({words:line,w:lw,first:firstLine});line=[];lw=0;firstLine=false;}
    lw+=(line.length&&!w.glue?spaceW(w):0)+wordW(w);line.push(w);}
-  if(line.length)lines.push({words:line,w:lw,first});
+  if(line.length)lines.push({words:line,w:lw,first:firstLine});
+  // Si después de este texto vienen firmas, las dos últimas líneas van en la misma hoja que ellas (la firma nunca queda sola)
+  let k=pi+1;while(paras[k]?.blank)k++;
+  let sigGroup=0;while(paras[k+sigGroup]?.cols)sigGroup++;
+  const sigNeed=sigGroup?sigGroup*lh+lh:0,keep=Math.min(2,lines.length);
   lines.forEach((ln,li)=>{
    if(y+lh>bottom+.5)newPage();
-   const x0=left+para.indLeft+(ln.first?para.firstLine:0),avail=width-para.indLeft-(ln.first?para.firstLine:0);
+   else if(sigGroup&&li===lines.length-keep&&y+keep*lh+sigNeed>bottom+.5&&y>m.top+.5)newPage();
+   const x0=left+para.indLeft+(ln.first?para.firstLine:0),av=width-para.indLeft-(ln.first?para.firstLine:0);
    const gaps=ln.words.filter((w,i)=>i&&!w.glue).length,last=li===lines.length-1;
-   const extra=para.align==='justify'&&!last&&gaps?(avail-ln.w)/gaps:0;
-   let x=para.align==='center'?x0+(avail-ln.w)/2:para.align==='right'?x0+avail-ln.w:x0;
+   const extra=para.align==='justify'&&!last&&gaps?(av-ln.w)/gaps:0;
+   let x=para.align==='center'?x0+(av-ln.w)/2:para.align==='right'?x0+av-ln.w:x0;
    ln.words.forEach((w,i)=>{if(i&&!w.glue)x+=spaceW(w)+extra;draw(w,x,y+baseOff);x+=wordW(w);});
    y+=lh;
   });
   y+=para.after;
- }
+ });
 }
 // Póliza tipo placa: los textos van donde los pone el PowerPoint original (Arial Narrow ≈ Helvetica angosta).
 const PLACA_TEXTS=[
