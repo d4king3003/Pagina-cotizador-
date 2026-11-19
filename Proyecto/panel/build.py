@@ -125,7 +125,7 @@ delivery_docs={'templates':{k:json.loads((DLV/f'{k}.json').read_text()) for k in
  'fonts':json.loads((DLV/'gothic.json').read_text())}
 delivery_docs['layouts']['placa']=json.loads((DLV/'placa-layout.json').read_text())
 delivery_docs['images']={k:['data:image/jpeg;base64,'+base64.b64encode((DLV/n).read_bytes()).decode() for n in delivery_docs['layouts'][k]['images']] for k in ('carta','matricula','exoneracion','placa')}
-credit_docs+='\n'+(ROOT/'src/delivery-docs.js').read_text().replace('/*DELIVERY_DOCS*/null',json.dumps(delivery_docs,separators=(',',':'),ensure_ascii=False))
+credit_docs+='\n'+(ROOT/'src/delivery-docs.js').read_text().replace('/*DELIVERY_DOCS*/null',json.dumps(delivery_docs,separators=(',',':'),ensure_ascii=False)).replace('/*SV_MUNICIPIOS*/null',(ROOT/'data/sv-municipios.json').read_text().strip())
 # Lector de capturas (OCR) sin internet: se guarda como texto y solo se usa al pegar una captura de SAP.
 OCR=ROOT/'src/vendor/ocr'
 ocr_tags=''.join(f'<script type="text/plain" id="{i}">'+base64.b64encode((OCR/n).read_bytes()).decode()+'</script>' for i,n in (('tvs-ocr-worker','worker.min.js'),('tvs-ocr-core','tesseract-core-simd-lstm.wasm.js'),('tvs-ocr-eng','eng.traineddata.gz')))

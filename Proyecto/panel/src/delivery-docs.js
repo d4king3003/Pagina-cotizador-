@@ -13,7 +13,17 @@ const DELIVERY_REQUIRED={
  exoneracion:['name','dui','occupation','municipio','departamento','model','color','motor','chasis','poliza','age','purchaseDate','deliveryDate']};
 const DELIVERY_LABELS={name:'nombre',dui:'DUI',occupation:'ocupación',municipio:'municipio',departamento:'departamento',model:'modelo',color:'color',year:'año',motor:'número de motor',chasis:'número de chasis',poliza:'número de póliza',price:'valor de venta',deliveryDate:'fecha de entrega',matriculaDate:'fecha del IPM',purchaseDate:'fecha de compra',age:'edad'};
 let deliveryDraft=null;
+const svKey=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase();
+// Opciones del municipio según el departamento elegido: los nombres de siempre (distritos) y los 44 municipios nuevos.
+function svMunicipioOptions(dep){
+ const div=SV_DIVISION||{},key=svKey(dep),deps=Object.keys(div).filter(d=>!key||svKey(d)===key);
+ const list=deps.length?deps:Object.keys(div);
+ return list.flatMap(d=>Object.entries(div[d]).flatMap(([muni,dists])=>dists.map(x=>`<option value="${esc(x)}" label="${esc(muni)}${list.length>1?' · '+esc(d):''}"></option>`)))
+  .concat(list.flatMap(d=>Object.keys(div[d]).map(muni=>`<option value="${esc(muni)}" label="Municipio desde 2024${list.length>1?' · '+esc(d):''}"></option>`))).join('');
+}
+function svRefreshMunicipios(){const form=$('delivery-form'),dl=$('sv-municipios');if(form&&dl)dl.innerHTML=svMunicipioOptions(form.departamento?.value);}
 // Los 14 departamentos de El Salvador (lista con buscador en el formulario de entrega)
+const SV_DIVISION=/*SV_MUNICIPIOS*/null;
 const SV_DEPARTAMENTOS=['Ahuachapán','Cabañas','Chalatenango','Cuscatlán','La Libertad','La Paz','La Unión','Morazán','San Miguel','San Salvador','San Vicente','Santa Ana','Sonsonate','Usulután'];
 
 /* ---------- Números y letras ---------- */
@@ -175,11 +185,12 @@ function openDeliveryForm(id='',creditId=''){
  <p class="delivery-sap-status" id="delivery-sap-status" role="status" aria-live="polite" hidden></p>
  <div class="form-grid">${dIn('Número de motor','motor',f.motor,{upper:true})}${dIn('Número de chasis (VIN)','chasis',f.chasis,{upper:true})}${dIn('Número de póliza','poliza',f.poliza)}${dIn('Año','year',f.year,{max:10})}${dIn('Color','color',f.color,{full:true,upper:true})}</div>
  <h3 class="section-label">Cliente</h3>
- <div class="form-grid">${dIn('Nombre completo según DUI','name',f.name,{full:true,upper:true,max:150})}${dIn('DUI','dui',f.dui,{max:40,hint:'9 dígitos; el guion se pone solo'})}${dIn('Ocupación','occupation',f.occupation,{upper:true})}${dIn('Municipio','municipio',f.municipio,{upper:true})}${dIn('Departamento','departamento',f.departamento,{upper:true,list:'sv-departamentos'})}${dIn('Edad','age',f.age,{max:3,hint:'Para la exoneración. Se calcula con la fecha de nacimiento del crédito.'})}</div>
+ <div class="form-grid">${dIn('Nombre completo según DUI','name',f.name,{full:true,upper:true,max:150})}${dIn('DUI','dui',f.dui,{max:40,hint:'9 dígitos; el guion se pone solo'})}${dIn('Ocupación','occupation',f.occupation,{upper:true})}${dIn('Departamento','departamento',f.departamento,{upper:true,list:'sv-departamentos'})}${dIn('Municipio','municipio',f.municipio,{upper:true,list:'sv-municipios',hint:'Elegí primero el departamento: solo salen sus municipios.'})}${dIn('Edad','age',f.age,{max:3,hint:'Para la exoneración. Se calcula con la fecha de nacimiento del crédito.'})}</div>
  <h3 class="section-label">Venta</h3>
  <div class="form-grid">${dIn('Modelo','model',f.model,{list:'credit-models',upper:true})}${dIn('Valor de venta $','price',f.price,{type:'number',hint:'En la carta sale en letras.'})}
  <div class="delivery-credit-only form-grid full">${dIn('Prima o enganche','prima',f.prima)}${dIn('Plan seleccionado','plan',f.plan)}${dIn('Cuotas de','payment',f.payment)}${dIn('Plazo (meses)','months',f.months,{max:10})}${dIn('Saldo para financiar','balance',f.balance)}</div>
  ${dIn('Fecha de entrega','deliveryDate',f.deliveryDate,{type:'date',hint:'Fecha de la carta de entrega y de la exoneración.'})}${dIn('Fecha de compra','purchaseDate',f.purchaseDate||f.deliveryDate,{type:'date',hint:'Exoneración: «el día … adquirí una motocicleta».'})}${ipmDateField(f.matriculaDate)}</div>
+ <datalist id="sv-municipios">${svMunicipioOptions(f.departamento)}</datalist>
  <datalist id="sv-departamentos">${SV_DEPARTAMENTOS.map(d=>`<option value="${esc(d)}"></option>`).join('')}</datalist>
  <datalist id="credit-models">${db.stock.filter(s=>s.active!==false).map(s=>`<option value="${esc(s.label)}"></option>`).join('')}</datalist>
  </form>`;
@@ -442,6 +453,8 @@ document.addEventListener('change',e=>{if(!['ipmDay','ipmMonth','ipmYear'].inclu
  // El día elegido se respeta; si no existe en ese mes (31 de abril) se avisa y se usa el último día.
  const fixed=Number(form.ipmDay.value)!==d.d?` (ese mes no tiene ${numberWords(Number(form.ipmDay.value)).toLowerCase()}: se usa ${numberWords(d.d).toLowerCase()})`:'';
  const prev=$('ipm-date-preview');if(prev)prev.textContent=`${numberWords(d.d)} días del mes de ${ES_MONTHS[d.m-1]} del año ${numberWords(d.y)}${fixed}`;});
+document.addEventListener('input',e=>{if(e.target.name==='departamento'&&e.target.closest?.('#delivery-form'))svRefreshMunicipios();});
+document.addEventListener('change',e=>{if(e.target.name==='departamento'&&e.target.closest?.('#delivery-form'))svRefreshMunicipios();});
 document.addEventListener('input',e=>{if(e.target.closest?.('#delivery-form')&&e.target.classList.contains('credit-missing')&&String(e.target.value).trim())e.target.classList.remove('credit-missing');});
 document.addEventListener('keydown',e=>{if(e.target.id==='delivery-sap'&&(e.key==='Enter'||e.key===' ')){e.preventDefault();$('delivery-sap-file')?.click();}});
 document.addEventListener('submit',e=>{if(e.target.id!=='delivery-form')return;e.preventDefault();if(saveDeliveryForm())$('modal').close();});
