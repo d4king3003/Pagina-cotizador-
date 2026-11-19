@@ -5,11 +5,14 @@ const clamp=THREE.MathUtils.clamp;
 // Salas 1,5 veces más grandes (como en el video): el edificio, la fiesta y el marcador se escalan en bloque;
 // los personajes conservan su tamaño, así las salas se ven amplias y caben más.
 const WORLD=1.5,FLOOR_Y=.33*WORLD;
-const roomLocal=i=>({x:-12+(i%3)*12,z:-5.75+Math.floor(i/3)*11.5});
+// Fila de arriba 11,5 de fondo; fila de abajo 18,5 (la pista de Vendidos es larga, como en el video).
+const ROW1=11.5,ROW2=18.5,STRETCH=ROW2/ROW1,MID=(ROW2-ROW1)/2;
+const roomDepth=i=>i<3?ROW1:ROW2;
+const roomLocal=i=>({x:-12+(i%3)*12,z:i<3?-ROW1/2:ROW2/2});
 const roomCenter=i=>{const p=roomLocal(i);return {x:p.x*WORLD,z:p.z*WORLD};};
 // Personajes 30 % más grandes; 8 por sala en dos filas al frente, lejos de muebles y decoración.
 // Proporciones como en el video: más altos (15 %) y más delgados (18 %); la cabeza conserva su forma.
-const AVATAR_SCALE=1.3,AVATAR_TALL=1.15,AVATAR_SLIM=.82,PER_ROOM=12,DANCE_ROOM=20;
+const AVATAR_SCALE=1.3,AVATAR_TALL=1.15,AVATAR_SLIM=.82,PER_ROOM=12,DANCE_ROOM=24;
 const roomCapacity=id=>id==='vendido'?DANCE_ROOM:PER_ROOM;
 // Nombre corto para la etiqueta siempre visible: primer nombre e inicial del último apellido.
 const shortClientName=name=>{const raw=String(name||'').trim();if(/^Interesado\b/i.test(raw))return raw.replace(/^Interesado\s*·\s*/i,'');const words=raw.split(/\s+/).filter(w=>/\p{L}/u.test(w)&&!/^(de|del|la|las|los|y|vda\.?)$/i.test(w));const cap=w=>w.charAt(0).toUpperCase()+w.slice(1).toLowerCase();if(!words.length)return raw.slice(0,14);return words.length>1?cap(words[0])+' '+words[words.length-1].charAt(0).toUpperCase()+'.':cap(words[0]);};
@@ -19,7 +22,7 @@ const SOFA={x:-.5,z:-3.0},SEATS=[[-1.7,-2.8],[-.5,-2.8],[.7,-2.8]],EVAL_STANDING
 // Posiciones en coordenadas de sala (sin escalar), con un pequeño desorden para que no se vea en fila.
 const jitter=(k,a)=>[Math.sin(k*12.9898)*a,Math.cos(k*78.233)*a];
 const slots=[[-4.5,-1],[-1.5,-.6],[1.5,-1],[4.5,-.6],[-3,1.6],[0,1.9],[3,1.6],[-4.5,4.1],[-1.5,4.4],[1.5,4.1],[4.5,4.4],[0,-2.3]].map((s,k)=>{const j=jitter(k,.25);return [s[0]+j[0],s[1]+j[1]];});
-const DANCE_SLOTS=[[-4.4,-1.1],[-2.2,-1.3],[0,-1.1],[2.2,-1.3],[4.4,-1.1],[-5,.9],[-3.3,.8],[-1.1,1],[1.1,.8],[3.3,1],[5,.8],[-4.4,2.8],[-2.2,2.9],[0,2.7],[2.2,2.9],[4.4,2.8],[.2,4.3],[1.9,4.1],[3.6,4.3],[-.4,-2.6]].map((s,k)=>{const j=jitter(k+3,.22);return [s[0]+j[0],s[1]+j[1]];});
+const DANCE_SLOTS=[[-4.4,-1.1],[-2.2,-1.3],[0,-1.1],[2.2,-1.3],[4.4,-1.1],[-5,.9],[-3.3,.8],[-1.1,1],[1.1,.8],[3.3,1],[5,.8],[-4.4,2.8],[-2.2,2.9],[0,2.7],[2.2,2.9],[4.4,2.8],[.2,4.3],[1.9,4.1],[3.6,4.3],[-.4,-2.6],[-2.1,-2.7],[2.2,-2.8],[4.4,-2.6],[5,2.9]].map((s,k)=>{const j=jitter(k+3,.22);return [s[0]+j[0],s[1]+j[1]];});
 
 /** All visible office objects are meshes in a lit, orbitable WebGL scene. */
 export class Office3D {
@@ -27,7 +30,7 @@ export class Office3D {
     this.host=host;this.onSelect=onSelect;this.onFilter=onFilter;this.onMove=onMove;
     this.materials=new Map();this.geometries=new Map();this.avatars=new Map();this.roomLabels=[];
     this.state={clients:[],stages:[],party:false,selected:null,filter:null};
-    this.yaw=.72;this.elevation=.66;this.zoom=1;this.target=new THREE.Vector3(0,.9*WORLD,0);
+    this.yaw=.72;this.elevation=.66;this.zoom=1;this.target=new THREE.Vector3(0,.9*WORLD,MID*WORLD);
     this.frame=0;this.lastRender=0;this.onScreen=true;this.dirty=true;this.lastTime=0;this.reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
     this.scene=new THREE.Scene();this.scene.background=new THREE.Color('#f8faf8');
     this.camera=new THREE.OrthographicCamera(-25,25,17,-17,.1,160);
@@ -96,24 +99,27 @@ export class Office3D {
   makeBuilding(){
     this.building=new THREE.Group();this.building.scale.setScalar(WORLD);this.scene.add(this.building);
     this.box(this.building,150,.12,150,0,-.61,0,'#f8faf8').castShadow=false;
-    this.box(this.building,36.6,.62,23.6,0,-.22,0,'#d3dbd1');
-    this.box(this.building,36.3,.12,23.3,0,.15,0,'#f0efe4');
+    this.box(this.building,36.6,.62,ROW1+ROW2+.6,0,-.22,MID,'#d3dbd1');
+    this.box(this.building,36.3,.12,ROW1+ROW2+.3,0,.15,MID,'#f0efe4');
     this.floorMeshes=[];
     ['#e5edf4','#f0e4cc','#e6e0f0','#d7e9db','#f0dce2','#c8d1c2'].forEach((color,i)=>{
       const p=roomLocal(i);
-      this.floorMeshes.push(this.box(this.building,11.65,.10,11.12,p.x,.25,p.z,color,{roughness:.96}));
-      if(i!==5){this.desk(p.x+3.4,p.z-3.65);this.plant(p.x-4.7,p.z-4.0);}
+      const back=p.z-roomDepth(i)/2;
+      this.floorMeshes.push(this.box(this.building,11.65,.10,roomDepth(i)-.38,p.x,.25,p.z,color,{roughness:.96}));
+      // Vendidos sin escritorio: la pista queda libre
+      if(i!==5&&i!==4)this.desk(p.x+3.4,back+2.1);
+      if(i!==5)this.plant(p.x-4.7,back+1.75);
     });
     this.makeCemetery();
     const gridPositions=[];
-    for(let x=-18;x<=18;x+=1.5)gridPositions.push(x,.31,-11.5,x,.31,11.5);
-    for(let z=-11.5;z<=11.5;z+=1.44)gridPositions.push(-18,.31,z,18,.31,z);
+    for(let x=-18;x<=18;x+=1.5)gridPositions.push(x,.31,-ROW1,x,.31,ROW2);
+    for(let z=-ROW1;z<=ROW2;z+=1.44)gridPositions.push(-18,.31,z,18,.31,z);
     const gridGeometry=new THREE.BufferGeometry();gridGeometry.setAttribute('position',new THREE.Float32BufferAttribute(gridPositions,3));
     const grid=new THREE.LineSegments(gridGeometry,new THREE.LineBasicMaterial({color:'#ffffff',transparent:true,opacity:.18}));this.building.add(grid);
     this.box(this.building,36.5,2.8,.17,0,1.65,-11.55,'#e3e5db');
-    this.box(this.building,.17,2.8,23.4,-18.2,1.65,0,'#e0e4d9');
+    this.box(this.building,.17,2.8,ROW1+ROW2-.1,-18.2,1.65,MID,'#e0e4d9');
     this.box(this.building,36.6,.12,.22,0,3.1,-11.55,'#b4c0ad');
-    this.box(this.building,.22,.12,23.5,-18.2,3.1,0,'#b4c0ad');
+    this.box(this.building,.22,.12,ROW1+ROW2,-18.2,3.1,MID,'#b4c0ad');
     // Logo oficial TVS (el mismo del menú). Sin logo disponible se usa el letrero de texto.
     const logoSrc=typeof document.querySelector==='function'?document.querySelector('.brand-logo img')?.getAttribute('src'):null;
     if(logoSrc&&logoSrc.startsWith('data:image'))this.logoWall(logoSrc,0,2.0,-11.42);else this.sign('TVS',3.0,1.15,'#dc3649','#fff',-14,1.95,-11.42);
@@ -138,7 +144,7 @@ export class Office3D {
     const glass=this.material('#cfe6f2',{roughness:.1,metalness:.1,emissive:'#fff1d6',emissiveIntensity:.35,transparent:true,opacity:.85});
     const frame=this.material('#b4c0ad',{roughness:.7});
     const patch=new THREE.MeshBasicMaterial({color:'#fff1cf',transparent:true,opacity:.28,depthWrite:false});
-    for(const z of [-7.8,-3.4,3.4,7.8]){
+    for(const z of [-7.8,-3.4,3.6,8.6,13.6]){
       this.box(this.building,.05,1.25,2.2,-18.08,1.75,z,'#cfe6f2').material=glass;
       for(const dz of [-1.12,1.12])this.box(this.building,.08,1.35,.08,-18.05,1.75,z+dz,'#b4c0ad').material=frame;
       this.box(this.building,.08,.08,2.3,-18.05,1.08,z,'#b4c0ad').material=frame;this.box(this.building,.08,.08,2.3,-18.05,2.42,z,'#b4c0ad').material=frame;
@@ -174,19 +180,16 @@ export class Office3D {
       for(const dx of [-1.8,1.8])this.box(b,.22,.66,1.05,x+dx,.68,z,'#6a5a93');
       for(const s of SEATS)this.box(b,1.12,.13,.82,p.x+s[0],.84,z+.06,'#9483c2');}
     // Aprobados: moto lista para entregar, con lazo rojo
-    {const p=at(3),g=this.motorcycle(p.x-2.6,p.z-3.6);
+    {const p=at(3),g=this.motorcycle(p.x-2.6,p.z-ROW2/2+2.15);
       const bow=this.material('#e2231a',{roughness:.45});
       this.box(g,.08,.06,1.25,0,1.33,0,'#e2231a').material=bow;
       for(const s of [-1,1]){const loop=this.mesh(g,this.geometry('bow-loop',()=>new THREE.TorusGeometry(.18,.05,8,16)),bow,0,1.48,s*.17);loop.rotation.y=Math.PI/2;loop.scale.set(1,.7,1);}
       this.sphere(g,.07,0,1.45,0,'#c41a15');}
-    // Vendidos: vitrina con moto TVS y trofeo
-    {const p=at(4),x=p.x-2.1,z=p.z-3.4;
+    // Vendidos: vitrina con moto TVS al lado (sin escritorio ni trofeo: la pista queda libre)
+    {const p=at(4),x=p.x-3.8,z=p.z-ROW2/2+2.7;
       this.cylinder(b,1.45,1.55,.22,x,.42,z,'#f4f6fb',{roughness:.3});const ring=this.mesh(b,this.geometry('podium-ring',()=>new THREE.TorusGeometry(1.5,.05,8,40)),this.material('#e2231a',{roughness:.4}),x,.54,z,false);ring.rotation.x=Math.PI/2;
       const g=this.motorcycle(x,z);g.position.y=.53;
-      const gold=this.material('#e5b93b',{roughness:.25,metalness:.6});
-      const tx=p.x+2.6,tz=p.z-3.85;this.box(b,.36,.14,.36,tx,1.66,tz,'#4a3a22');
-      this.mesh(b,this.geometry('trophy-stem',()=>new THREE.CylinderGeometry(.05,.09,.22,12)),gold,tx,1.84,tz);
-      this.mesh(b,this.geometry('trophy-cup',()=>new THREE.CylinderGeometry(.2,.09,.3,16)),gold,tx,2.1,tz);}
+    }
   }
   sign(text,w,h,bg,color,x,y,z){
     const canvas=document.createElement('canvas');canvas.width=512;canvas.height=192;
@@ -219,7 +222,7 @@ export class Office3D {
   }
   makeCemetery(){
     const g=new THREE.Group();g.name='Cementerio de descartados';this.building.add(g);
-    for(let i=0;i<8;i++)this.box(g,1.2,.035,.62,12,.327,.8+i*1.38,i%2?'#b4bcb0':'#bac2b5');
+    for(let i=0;i<13;i++)this.box(g,1.2,.035,.62,12,.327,.8+i*1.38,i%2?'#b4bcb0':'#bac2b5');
     const fence=(x,z,axis,length)=>{
       for(let i=0;i<=length;i++){
         const px=x+(axis==='x'?i:0),pz=z+(axis==='z'?i:0);
@@ -228,12 +231,12 @@ export class Office3D {
       }
       for(const h of [.62,1.04])this.box(g,axis==='x'?length:.045,.045,axis==='z'?length:.045,x+(axis==='x'?length/2:0),h,z+(axis==='z'?length/2:0),'#6e796e');
     };
-    fence(6.5,.45,'x',11);fence(17.55,.45,'z',10);
+    fence(6.5,.45,'x',11);fence(17.55,.45,'z',17);
     for(const [x,z]of [[7.15,1.45],[16.75,1.45]]){
       this.cylinder(g,.13,.17,.7,x,.65,z,'#857f6b');
       for(let i=0;i<3;i++)this.mesh(g,this.geometry(`cypress:${i}`,()=>new THREE.ConeGeometry(.52-i*.08,1.25,8)),this.material(i%2?'#7c8d73':'#6b8068'),x,1.2+i*.48,z);
     }
-    for(let i=0;i<10;i++)this.sphere(g,.09,6.9+(i%5)*2.05,.37,10.3+Math.floor(i/5)*.45,'#a6afa1').scale.set(1,.55,.7);
+    for(let i=0;i<10;i++)this.sphere(g,.09,6.9+(i%5)*2.05,.37,17.3+Math.floor(i/5)*.45,'#a6afa1').scale.set(1,.55,.7);
   }
   makeGrave(parent){
     const grave=new THREE.Group();parent.add(grave);grave.rotation.y=.22;
@@ -264,11 +267,11 @@ export class Office3D {
     this.partyGroup=new THREE.Group();this.partyGroup.scale.setScalar(WORLD);this.scene.add(this.partyGroup);this.partyGroup.visible=false;
     this.partyMaterial=this.material('#1b2a4e',{roughness:.85});
     const p=this.partyGroup;
-    this.box(p,3.4,1.35,1.1,-2.8,1.0,10.15,'#30323e');this.box(p,3.6,.12,1.3,-2.8,1.74,10.15,'#92bba9');
-    for(const x of [-3.65,-1.95])this.cylinder(p,.34,.34,.045,x,1.84,10.15,'#454b52');
+    this.box(p,3.4,1.35,1.1,-2.8,1.0,17.15,'#30323e');this.box(p,3.6,.12,1.3,-2.8,1.74,17.15,'#92bba9');
+    for(const x of [-3.65,-1.95])this.cylinder(p,.34,.34,.045,x,1.84,17.15,'#454b52');
     for(const x of [-5.05,5.05]){
-      this.box(p,.9,1.65,.78,x,1.15,10.15,'#353440');
-      const cone=this.cylinder(p,.23,.23,.04,x,1.2,10.57,'#171d2d');cone.rotation.x=Math.PI/2;
+      this.box(p,.9,1.65,.78,x,1.15,17.15,'#353440');
+      const cone=this.cylinder(p,.23,.23,.04,x,1.2,17.57,'#171d2d');cone.rotation.x=Math.PI/2;
     }
     this.ballPivot=new THREE.Group();this.ballPivot.position.set(.6,5.3,3.1);p.add(this.ballPivot);
     this.cylinder(p,.05,.05,2.6,.6,7.65,3.1,'#2a2d34');this.cylinder(p,.16,.12,.18,.6,6.45,3.1,'#2a2d34');
@@ -281,21 +284,21 @@ export class Office3D {
     ball.castShadow=false;
     this.balloons=[];
     ['#e2231a','#1f5594','#f4f6fb'].forEach((color,i)=>{
-      const b=new THREE.Group();b.position.set(-4.9+i*1.4,0,10.65);p.add(b);
+      const b=new THREE.Group();b.position.set(-4.9+i*1.4,0,17.65);p.add(b);
       this.line(b,[[0,.35,0],[.08,1.1,0],[0,2.06,0]],'#a4a5ad');
       this.sphere(b,.37,0,2.4,0,color).scale.set(1,1.28,1);this.balloons.push(b);
     });
     this.lightDiscs=[];
-    [[-3,2.0,'#ff3b30'],[3,2.0,'#4f8dff'],[1.7,9.6,'#ffd166'],[-3,7.7,'#ff3b30']].forEach(([x,z,color])=>{
+    [[-3,4.5,'#ff3b30'],[3,4.5,'#4f8dff'],[1.7,14.2,'#ffd166'],[-2.5,10.5,'#ff3b30'],[3.2,9.5,'#4f8dff']].forEach(([x,z,color])=>{
       const mat=new THREE.MeshBasicMaterial({color,transparent:true,opacity:.35,depthWrite:false});
       const disc=this.mesh(p,new THREE.CircleGeometry(.83,32),mat,x,.326,z,false);disc.rotation.x=-Math.PI/2;disc.scale.set(1.4,1,1);disc.userData.home={x,z};this.lightDiscs.push(disc);
     });
     this.confetti=[];
     for(let i=0;i<12;i++){
-      const c=this.box(p,.09,.17,.035,Math.sin(i*2.4)*4,1+(i%5)*.7,1.4+(i%4)*2.1,['#e2231a','#1f5594','#ffffff','#ffd166'][i%4]);
+      const c=this.box(p,.09,.17,.035,Math.sin(i*2.4)*4,1+(i%5)*.7,2+(i%4)*3.8,['#e2231a','#1f5594','#ffffff','#ffd166'][i%4]);
       c.castShadow=false;this.confetti.push(c);
     }
-    this.partyLight=new THREE.PointLight('#ff6b5e',9,14*WORLD,2);this.partyLight.position.set(0,5,6);p.add(this.partyLight);
+    this.partyLight=new THREE.PointLight('#ff6b5e',9,14*WORLD,2);this.partyLight.position.set(0,5,ROW2/2);p.add(this.partyLight);
     // Confeti del festejo de venta: un solo InstancedMesh, un dibujo para todas las piezas.
     const burstColors=['#e2231a','#1f5594','#ffffff','#ffd166'].map(c=>new THREE.Color(c));
     this.burst=new THREE.InstancedMesh(new THREE.BoxGeometry(.32,.5,.06),new THREE.MeshBasicMaterial({color:'#ffffff'}),64);
@@ -441,7 +444,8 @@ export class Office3D {
       const tone=mix(base,stage.color,.22),kind=['carpet','wood','carpet','wood','tile',null][i],map=kind?this.floorTexture(kind):null;
       const material=map?new THREE.MeshStandardMaterial({color:tone,map,roughness:kind==='tile'?.55:.92,metalness:0}):this.material(tone,{roughness:.96});this.roomFloorMaterials[i]=material;if(!(i===4&&this.state.party))floor.material=material;
       const p=roomLocal(i),trim=this.material(stage.color,{roughness:.7});
-      for(const [w,d,dx,dz] of [[11.5,.14,0,-5.48],[11.5,.14,0,5.48],[.14,10.8,-5.75,0],[.14,10.8,5.75,0]]){const strip=this.box(this.building,w,.03,d,p.x+dx,.31,p.z+dz,stage.color);strip.material=trim;strip.castShadow=false;}
+      const depth=roomDepth(i);
+      for(const [w,d,dx,dz] of [[11.5,.14,0,-(depth/2-.27)],[11.5,.14,0,depth/2-.27],[.14,depth-.7,-5.75,0],[.14,depth-.7,5.75,0]]){const strip=this.box(this.building,w,.03,d,p.x+dx,.31,p.z+dz,stage.color);strip.material=trim;strip.castShadow=false;}
     });
     this.dirty=true;
   }
@@ -469,7 +473,7 @@ export class Office3D {
       pageList.forEach((c,k)=>{
         present.add(c.id);const rig=this.avatars.get(c.id)||this.makeAvatar(c);const seat=seatOf.get(c.id);
         const offset=seat!==undefined?SEATS[seat]:(state.stages[i].id==='evaluacion'?EVAL_STANDING:state.stages[i].id==='vendido'?DANCE_SLOTS:slots)[standing++];rig.seated=seat!==undefined;
-        rig.target.set(room.x+offset[0]*WORLD,FLOOR_Y,room.z+offset[1]*WORLD);
+        rig.target.set(room.x+offset[0]*WORLD,FLOOR_Y,room.z+offset[1]*(i>=3&&seat===undefined?STRETCH:1)*WORLD);
         if(!rig.placed){rig.root.position.copy(rig.target);rig.placed=true;}
         if(rig.placed&&rig.stage&&rig.stage!=='vendido'&&c.stage==='vendido')this.celebrateSale(rig);
         rig.stage=c.stage;rig.root.visible=!state.filter||state.filter===c.stage;
@@ -501,15 +505,15 @@ export class Office3D {
     const add=(text,label,fn)=>{const b=document.createElement('button');b.type='button';b.textContent=text;b.setAttribute('aria-label',label);b.title=label;b.addEventListener('click',fn);toolbar.append(b);return b;};
     add('−','Alejar cámara',()=>this.setZoom(this.zoom/1.2));
     add('+','Acercar cámara',()=>this.setZoom(this.zoom*1.2));
-    add('↺','Restablecer cámara',()=>{this.yaw=.72;this.elevation=.66;this.target.set(0,.9*WORLD,0);this.zoom=1;this.updateCamera();});
-    const sold=add('Ver Vendidos','Acercarse a la sala Vendidos',()=>{this.target.set(0,1.5*WORLD,5.75*WORLD);this.zoom=1.8;this.updateCamera();});sold.className='focus-sold-camera';
+    add('↺','Restablecer cámara',()=>{this.yaw=.72;this.elevation=.66;this.target.set(0,.9*WORLD,MID*WORLD);this.zoom=1;this.updateCamera();});
+    const sold=add('Ver Vendidos','Acercarse a la sala Vendidos',()=>{this.target.set(0,1.5*WORLD,ROW2/2*WORLD);this.zoom=1.45;this.updateCamera();});sold.className='focus-sold-camera';
     if(typeof this.host.requestFullscreen==='function'){
       const names=add('Nombres','Mostrar u ocultar los nombres de los personajes',()=>{const on=!this.host.classList.contains('show-names');this.host.classList.toggle('show-names',on);names.setAttribute('aria-pressed',String(on));try{localStorage.setItem(NAMES_KEY,on?'1':'0');}catch{}});
       names.className='names-camera';let namesOn=false;try{namesOn=localStorage.getItem(NAMES_KEY)==='1';}catch{}this.host.classList.toggle('show-names',namesOn);names.setAttribute('aria-pressed',String(namesOn));
       const full=add('⛶','Ver la oficina en pantalla completa',()=>{if(document.fullscreenElement)document.exitFullscreen?.();else this.host.requestFullscreen().catch(()=>{});});full.className='fullscreen-camera';
       document.addEventListener('fullscreenchange',()=>{const on=document.fullscreenElement===this.host;full.textContent=on?'✕':'⛶';const label=on?'Salir de pantalla completa (Esc)':'Ver la oficina en pantalla completa';full.setAttribute('aria-label',label);full.title=label;this.resize();});
     }
-    const cemetery=add('🪦','Acercarse al cementerio de Descartados',()=>{this.target.set(12*WORLD,WORLD,5.75*WORLD);this.zoom=2.15;this.updateCamera();});cemetery.className='cemetery-camera';
+    const cemetery=add('🪦','Acercarse al cementerio de Descartados',()=>{this.target.set(12*WORLD,WORLD,ROW2/2*WORLD);this.zoom=2.15;this.updateCamera();});cemetery.className='cemetery-camera';
     const tip=document.createElement('span');tip.className='camera-3d-hint';tip.textContent='Arrastrá el piso para girar · Rueda para acercar';
     this.host.append(toolbar,tip);
   }
@@ -541,11 +545,11 @@ export class Office3D {
     rig.root.position.copy(point.add(grab.offset));rig.root.position.y=1.38+FLOOR_Y-.33;
     rig.ring.visible=true;rig.ring.position.y=-1.025;rig.plumbob.visible=true;rig.button.dataset.grabbed='true';
     const x=rig.root.position.x/WORLD,z=rig.root.position.z/WORLD;
-    let index=x>=-18&&x<18&&z>=-11.5&&z<11.5?Math.floor((z+11.5)/11.5)*3+Math.floor((x+18)/12):-1;
+    let index=x>=-18&&x<18&&z>=-ROW1&&z<ROW2?(z<0?0:3)+Math.floor((x+18)/12):-1;
     for(const label of this.roomLabels){if(label.button.hidden)continue;const r=label.button.getBoundingClientRect();if(e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom){index=label.i;break;}}
     grab.stage=this.state.stages[index]?.id??null;
     this.dropMarker.visible=index>=0;
-    if(index>=0){const c=roomCenter(index);this.dropMarker.position.set(c.x,0,c.z);}
+    if(index>=0){const c=roomCenter(index);this.dropMarker.position.set(c.x,0,c.z);this.dropMarker.scale.set(WORLD,WORLD,WORLD*roomDepth(index)/ROW1);}
     this.roomLabels.forEach(label=>label.button.classList.toggle('drop-target',label.i===index));
     const message=index>=0?`Soltá para mover a ${this.state.stages[index].name}`:'Soltá dentro de una sala · Esc para cancelar';
     if(this.dragStatus.textContent!==message)this.dragStatus.textContent=message;this.dragStatus.hidden=false;this.dirty=true;
@@ -590,7 +594,7 @@ export class Office3D {
     this.width=r.width;this.height=r.height;this.renderer.setSize(r.width,r.height,false);this.updateCamera();
   }
   updateCamera(){
-    const aspect=(this.width||800)/(this.height||500),height=Math.max(29.5,38.5/aspect)*WORLD;
+    const aspect=(this.width||800)/(this.height||500),height=Math.max(33,42/aspect)*WORLD;
     this.camera.left=-height*aspect/2;this.camera.right=height*aspect/2;this.camera.top=height/2;this.camera.bottom=-height/2;
     this.camera.zoom=this.zoom;
     const radius=60;this.camera.position.set(this.target.x+radius*Math.sin(this.yaw)*Math.cos(this.elevation),this.target.y+radius*Math.sin(this.elevation),this.target.z+radius*Math.cos(this.yaw)*Math.cos(this.elevation));
@@ -599,7 +603,7 @@ export class Office3D {
   projectLabels(){
     const v=new THREE.Vector3();
     const project=(x,y,z)=>{v.set(x,y,z).project(this.camera);return {x:(v.x*.5+.5)*this.width,y:(-.5*v.y+.5)*this.height};};
-    this.roomLabels.forEach(({button,i})=>{const c=roomCenter(i),p=project(c.x,3.4*WORLD,c.z-3.6*WORLD);button.hidden=p.x<0||p.x>this.width||p.y<0||p.y>this.height-50;button.style.left=clamp(p.x,45,this.width-45)+'px';button.style.top=clamp(p.y,18,this.height-50)+'px';});
+    this.roomLabels.forEach(({button,i})=>{const c=roomCenter(i),p=project(c.x,3.4*WORLD,c.z-(roomDepth(i)/2-2.15)*WORLD);button.hidden=p.x<0||p.x>this.width||p.y<0||p.y>this.height-50;button.style.left=clamp(p.x,45,this.width-45)+'px';button.style.top=clamp(p.y,18,this.height-50)+'px';});
     for(const rig of this.avatars.values()){
       const p=rig.root.position,grave=rig.stage==='descartado',head=project(p.x,p.y+((grave?2.0:3.2)+(rig.sitting?SIT_DROP:0))*AVATAR_SCALE*AVATAR_TALL,p.z),foot=project(p.x,p.y,p.z);
       const h=clamp(Math.abs(foot.y-head.y)+10,27,210),w=clamp(h*(grave?.8:.55),22,110);
