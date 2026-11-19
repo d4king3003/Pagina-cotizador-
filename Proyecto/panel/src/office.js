@@ -59,7 +59,7 @@ function officeSelect(id){
  officeUI.selected=id;
  if(officeUI.room&&officeUI.room!==officeRoom(c.stage))officeUI.room=officeRoom(c.stage);
  const group=officeData().filter(x=>officeRoom(x.stage)===officeRoom(c.stage));
- officeUI.page=Math.max(0,Math.floor(group.findIndex(x=>x.id===id)/9));
+ officeUI.page=Math.max(0,Math.floor(group.findIndex(x=>x.id===id)/8));
  renderOffice();
 }
 function officeFilter(room){officeUI.room=officeUI.room===room?'':room;officeUI.page=0;officeUI.listPage=0;renderOffice();}
@@ -110,9 +110,9 @@ function renderOffice(){
  $('office-party-button').textContent=officeUI.party?'♫ Pausar fiesta de vendidos':'♫ Fiesta de vendidos';
  $('office-legend').innerHTML='<button class="btn btn-small" data-action="office-filter" data-id="" aria-pressed="'+(!officeUI.room)+'">Todas las salas</button>'+OFFICE_ROOMS.map(r=>'<button class="btn btn-small" data-action="office-filter" data-id="'+r.id+'" aria-pressed="'+(officeUI.room===r.id)+'"><i style="background:'+r.color+'"></i>'+r.name+' <b>'+rows.filter(c=>officeRoom(c.stage)===r.id).length+'</b></button>').join('');
  $('office-empty').hidden=visible.length>0;
- const pages=Math.max(1,...OFFICE_ROOMS.filter(r=>!officeUI.room||r.id===officeUI.room).map(r=>Math.ceil(rows.filter(c=>officeRoom(c.stage)===r.id).length/9)));
+ const pages=Math.max(1,...OFFICE_ROOMS.filter(r=>!officeUI.room||r.id===officeUI.room).map(r=>Math.ceil(rows.filter(c=>officeRoom(c.stage)===r.id).length/8)));
  officeUI.page=Math.min(officeUI.page,pages-1);
- $('office-scene-pagination').innerHTML=pages>1?'<button class="btn btn-small" data-action="office-page" data-id="-1" '+(officeUI.page===0?'disabled':'')+'>← Anterior</button><span>Página '+(officeUI.page+1)+' de '+pages+' · hasta 9 personajes por sala</span><button class="btn btn-small" data-action="office-page" data-id="1" '+(officeUI.page===pages-1?'disabled':'')+'>Siguiente →</button>':'';
+ $('office-scene-pagination').innerHTML=pages>1?'<button class="btn btn-small" data-action="office-page" data-id="-1" '+(officeUI.page===0?'disabled':'')+'>← Anterior</button><span>Página '+(officeUI.page+1)+' de '+pages+' · hasta 8 personajes por sala</span><button class="btn btn-small" data-action="office-page" data-id="1" '+(officeUI.page===pages-1?'disabled':'')+'>Siguiente →</button>':'';
  if(!officeScene&&!officeFailed&&officeUI.view==='scene'){
   try{officeScene=new globalThis.TVSOfficeScene($('office-scene'),{onSelect:officeSelect,onFilter:officeFilter,onMove:officeMove});}
   catch(error){console.warn('La oficina 3D no pudo iniciar:',error.message);officeFailed=true;officeUI.view='list';$('office-scene').dataset.renderer='unavailable';toast('No se pudo activar el 3D en este equipo. La vista Lista está disponible.',true);}

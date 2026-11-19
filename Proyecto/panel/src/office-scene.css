@@ -19,3 +19,9 @@
 /* Las etiquetas de sala quedan debajo de los personajes para no bloquear el clic sobre ellos */
 .room-3d-label{z-index:20}
 .room-3d-label.drop-target{z-index:230}
+
+/* Oficina más grande en PC y pantalla completa */
+@media(min-width:900px){#office-scene{height:clamp(600px,calc(100vh - 170px),920px)}}
+#office-scene:fullscreen{width:100vw;height:100vh;max-height:none;background:#f8faf8}
+#office-scene:fullscreen .camera-3d-tools{bottom:24px;left:24px}
+.camera-3d-tools .fullscreen-camera{font-size:15px}

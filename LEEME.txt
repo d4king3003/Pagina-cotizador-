@@ -28,6 +28,13 @@ Cada sala tiene un borde y un piso del color de su etiqueta. En la pared del fon
 La fiesta de vendidos usa los colores de TVS. Cada vez que un cliente pasa a Vendidos, al llegar a la sala salta y estalla confeti rojo, azul y blanco durante un par de segundos.
 Con reducir animaciones activado en Windows, los personajes cambian de sala al instante y no hay festejo.
 
+OFICINA VIRTUAL: MÁS GRANDE Y DECORADA
+La oficina ocupa casi todo el alto de la pantalla en la PC y la cámara está más cerca. El botón ⛶ la muestra en pantalla completa; Esc o ✕ vuelven a la vista normal.
+Los personajes son un 30 % más grandes. Cada sala muestra hasta 8 personajes por página (antes 9) para que no se encimen.
+Cada sala tiene su decoración: sala de espera en Interesados, teléfono y reloj en Seguimiento, archivadores en En evaluación, una moto con lazo rojo en Aprobados y una vitrina con moto y trofeo en Vendidos.
+Los clientes vendidos llevan casco TVS (durante la fiesta usan gorro). Hay más peinados y algunos personajes con lentes.
+La luz es más cálida, con sombras suaves y ventanas en las paredes.
+
 INGRESAR CRÉDITO CREDIOPCIONES · PLAN SIETE TRES 47% (VERSIÓN 1.8.0)
 En Solicitudes usá + Ingresar crédito. Un solo formulario llena los tres documentos y cada uno se descarga en PDF con su propio botón: Buró, Cotizador y Solicitud.
 Para la precalificación basta con el nombre completo según DUI y el número de DUI: guardá y descargá el Buró. Los demás datos se pueden completar después con Editar.

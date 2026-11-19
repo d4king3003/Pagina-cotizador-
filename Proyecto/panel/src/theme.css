@@ -224,3 +224,6 @@ html[data-theme=dark] .modal-actions{background:#162135}
 @media(max-width:900px){.sidebar{transition:transform .28s var(--ease-drawer)}}
 /* Al cambiar entre modo claro y oscuro todo cambia a la vez, sin transiciones sueltas */
 html[data-theme-switching] :not(.toast),html[data-theme-switching] :not(.toast)::before,html[data-theme-switching] :not(.toast)::after{transition:none!important}
+
+/* Oficina 3D más grande en PC (va al final para ganar a office.css) */
+@media(min-width:900px){#office-scene{height:clamp(600px,calc(100vh - 170px),920px)}}
