@@ -33,6 +33,20 @@ function sieteTresQuote(price,down){
   terms:SIETE_TRES.terms.map(n=>({months:n,payment:amount?amount*r/(1-Math.pow(1+r,-n)):0}))};
 }
 
+// Prima: lo que se escribe es el total que da el cliente. De ahí salen los gastos de formalización (7 % del valor)
+// y lo que sobra es la prima que baja la moto. Los créditos guardados antes de este cambio (sin downIncludesFee)
+// tenían la prima ya sin gastos y se siguen leyendo igual.
+function creditFee(price){return Math.round((Number(price)||0)*SIETE_TRES.fee*100)/100;}
+function creditNetDown(f){const total=Number(f.down)||0;return f.downIncludesFee?Math.max(0,Math.round((total-creditFee(f.price))*100)/100):total;}
+function creditTotalDown(f){if(f.down===null||f.down===undefined||f.down==='')return f.down;return f.downIncludesFee||!(Number(f.down)>0)||!f.price?f.down:Math.round((Number(f.down)+creditFee(f.price))*100)/100;}
+function creditQuote(f){return sieteTresQuote(f.price,creditNetDown(f));}
+function creditDownProblem(price,total){
+ const fee=creditFee(price);if(!(Number(price)>0))return '';
+ if(total>0&&total<fee)return `Lo que da el cliente ($${creditMoney(total)}) no alcanza para los gastos de formalización ($${creditMoney(fee)}). Escribí 0 si no hay prima o un total mayor.`;
+ if(Math.max(0,total-fee)>=price)return 'La prima (sin los gastos de formalización) debe ser menor que el valor de la moto: si cubre todo el valor, no hay nada que financiar.';
+ return '';
+}
+
 function validateCreditForms(v){
  if(v.creditForms===undefined)return;
  if(!Array.isArray(v.creditForms)||v.creditForms.length>25000)throw new Error('La colección de créditos no es válida.');
@@ -51,7 +65,7 @@ renderRequests=function(){
 };
 function creditPanel(){
  const list=[...(db.creditForms||[])].sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt)));
- const rows=list.map(f=>{const q=sieteTresQuote(f.price,f.down),chosen=q.terms.find(t=>t.months===f.months);return `<tr><td><strong>${esc(f.name)}</strong><small>DUI ${esc(f.dui)}${f.phone?' · '+esc(f.phone):''} · ${esc(fmtDate(String(f.updatedAt).slice(0,10)))}</small></td><td>${f.model?esc(f.model):'<span class="subtext">Sin moto</span>'}<small>${f.price?'$'+creditMoney(f.price)+' · prima $'+creditMoney(f.down||0):'Sin precio'}</small></td><td>${chosen&&f.price?'$'+creditMoney(chosen.payment)+'<small>'+f.months+' cuotas</small>':'—'}</td><td><div class="table-actions credit-pdf-actions"><button class="btn" data-action="credit-pdf" data-doc="buro" data-id="${esc(f.id)}">${icon('download')}Buró</button><button class="btn" data-action="credit-pdf" data-doc="cotizador" data-id="${esc(f.id)}">${icon('download')}Cotizador</button><button class="btn" data-action="credit-pdf" data-doc="solicitud" data-id="${esc(f.id)}">${icon('download')}Solicitud</button><button class="btn" data-action="credit-office-menu" data-id="${esc(f.id)}" title="Descargar el Excel o Word original lleno, para corregirlo y guardarlo como PDF">Excel/Word</button><button class="btn" data-action="credit-edit" data-id="${esc(f.id)}">Editar</button><button class="btn btn-quiet" data-action="credit-delete" data-id="${esc(f.id)}" aria-label="Borrar crédito de ${esc(f.name)}">Borrar</button></div></td></tr>`;}).join('');
+ const rows=list.map(f=>{const q=creditQuote(f),chosen=q.terms.find(t=>t.months===f.months);return `<tr><td><strong>${esc(f.name)}</strong><small>DUI ${esc(f.dui)}${f.phone?' · '+esc(f.phone):''} · ${esc(fmtDate(String(f.updatedAt).slice(0,10)))}</small></td><td>${f.model?esc(f.model):'<span class="subtext">Sin moto</span>'}<small>${f.price?'$'+creditMoney(f.price)+' · prima $'+creditMoney(creditNetDown(f)):'Sin precio'}</small></td><td>${chosen&&f.price?'$'+creditMoney(chosen.payment)+'<small>'+f.months+' cuotas</small>':'—'}</td><td><div class="table-actions credit-pdf-actions"><button class="btn" data-action="credit-pdf" data-doc="buro" data-id="${esc(f.id)}">${icon('download')}Buró</button><button class="btn" data-action="credit-pdf" data-doc="cotizador" data-id="${esc(f.id)}">${icon('download')}Cotizador</button><button class="btn" data-action="credit-pdf" data-doc="solicitud" data-id="${esc(f.id)}">${icon('download')}Solicitud</button><button class="btn" data-action="credit-office-menu" data-id="${esc(f.id)}" title="Descargar el Excel o Word original lleno, para corregirlo y guardarlo como PDF">Excel/Word</button><button class="btn" data-action="credit-edit" data-id="${esc(f.id)}">Editar</button><button class="btn btn-quiet" data-action="credit-delete" data-id="${esc(f.id)}" aria-label="Borrar crédito de ${esc(f.name)}">Borrar</button></div></td></tr>`;}).join('');
  return `<section class="card credit-panel" aria-labelledby="credit-panel-title"><div class="card-head"><div><h2 id="credit-panel-title">Ingresar crédito · Crediopciones</h2><p class="subtext">Plan Siete Tres 47%. Llená los datos una vez y descargá el Buró, el Cotizador o la Solicitud en PDF con el formato original de Crediopciones. Con Excel/Word descargás el archivo original lleno, para corregirlo y guardarlo como PDF.</p></div><button class="btn btn-primary" data-action="credit-new">+ Ingresar crédito</button></div>${list.length?`<div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Moto</th><th>Cuota</th><th><span class="sr-only">Documentos y acciones</span></th></tr></thead><tbody>${rows}</tbody></table></div>`:`<div class="empty compact">${icon('document')}<h3>Todavía no hay créditos ingresados</h3><p>Para la precalificación basta con el nombre y el DUI: guardá y descargá el Buró.</p></div>`}</section>`;
 }
 
@@ -70,7 +84,7 @@ function openCreditForm(id='',clientId=''){
  <h3 class="credit-step"><span>1</span>Buró · precalificación</h3><p class="subtext credit-step-note">Con estos dos datos ya podés guardar y descargar el Buró.</p>
  <div class="form-grid">${cIn('Nombre completo según DUI','name',f.name,{req:true,full:true})}${cIn('Número de DUI','dui',f.dui,{req:true,hint:'9 dígitos, ejemplo 01234567-8',mode:'numeric',max:10})}${cIn('Teléfono celular','phone',f.phone,{type:'tel',mode:'tel',max:50})}</div>
  <h3 class="credit-step"><span>2</span>Cotizador Siete Tres 47%</h3><p class="subtext credit-step-note">Para descargar el Cotizador se necesitan el nombre, el teléfono celular y todos los campos de esta sección.</p>
- <div class="form-grid">${cIn('Moto (modelo)','model',f.model,{list:'credit-models',full:true})}${cIn('Año','year',f.year,{mode:'numeric',max:10})}${cIn('Valor de la moto $','price',f.price,{type:'number',mode:'decimal'})}${cIn('Prima $','down',f.down,{type:'number',mode:'decimal',hint:'Dejá 0 si no hay prima.'})}${selectField('Plazo elegido','months',options(SIETE_TRES.terms.map(n=>[n,n+' cuotas']),f.months))}<div class="field"><span class="field-label">Cuota del plazo elegido</span><output id="credit-chosen" class="credit-chosen">—</output></div>
+ <div class="form-grid">${cIn('Moto (modelo)','model',f.model,{list:'credit-models',full:true})}${cIn('Año','year',f.year,{mode:'numeric',max:10})}${cIn('Valor de la moto $','price',f.price,{type:'number',mode:'decimal'})}${cIn('Prima total que da el cliente $','down',creditTotalDown(f),{type:'number',mode:'decimal',hint:'Incluye los gastos de formalización: el panel los resta. Dejá 0 si no hay prima.'})}${selectField('Plazo elegido','months',options(SIETE_TRES.terms.map(n=>[n,n+' cuotas']),f.months))}<div class="field"><span class="field-label">Cuota del plazo elegido</span><output id="credit-chosen" class="credit-chosen">—</output></div>
  <div class="field full"><div class="credit-preview" id="credit-preview" aria-live="polite"></div></div>
  ${cIn('Vendedor','vendor',f.vendor)}${cIn('Agencia','agency',f.agency)}${cIn('Teléfono de la agencia','agencyPhone',f.agencyPhone,{type:'tel',mode:'tel',max:50})}</div>
  <h3 class="credit-step"><span>3</span>Solicitud de crédito</h3><p class="subtext credit-step-note">Para descargar la Solicitud se necesitan todos los campos, menos otros ingresos, punto de referencia y teléfono del trabajo, y el detalle.</p>
@@ -95,7 +109,7 @@ function clientPrefill(clientId){
 function readCreditForm(form){
  const fd=new FormData(form),text=k=>String(fd.get(k)??'').trim(),number=k=>{const raw=text(k);if(raw==='')return null;const n=Number(raw);if(!Number.isFinite(n)||n<0||n>1e10)throw Error('Revisá el valor numérico de '+k+'.');return Math.round(n*100)/100;};
  const r={};for(const k of CREDIT_TEXT)r[k]=text(k);for(const k of CREDIT_NUMBERS)r[k]=number(k);
- r.clientId=text('clientId');r.months=Number(text('months'))||18;
+ r.clientId=text('clientId');r.months=Number(text('months'))||18;r.downIncludesFee=true;
  const refs=kind=>Array.from({length:CREDIT_REF_COUNT},(_,i)=>({name:text(`${kind}-${i}-name`),phone:text(`${kind}-${i}-phone`),relation:CREDIT_RELATION[kind]}));
  r.famRefs=refs('fam');r.friendRefs=refs('friend');
  return r;
@@ -104,7 +118,7 @@ function checkCreditRecord(r){
  if(!r.name)throw Error('Escribí el nombre completo según el DUI.');
  if(r.name.length>150)throw Error('El nombre es demasiado largo.');
  r.dui=normalizeDUI(r.dui);
- if(r.price!==null&&r.down!==null&&r.down>r.price)throw Error('La prima no puede ser mayor que el valor de la moto.');
+ if(r.price!==null&&r.down!==null&&Math.max(0,r.down-creditFee(r.price))>=r.price)throw Error('La prima (sin los gastos de formalización) debe ser menor que el valor de la moto.');
  if(!SIETE_TRES.terms.includes(r.months))throw Error('Elegí un plazo válido.');
  return r;
 }
@@ -129,10 +143,11 @@ function updateCreditPreview(){
  const form=$('credit-form');if(!form)return;
  const price=Number(form.price.value)||0,down=Number(form.down.value)||0,box=$('credit-preview'),out=$('credit-chosen');
  if(!price){box.innerHTML='<p class="subtext">Ingresá el valor de la moto para ver las cuotas de 12 a 48 meses.</p>';out.textContent='—';return;}
- if(down>=price){box.innerHTML='<p class="form-error" style="margin:0">La prima debe ser menor que el valor de la moto: si cubre todo el valor, no hay nada que financiar.</p>';out.textContent='—';return;}
- const q=sieteTresQuote(price,down),months=Number(form.months.value);
+ const problem=creditDownProblem(price,down);
+ if(problem){box.innerHTML=`<p class="form-error" style="margin:0">${esc(problem)}</p>`;out.textContent='—';return;}
+ const q=creditQuote({price,down,downIncludesFee:true}),months=Number(form.months.value);
  out.textContent='$'+creditMoney(q.terms.find(t=>t.months===months)?.payment);
- box.innerHTML=`<div class="credit-summary"><span>Gastos de formalización <strong>$${creditMoney(q.fee)}</strong></span><span>Prima <strong>${(q.primaRate*100).toFixed(2)}%</strong></span><span>Monto a financiar <strong>$${creditMoney(q.amount)}</strong></span></div><div class="credit-terms">${q.terms.map(t=>`<span class="${t.months===months?'active':''}"><small>${t.months} cuotas</small>$${creditMoney(t.payment)}</span>`).join('')}</div>`;
+ box.innerHTML=`<div class="credit-summary"><span>Total que da el cliente <strong>$${creditMoney(down)}</strong></span><span>Gastos de formalización <strong>−$${creditMoney(q.fee)}</strong></span><span class="credit-net">Prima (sin gastos) <strong>$${creditMoney(q.prima)}</strong> <small>${(q.primaRate*100).toFixed(2)}%</small></span><span>Monto a financiar <strong>$${creditMoney(q.amount)}</strong></span></div><div class="credit-terms" role="group" aria-label="Elegí el plazo">${q.terms.map(t=>`<button type="button" class="${t.months===months?'active':''}" data-credit-term="${t.months}" aria-pressed="${t.months===months}"><small>${t.months} cuotas</small>$${creditMoney(t.payment)}</button>`).join('')}</div>`;
 }
 
 /* ---------- PDF ---------- */
@@ -180,8 +195,8 @@ function makeBuroPDF(f){
 function makeCotizadorPDF(f){
  if(!f.model)throw Error('Para el Cotizador escribí el modelo de la moto.');
  if(!f.price)throw Error('Para el Cotizador escribí el valor de la moto.');
- if((f.down||0)>=f.price)throw Error('No se puede descargar el Cotizador: la prima debe ser menor que el valor de la moto (si la prima cubre todo el valor, no hay nada que financiar).');
- const doc=needPDF(),X=n=>n*0.28222,q=sieteTresQuote(f.price,f.down||0),blue=[46,117,181];
+ {const problem=creditDownProblem(f.price,f.downIncludesFee?Number(f.down)||0:(Number(f.down)||0)+creditFee(f.price));if(problem)throw Error('No se puede descargar el Cotizador. '+problem);}
+ const doc=needPDF(),X=n=>n*0.28222,q=creditQuote(f),blue=[46,117,181];
  doc.setDrawColor(0);doc.setLineWidth(0.3);doc.rect(X(63),X(67),X(636-63),X(128-67));
  pdfLogo(doc,'credi',X(67),X(71),X(95),X(50));
  doc.setFont('helvetica','bold');doc.setFontSize(24);doc.setTextColor(...blue);doc.text('COTIZADOR SV',X(218),X(117));
@@ -262,7 +277,7 @@ function makeSolicitudPDF(f){
 
 const CREDIT_DOCS={buro:['Buro',makeBuroPDF],cotizador:['Cotizador Siete Tres',makeCotizadorPDF],solicitud:['Solicitud de credito',makeSolicitudPDF]};
 // Campos obligatorios de cada documento. El Buró solo necesita nombre y DUI.
-const CREDIT_LABELS={name:'nombre',dui:'DUI',phone:'teléfono celular',model:'moto',year:'año',price:'valor de la moto',down:'prima (poné 0 si no hay)',vendor:'vendedor',agency:'agencia',agencyPhone:'teléfono de la agencia',birth:'fecha de nacimiento',sex:'sexo',nationality:'nacionalidad',address:'dirección de residencia',addressRef:'punto de referencia',company:'empresa o negocio',position:'cargo',startDate:'fecha de ingreso',income:'ingreso mensual',workAddress:'dirección del trabajo'};
+const CREDIT_LABELS={name:'nombre',dui:'DUI',phone:'teléfono celular',model:'moto',year:'año',price:'valor de la moto',down:'prima total que da el cliente (poné 0 si no hay)',vendor:'vendedor',agency:'agencia',agencyPhone:'teléfono de la agencia',birth:'fecha de nacimiento',sex:'sexo',nationality:'nacionalidad',address:'dirección de residencia',addressRef:'punto de referencia',company:'empresa o negocio',position:'cargo',startDate:'fecha de ingreso',income:'ingreso mensual',workAddress:'dirección del trabajo'};
 const refFields=kind=>Array.from({length:CREDIT_REF_COUNT},(_,i)=>[`${kind}-${i}-name`,`${kind}-${i}-phone`]).flat();
 const CREDIT_REQUIRED={buro:['name','dui'],cotizador:['name','phone','model','year','price','down','vendor','agency','agencyPhone'],solicitud:['name','dui','phone','birth','sex','nationality','address','addressRef','company','position','startDate','income','workAddress',...refFields('fam'),...refFields('friend')]};
 const CREDIT_DOC_NAMES={buro:'el Buró',cotizador:'el Cotizador',solicitud:'la Solicitud'};
@@ -306,6 +321,8 @@ document.addEventListener('change',e=>{
  if(e.target.name==='model'){const form=$('credit-form'),key=norm(e.target.value).replace(/^TVS/,''),s=db.stock.find(s=>norm(s.label).replace(/^TVS/,'')===key);
   if(s){if(form.price&&!form.price.value&&s.price!=null)form.price.value=s.price;if(form.year&&!form.year.value&&s.year)form.year.value=s.year;updateCreditPreview();}}
 });
+// Tocar una cuota elige ese plazo (igual que cambiarlo en "Plazo elegido").
+document.addEventListener('click',e=>{const b=e.target.closest('[data-credit-term]');if(!b)return;const form=$('credit-form');if(!form)return;form.months.value=b.dataset.creditTerm;updateCreditPreview();$('credit-preview')?.querySelector(`[data-credit-term="${b.dataset.creditTerm}"]`)?.focus({preventScroll:true});});
 document.addEventListener('submit',e=>{if(e.target.id!=='credit-form')return;e.preventDefault();if(saveCreditForm())$('modal').close();});
 document.addEventListener('click',e=>{
  const b=e.target.closest('[data-action^="credit-"]');if(!b)return;const action=b.dataset.action,id=b.dataset.id||'';

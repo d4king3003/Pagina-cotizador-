@@ -57,6 +57,8 @@ En En evaluación hay un sillón de tres plazas: hasta tres clientes se sientan 
 INGRESAR CRÉDITO CREDIOPCIONES · PLAN SIETE TRES 47% (VERSIÓN 1.8.0)
 En Solicitudes usá + Ingresar crédito. Un solo formulario llena los tres documentos y cada uno se descarga en PDF con su propio botón: Buró, Cotizador y Solicitud.
 Para la precalificación basta con el nombre completo según DUI y el número de DUI: guardá y descargá el Buró. Los demás datos se pueden completar después con Editar.
+En Prima se escribe el total que da el cliente. El panel le resta los gastos de formalización (7 % del valor de la moto) y lo que sobra es la prima que baja la moto. Ejemplo: moto de $1,899, el cliente da $500: gastos $132.93, prima $367.07, monto a financiar $1,531.93. Esa prima sin gastos es la que sale en el Cotizador. Si el total no alcanza para los gastos, el panel avisa.
+Para elegir el plazo podés tocar directamente la cuota (12 a 48 cuotas) en el resumen.
 Los PDF salen con los documentos originales de Crediopciones de fondo (la carta de buró, el cotizador Siete Tres y la solicitud) y los datos escritos en su lugar. Si un nombre o una dirección es muy largo, la letra se achica o el texto pasa a otra línea para que quepa en su casilla.
 Para corregir algo a mano, usá Buró Word, Cotizador Excel o Solicitud Excel en el formulario, o el botón Excel/Word en la lista. Se descarga tu archivo original de Crediopciones ya lleno: abrilo, corregí lo que haga falta y guardalo como PDF desde Excel o Word. No hace falta instalar nada.
 Si Crediopciones cambia algún formato, los documentos se vuelven a preparar con tools/prep_credit_templates.py.

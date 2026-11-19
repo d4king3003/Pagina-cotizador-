@@ -16,9 +16,10 @@
 .credit-summary{display:flex;flex-wrap:wrap;gap:8px 22px;font-size:12.5px;color:var(--muted);margin-bottom:12px}
 .credit-summary strong{color:var(--ink);margin-left:4px;font-variant-numeric:tabular-nums}
 .credit-terms{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
-.credit-terms span{display:flex;flex-direction:column;gap:3px;padding:8px 6px;border-radius:9px;background:var(--paper);border:1px solid var(--line);font-size:13px;font-weight:600;text-align:center;font-variant-numeric:tabular-nums}
+.credit-terms button{font-family:inherit;color:var(--ink);cursor:pointer;transition:border-color .15s,background-color .15s;display:flex;flex-direction:column;gap:3px;padding:8px 6px;border-radius:9px;background:var(--paper);border:1px solid var(--line);font-size:13px;font-weight:600;text-align:center;font-variant-numeric:tabular-nums}
 .credit-terms small{font-size:10.5px;font-weight:500;color:var(--muted)}
-.credit-terms span.active{border-color:var(--primary);box-shadow:inset 0 0 0 1px var(--primary);color:var(--primary)}
+.credit-terms button:hover{border-color:var(--primary);background:var(--soft)}
+.credit-terms button.active{border-color:var(--primary);box-shadow:inset 0 0 0 1px var(--primary);color:var(--primary)}
 .credit-sex{min-height:42px}
 .credit-refs{display:flex;flex-direction:column;gap:8px}
 .credit-ref{display:grid;grid-template-columns:20px minmax(0,2fr) minmax(0,1fr) auto;gap:8px;align-items:center}
@@ -45,3 +46,7 @@ html[data-theme=dark] .credit-form .credit-missing{background:#3a2230}
 .credit-office-list .btn{justify-content:flex-start}
 .credit-office-tag{margin-left:auto;font-size:10px;font-weight:650;color:var(--muted);background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:3px 8px}
 @media(max-width:760px){.credit-actions-office .btn{flex:1}}
+
+.credit-summary .credit-net strong{color:var(--primary)}
+.credit-summary small{font-size:11px;color:var(--muted);font-weight:500}
+.credit-summary>span{white-space:nowrap}

@@ -8,15 +8,15 @@ const CREDIT_OFFICE={buro:{label:'Word',ext:'docx',mime:'application/vnd.openxml
 function creditCotizadorCheck(f){
  if(!f.model)throw Error('Para el Cotizador escribí el modelo de la moto.');
  if(!f.price)throw Error('Para el Cotizador escribí el valor de la moto.');
- if((f.down||0)>=f.price)throw Error('No se puede descargar el Cotizador: la prima debe ser menor que el valor de la moto (si la prima cubre todo el valor, no hay nada que financiar).');
+ const problem=creditDownProblem(f.price,Number(creditTotalDown(f))||0);if(problem)throw Error('No se puede descargar el Cotizador. '+problem);
 }
 function creditValues(kind,f){
  const txt=v=>v===null||v===undefined?'':String(v).trim();
  if(kind==='buro')return {date:creditDate(),name:txt(f.name),dui:txt(f.dui)};
  if(kind==='cotizador'){
-  const q=sieteTresQuote(f.price,f.down||0),pay=Object.fromEntries(q.terms.map(t=>['q'+t.months,creditMoney(t.payment)]));
+  const q=creditQuote(f),pay=Object.fromEntries(q.terms.map(t=>['q'+t.months,creditMoney(t.payment)]));
   return {name:txt(f.name),phone:txt(f.phone),vendor:txt(f.vendor),agency:txt(f.agency),agencyPhone:txt(f.agencyPhone),date:creditDate(),model:txt(f.model),year:txt(f.year),
-   price:Number(f.price)||0,down:Number(f.down)>0?Number(f.down):null,months:String(f.months),
+   price:Number(f.price)||0,down:q.prima>0?q.prima:null,months:String(f.months),
    fee:creditMoney(q.fee),primaRate:(q.primaRate*100).toFixed(2)+'%',cuotaOk:'1a CUOTA OK',amount:creditMoney(q.amount),...pay,
    // Resultados ya calculados para las fórmulas del Excel (se ven bien aunque Excel abra en vista protegida)
    calc_fee:q.fee,calc_primaRate:q.primaRate,calc_amount:q.amount,...Object.fromEntries(q.terms.map(t=>['calc_q'+t.months,t.payment]))};
