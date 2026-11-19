@@ -2,10 +2,11 @@
 // Los datos de la moto (motor, chasis, póliza, color) se pegan desde SAP: como texto o como captura (se lee sin internet).
 const DELIVERY_DOCS=/*DELIVERY_DOCS*/null;
 const DELIVERY_TEXT=['creditId','clientId','name','dui','occupation','municipio','departamento','model','color','year','motor','chasis','poliza','prima','plan','payment','months','balance','deliveryDate','matriculaDate','purchaseDate','age'];
-const DELIVERY_KINDS={carta:{label:'Carta de entrega',file:'Carta de entrega'},matricula:{label:'IPM',file:'IPM'},exoneracion:{label:'Carta de exoneración',file:'Carta de exoneracion'}};
+const DELIVERY_KINDS={placa:{label:'Póliza (placa)',file:'Poliza placa',pdfOnly:true},carta:{label:'Carta de entrega',file:'Carta de entrega'},matricula:{label:'IPM',file:'IPM'},exoneracion:{label:'Carta de exoneración',file:'Carta de exoneracion'}};
 const DELIVERY_REQUIRED={
  carta:['name','dui','model','color','year','motor','chasis','poliza','price','deliveryDate'],
  matricula:['name','dui','occupation','municipio','departamento','model','color','year','motor','chasis','poliza','matriculaDate'],
+ placa:['poliza'],
  exoneracion:['name','dui','occupation','municipio','departamento','model','color','motor','chasis','poliza','age','purchaseDate','deliveryDate']};
 const DELIVERY_LABELS={name:'nombre',dui:'DUI',occupation:'ocupación',municipio:'municipio',departamento:'departamento',model:'modelo',color:'color',year:'año',motor:'número de motor',chasis:'número de chasis',poliza:'número de póliza',price:'valor de venta',deliveryDate:'fecha de entrega',matriculaDate:'fecha del IPM',purchaseDate:'fecha de compra',age:'edad'};
 let deliveryDraft=null;
@@ -40,7 +41,7 @@ function emptyDelivery(){return {id:'',creditId:'',clientId:'',saleType:'credito
 function deliveryFromCredit(f){
  const q=creditQuote(f),chosen=q.terms.find(t=>t.months===f.months);
  return {creditId:f.id,clientId:f.clientId||'',saleType:'credito',name:f.name,dui:f.dui,occupation:f.position||'',model:f.model||'',year:f.year||'',price:f.price??null,
-  prima:f.price?'$'+creditMoney(q.prima):'',plan:'SIETE TRES 47%',payment:chosen&&f.price?'$'+creditMoney(chosen.payment):'',months:f.price?String(f.months):'',balance:f.price?'$'+creditMoney(q.amount):'',age:ageFrom(f.birth)};
+  prima:f.price?'$'+creditMoney(q.fee+q.prima):'',plan:'SIETE TRES 47%',payment:chosen&&f.price?'$'+creditMoney(chosen.payment):'',months:f.price?String(f.months):'',balance:f.price?'$'+creditMoney(q.amount):'',age:ageFrom(f.birth)};
 }
 function deliveryValues(f){
  const up=v=>String(v??'').trim().toUpperCase(),d=dateParts(f.deliveryDate),m=dateParts(f.matriculaDate),credit=f.saleType==='credito';
@@ -122,8 +123,8 @@ async function handleSAPInput(dataTransfer){
 /* ---------- Pantalla ---------- */
 function deliveryPanel(){
  const list=[...(db.deliveryForms||[])].sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt)));
- const rows=list.map(f=>`<tr><td><strong>${esc(f.name)}</strong><small>DUI ${esc(f.dui)} · ${f.saleType==='credito'?'Crédito':'Contado'} · entrega ${esc(fmtDate(f.deliveryDate))}</small></td><td>${esc(f.model||'—')}<small>${f.chasis?'Chasis '+esc(f.chasis):'Sin chasis'}${f.poliza?' · Póliza '+esc(f.poliza):''}</small></td><td><div class="table-actions credit-pdf-actions"><button class="btn" data-action="delivery-pdf" data-doc="carta" data-id="${esc(f.id)}">${icon('download')}Carta</button><button class="btn" data-action="delivery-pdf" data-doc="matricula" data-id="${esc(f.id)}">${icon('download')}IPM</button><button class="btn" data-action="delivery-pdf" data-doc="exoneracion" data-id="${esc(f.id)}">${icon('download')}Exoneración</button><button class="btn" data-action="delivery-print-menu" data-id="${esc(f.id)}">Imprimir</button><button class="btn" data-action="delivery-word-menu" data-id="${esc(f.id)}" title="Descargar los Word originales llenos, para corregirlos a mano">Word</button><button class="btn" data-action="delivery-edit" data-id="${esc(f.id)}">Editar</button><button class="btn btn-quiet" data-action="delivery-delete" data-id="${esc(f.id)}" aria-label="Borrar entrega de ${esc(f.name)}">Borrar</button></div></td></tr>`).join('');
- return `<section class="card credit-panel delivery-panel" aria-labelledby="delivery-panel-title"><div class="card-head"><div><h2 id="delivery-panel-title">Entrega de la moto</h2><p class="subtext">Carta de entrega, IPM (impuesto de primera matrícula) y carta de exoneración con los formatos originales. Pegá la captura de SAP para llenar motor, chasis, póliza y color.</p></div><button class="btn btn-primary" data-action="delivery-new">+ Nueva entrega</button></div>${list.length?`<div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Moto</th><th><span class="sr-only">Documentos y acciones</span></th></tr></thead><tbody>${rows}</tbody></table></div>`:`<div class="empty compact">${icon('document')}<h3>Todavía no hay entregas</h3><p>Elegí un crédito ingresado (o una venta de contado) y pegá la captura de SAP.</p></div>`}</section>`;
+ const rows=list.map(f=>`<tr><td><strong>${esc(f.name)}</strong><small>DUI ${esc(f.dui)} · ${f.saleType==='credito'?'Crédito':'Contado'} · entrega ${esc(fmtDate(f.deliveryDate))}</small></td><td>${esc(f.model||'—')}<small>${f.chasis?'Chasis '+esc(f.chasis):'Sin chasis'}${f.poliza?' · Póliza '+esc(f.poliza):''}</small></td><td><div class="table-actions credit-pdf-actions"><button class="btn" data-action="delivery-pdf" data-doc="placa" data-id="${esc(f.id)}">${icon('download')}Póliza</button><button class="btn" data-action="delivery-pdf" data-doc="carta" data-id="${esc(f.id)}">${icon('download')}Carta</button><button class="btn" data-action="delivery-pdf" data-doc="matricula" data-id="${esc(f.id)}">${icon('download')}IPM</button><button class="btn" data-action="delivery-pdf" data-doc="exoneracion" data-id="${esc(f.id)}">${icon('download')}Exoneración</button><button class="btn" data-action="delivery-print-menu" data-id="${esc(f.id)}">Imprimir</button><button class="btn" data-action="delivery-word-menu" data-id="${esc(f.id)}" title="Descargar los Word originales llenos, para corregirlos a mano">Word</button><button class="btn" data-action="delivery-edit" data-id="${esc(f.id)}">Editar</button><button class="btn btn-quiet" data-action="delivery-delete" data-id="${esc(f.id)}" aria-label="Borrar entrega de ${esc(f.name)}">Borrar</button></div></td></tr>`).join('');
+ return `<section class="card credit-panel delivery-panel" aria-labelledby="delivery-panel-title"><div class="card-head"><div><h2 id="delivery-panel-title">Entrega de la moto</h2><p class="subtext">Póliza (placa), carta de entrega, IPM (impuesto de primera matrícula) y carta de exoneración con los formatos originales. Pegá la captura de SAP para llenar motor, chasis, póliza y color.</p></div><button class="btn btn-primary" data-action="delivery-new">+ Nueva entrega</button></div>${list.length?`<div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Moto</th><th><span class="sr-only">Documentos y acciones</span></th></tr></thead><tbody>${rows}</tbody></table></div>`:`<div class="empty compact">${icon('document')}<h3>Todavía no hay entregas</h3><p>Elegí un crédito ingresado (o una venta de contado) y pegá la captura de SAP.</p></div>`}</section>`;
 }
 renderRequests=(base=>function(){base();$('view-financieras').insertAdjacentHTML('beforeend',deliveryPanel());})(renderRequests);
 
@@ -165,7 +166,7 @@ function openDeliveryForm(id='',creditId=''){
  ${dIn('Fecha de entrega','deliveryDate',f.deliveryDate,{type:'date',hint:'Fecha de la carta de entrega y de la exoneración.'})}${dIn('Fecha de compra','purchaseDate',f.purchaseDate||f.deliveryDate,{type:'date',hint:'Exoneración: «el día … adquirí una motocicleta».'})}${ipmDateField(f.matriculaDate)}</div>
  <datalist id="credit-models">${db.stock.filter(s=>s.active!==false).map(s=>`<option value="${esc(s.label)}"></option>`).join('')}</datalist>
  </form>`;
- const actions=`<button class="btn" data-close>Cancelar</button><span class="credit-actions-office"><button class="btn btn-quiet" data-action="delivery-save-word" data-doc="carta">Carta Word</button><button class="btn btn-quiet" data-action="delivery-save-word" data-doc="matricula">IPM Word</button><button class="btn btn-quiet" data-action="delivery-save-word" data-doc="exoneracion">Exoneración Word</button></span><span class="credit-actions-office delivery-actions-print"><button class="btn btn-quiet" data-action="delivery-save-print" data-doc="carta">Carta</button><button class="btn btn-quiet" data-action="delivery-save-print" data-doc="matricula">IPM</button><button class="btn btn-quiet" data-action="delivery-save-print" data-doc="exoneracion">Exoneración</button><button class="btn btn-quiet" data-action="delivery-save-print" data-doc="todo">Todo</button></span><span class="credit-actions-pdf"><button class="btn" data-action="delivery-save-pdf" data-doc="carta">${icon('download')}Carta de entrega PDF</button><button class="btn" data-action="delivery-save-pdf" data-doc="matricula">${icon('download')}IPM PDF</button><button class="btn" data-action="delivery-save-pdf" data-doc="exoneracion">${icon('download')}Exoneración PDF</button></span><button class="btn btn-primary" type="submit" form="delivery-form">Guardar</button>`;
+ const actions=`<button class="btn" data-close>Cancelar</button><span class="credit-actions-office"><button class="btn btn-quiet" data-action="delivery-save-word" data-doc="carta">Carta Word</button><button class="btn btn-quiet" data-action="delivery-save-word" data-doc="matricula">IPM Word</button><button class="btn btn-quiet" data-action="delivery-save-word" data-doc="exoneracion">Exoneración Word</button></span><span class="credit-actions-office delivery-actions-print"><button class="btn btn-quiet" data-action="delivery-save-print" data-doc="placa">Póliza</button><button class="btn btn-quiet" data-action="delivery-save-print" data-doc="carta">Carta</button><button class="btn btn-quiet" data-action="delivery-save-print" data-doc="matricula">IPM</button><button class="btn btn-quiet" data-action="delivery-save-print" data-doc="exoneracion">Exoneración</button><button class="btn btn-quiet" data-action="delivery-save-print" data-doc="todo">Todo</button></span><span class="credit-actions-pdf"><button class="btn" data-action="delivery-save-pdf" data-doc="placa">${icon('download')}Póliza PDF</button><button class="btn" data-action="delivery-save-pdf" data-doc="carta">${icon('download')}Carta de entrega PDF</button><button class="btn" data-action="delivery-save-pdf" data-doc="matricula">${icon('download')}IPM PDF</button><button class="btn" data-action="delivery-save-pdf" data-doc="exoneracion">${icon('download')}Exoneración PDF</button></span><button class="btn btn-primary" type="submit" form="delivery-form">Guardar</button>`;
  openModal(id?'Editar entrega':'Entrega de la moto',body,actions,860);
  deliverySaleToggle();
 }
@@ -224,11 +225,33 @@ function deliveryPDF(kind,f){
  const v=deliveryValues(f);let first=true;
  for(const k of kinds){const lay=D.layouts[k];
   for(let p=0;p<lay.pages;p++){
-   if(!first)doc.addPage('letter','portrait');first=false;
-   doc.addImage(D.images[k][p],'JPEG',0,0,612,792,undefined,'FAST');
+   const [w,h]=lay.size||[612,792];
+   if(first){if(lay.placa){doc.deletePage(1);doc.addPage([w,h],'landscape');}}
+   else doc.addPage(lay.placa?[w,h]:'letter',lay.placa?'landscape':'portrait');
+   first=false;
+   doc.addImage(D.images[k][p],'JPEG',0,0,w,h,undefined,'FAST');
+   if(lay.placa)deliveryDrawPlaca(doc,v);
    for(const item of lay.items.filter(i=>i.page===p))deliveryDrawItem(doc,item,v);
   }}
  return doc;
+}
+// Póliza tipo placa: los textos van donde los pone el PowerPoint original (Arial Narrow ≈ Helvetica angosta).
+const PLACA_TEXTS=[
+ {key:'poliza',x:494,capTop:147,size:111,scale:.8,maxW:470},
+ {t:'POLIZA',x:494,capTop:237,size:42,scale:.84},
+ {t:'TVS ROOSEVLET',x:505,capTop:330,size:19,scale:1},
+ {t:'SAN MIGUEL.',x:505,capTop:357,size:19,scale:1},
+ {t:'6082-4466.',x:517,capTop:392,size:60,scale:.82}];
+function deliveryDrawPlaca(doc,v){
+ doc.setTextColor(0,0,0);doc.setFont('helvetica','bold');
+ for(const it of PLACA_TEXTS){
+  const text=it.key?String(v[it.key]||''):it.t;if(!text)continue;
+  let size=it.size;doc.setFontSize(size);
+  // Una póliza más larga se achica para que quepa en la placa
+  while(it.maxW&&size>40&&doc.getTextWidth(text)*it.scale>it.maxW){size-=2;doc.setFontSize(size);}
+  const w=doc.getTextWidth(text)*it.scale,cap=it.capTop+(it.size-size)*.718/2;
+  doc.text(text,it.x-w/2,cap+size*.718,{horizontalScale:it.scale});
+ }
 }
 // Imprimir: abre el PDF en una pestaña con la ventana de impresión lista.
 function deliveryPrint(kind,f){
@@ -311,9 +334,9 @@ document.addEventListener('click',e=>{
  else if(action==='delivery-word'){const f=rec();if(f&&downloadDelivery(b.dataset.doc,f,'word')&&$('modal').open&&!$('delivery-form'))$('modal').close();}
  else if(action==='delivery-save-print'){const f=saveDeliveryForm();if(f){deliveryError('');deliveryPrint(b.dataset.doc,f);}}
  else if(action==='delivery-print'){const f=rec();if(f&&deliveryPrint(b.dataset.doc,f)&&$('modal').open&&!$('delivery-form'))$('modal').close();}
- else if(action==='delivery-print-menu'){const f=rec();if(!f)return;openModal('Imprimir',`<p>Se abre el documento con tu formato original y la ventana para imprimir.</p><div class="credit-office-list">${[['carta','Carta de entrega (4 hojas)'],['matricula','IPM (impuesto primera matrícula)'],['exoneracion','Carta de exoneración (2 hojas)'],['todo','Los tres documentos juntos']].map(([k,l])=>`<button class="btn" data-action="delivery-print" data-doc="${k}" data-id="${esc(f.id)}">${esc(l)}</button>`).join('')}</div>`,`<button class="btn" data-close>Cerrar</button>`,480);}
+ else if(action==='delivery-print-menu'){const f=rec();if(!f)return;openModal('Imprimir',`<p>Se abre el documento con tu formato original y la ventana para imprimir.</p><div class="credit-office-list">${[['placa','Póliza (placa)'],['carta','Carta de entrega (4 hojas)'],['matricula','IPM (impuesto primera matrícula)'],['exoneracion','Carta de exoneración (2 hojas)'],['todo','Todos los documentos juntos']].map(([k,l])=>`<button class="btn" data-action="delivery-print" data-doc="${k}" data-id="${esc(f.id)}">${esc(l)}</button>`).join('')}</div>`,`<button class="btn" data-close>Cerrar</button>`,480);}
  else if(action==='delivery-save-pdf'||action==='delivery-save-word'){const f=saveDeliveryForm();if(f){deliveryError('');downloadDelivery(b.dataset.doc,f,action==='delivery-save-pdf'?'pdf':'word');}}
- else if(action==='delivery-word-menu'){const f=rec();if(!f)return;openModal('Descargar en Word',`<p>Se descargan tus documentos originales con los datos de <strong>${esc(f.name)}</strong>. Abrilos en Word, corregí lo que haga falta y guardalos como PDF.</p><div class="credit-office-list">${Object.entries(DELIVERY_KINDS).map(([k,d])=>`<button class="btn" data-action="delivery-word" data-doc="${k}" data-id="${esc(f.id)}">${icon('download')}${esc(d.label)} <span class="credit-office-tag">Word</span></button>`).join('')}</div>`,`<button class="btn" data-close>Cerrar</button>`,520);}
+ else if(action==='delivery-word-menu'){const f=rec();if(!f)return;openModal('Descargar en Word',`<p>Se descargan tus documentos originales con los datos de <strong>${esc(f.name)}</strong>. Abrilos en Word, corregí lo que haga falta y guardalos como PDF.</p><div class="credit-office-list">${Object.entries(DELIVERY_KINDS).filter(([k,d])=>!d.pdfOnly).map(([k,d])=>`<button class="btn" data-action="delivery-word" data-doc="${k}" data-id="${esc(f.id)}">${icon('download')}${esc(d.label)} <span class="credit-office-tag">Word</span></button>`).join('')}</div>`,`<button class="btn" data-close>Cerrar</button>`,520);}
  else if(action==='delivery-delete'){const f=rec();if(!f)return;openModal('Borrar entrega',`<p>¿Querés borrar la entrega de <strong>${esc(f.name)}</strong>?</p><p class="subtext">El crédito y la ficha del cliente no se borran.</p>`,`<button class="btn" data-close>Cancelar</button><button class="btn btn-danger" data-action="delivery-delete-confirm" data-id="${esc(id)}">Sí, borrar</button>`,480);}
  else if(action==='delivery-delete-confirm'){const next=clone(db);next.deliveryForms=(next.deliveryForms||[]).filter(f=>f.id!==id);if(commit(next,'Entrega borrada.'))$('modal').close();}
 });

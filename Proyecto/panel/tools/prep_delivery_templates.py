@@ -377,6 +377,19 @@ def main():
         (OUT / f'{kind}-layout.json').write_text(json.dumps(layout, ensure_ascii=False, indent=1))
         (OUT / f'{kind}.json').write_text(json.dumps({'type': 'docx', 'entries': pack_entries(marked)}))
         summary[kind] = {'pages': npages, 'items': len(items)}
+    # Póliza tipo placa (PowerPoint): la placa sin textos de fondo; el panel escribe la póliza de SAP y los textos.
+    if (src / 'placa.pptx').exists():
+        with zipfile.ZipFile(src / 'placa.pptx') as z:
+            items = {i.filename: z.read(i.filename) for i in z.infolist()}
+        items['ppt/slides/slide1.xml'] = re.sub(rb'<a:t>[^<]*</a:t>', b'<a:t></a:t>', items['ppt/slides/slide1.xml'])
+        blank = work / 'placa.pptx'
+        with zipfile.ZipFile(blank, 'w', zipfile.ZIP_DEFLATED) as z:
+            for k, v in items.items():
+                z.writestr(k, v)
+        subprocess.run(['soffice', '--headless', '--convert-to', 'pdf', '--outdir', str(work), str(blank)], check=True, capture_output=True, timeout=180)
+        subprocess.run(['pdftoppm', '-r', '150', '-jpeg', '-jpegopt', 'quality=88', '-singlefile', str(work / 'placa.pdf'), str(OUT / 'placa-fondo-1')], check=True)
+        (OUT / 'placa-layout.json').write_text(json.dumps({'pages': 1, 'size': [960, 540], 'images': ['placa-fondo-1.jpg'], 'items': [], 'placa': True}))
+        summary['placa'] = {'pages': 1}
     shutil.rmtree(work)
     print(json.dumps(summary))
 
