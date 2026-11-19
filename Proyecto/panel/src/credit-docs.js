@@ -124,6 +124,35 @@ function checkCreditRecord(r){
  if(!SIETE_TRES.terms.includes(r.months))throw Error('Elegí un plazo válido.');
  return r;
 }
+// Al guardar un crédito, el cliente queda en Clientes del mes:
+// «Credito ingresado» si la Solicitud tiene todos sus datos; si faltan, «Documentos».
+// Si el cliente ya existe (por la ficha elegida, el teléfono o el nombre) se actualiza; nunca se le baja el estado
+// si ya va más adelante (Preaprobado, Aprobado o Vendido).
+const CREDIT_LATER_STAGES=['Preaprobado','Aprobado','Vendido'];
+function creditPhoneKey(v){const d=String(v||'').replace(/\D/g,'');return d.length>=8?d.slice(-8):'';}
+function creditSyncClient(next,rec,isNew){
+ const stage=creditMissing('solicitud',rec).length?'Documentos':'Credito ingresado';
+ const nameKey=norm(rec.name),phoneKey=creditPhoneKey(rec.phone);
+ let c=rec.clientId?next.clients.find(x=>x.id===rec.clientId):null;
+ c??=phoneKey?next.clients.find(x=>creditPhoneKey(x.phone)===phoneKey):null;
+ c??=nameKey?next.clients.find(x=>!x.namePending&&norm(x.name)===nameKey):null;
+ const modelKey=norm(rec.model||'').replace(/^TVS/,''),st=modelKey?next.stock.find(s=>norm(s.label).replace(/^TVS/,'')===modelKey):null;
+ if(!c){
+  c={id:uid(),name:rec.name,phone:rec.phone||'',stockId:st?.id||'',stage,source:'Otro',paymentMode:'Crédito',nextFollow:'',notes:'',recordDate:today(),price:rec.price??null,documentation:'',plates:'',saleId:'',archived:false,createdAt:new Date().toISOString(),history:[]};
+  next.clients.push(c);
+  if(typeof eventFor==='function')eventFor(c,'Cliente agregado desde Ingresar crédito.');
+ }else{
+  if(c.namePending&&rec.name){c.name=rec.name;c.namePending=false;}
+  if(!c.phone&&rec.phone)c.phone=rec.phone;
+  if(!c.stockId&&st)c.stockId=st.id;
+  if((c.price===null||c.price===undefined)&&rec.price!=null)c.price=rec.price;
+  if(c.paymentMode==='Por definir')c.paymentMode='Crédito';
+  c.archived=false;
+  if(!CREDIT_LATER_STAGES.includes(c.stage)&&c.stage!==stage){if(typeof eventFor==='function')eventFor(c,`Estado: ${c.stage} → ${stage} (crédito ingresado).`);c.stage=stage;}
+ }
+ rec.clientId=c.id;
+ return {client:c,stage,created:isNew};
+}
 function saveCreditForm(){
  const form=$('credit-form');if(!form)return null;
  let rec;try{rec=checkCreditRecord(readCreditForm(form));}catch(err){showCreditError(err.message);return null;}
@@ -136,6 +165,7 @@ function saveCreditForm(){
  const old=next.creditForms.find(f=>f.id===creditDraft?.id);
  if(old){Object.assign(old,rec,{updatedAt:now});rec=old;}
  else{rec=Object.assign({id:uid(),createdAt:now,updatedAt:now},rec);next.creditForms.push(rec);creditDraft={id:rec.id};}
+ const synced=creditSyncClient(next,rec,!old);
  if(rec.clientId){const c=next.clients.find(c=>c.id===rec.clientId);if(c&&typeof eventFor==='function')eventFor(c,old?'Datos de crédito Crediopciones actualizados.':'Crédito Crediopciones ingresado (Siete Tres 47%).');}
  if(!commit(next,old?'Crédito actualizado.':'Crédito guardado.'))return null;
  return (db.creditForms||[]).find(f=>f.id===rec.id)||rec;
