@@ -7,7 +7,7 @@ const CREDIT_REF_COUNT=2;
 const CREDIT_RELATION={fam:'FAMILIAR',friend:'CONOCIDA'};
 const CREDIT_TEXT=['name','dui','phone','model','year','vendor','agency','agencyPhone','birth','sex','nationality','address','addressRef','company','position','startDate','workAddress','workRef','workPhone','detail'];
 const CREDIT_NUMBERS=['price','down','income','otherIncome'];
-let creditDraft=null;
+let creditDraft=null,creditDupOk=false;
 
 function emptyCreditForm(){
  const last=[...(db.creditForms||[])].sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt)))[0];
@@ -83,6 +83,7 @@ function openCreditForm(id='',clientId=''){
  <div class="form-grid" style="margin-top:18px"><div class="field full"><label for="cf-detail">Detalle</label><textarea id="cf-detail" name="detail" maxlength="5000" placeholder="Horario para localizar al cliente, verificación de campo, croquis, contacto para la constancia laboral…">${esc(f.detail)}</textarea></div></div>
  ${stockList}</form>`;
  const actions=`<button class="btn" data-close>Cancelar</button><span class="credit-actions-pdf"><button class="btn" data-action="credit-save-pdf" data-doc="buro">${icon('download')}Buró PDF</button><button class="btn" data-action="credit-save-pdf" data-doc="cotizador">${icon('download')}Cotizador PDF</button><button class="btn" data-action="credit-save-pdf" data-doc="solicitud">${icon('download')}Solicitud PDF</button></span><button class="btn btn-primary" type="submit" form="credit-form">Guardar</button>`;
+ creditDupOk=false;
  openModal(base?'Editar crédito':'Ingresar crédito · Crediopciones',body,actions,860);
  updateCreditPreview();
  if(!base)$('cf-name')?.focus();
@@ -110,6 +111,11 @@ function checkCreditRecord(r){
 function saveCreditForm(){
  const form=$('credit-form');if(!form)return null;
  let rec;try{rec=checkCreditRecord(readCreditForm(form));}catch(err){showCreditError(err.message);return null;}
+ // DUI repetido: se avisa antes de crear otro crédito para la misma persona
+ const stored=(db.creditForms||[]).find(f=>f.id===creditDraft?.id);
+ const dupCredit=stored&&stored.dui===rec.dui?null:(db.creditForms||[]).find(f=>f.dui===rec.dui&&f.id!==creditDraft?.id);
+ if(dupCredit&&!creditDupOk){showCreditError('');const el=$('credit-error');el.innerHTML=`<strong>Ya hay un crédito con el DUI ${esc(rec.dui)}:</strong> ${esc(dupCredit.name)}. <span class="dup-actions"><button type="button" class="btn btn-small" data-action="credit-edit" data-id="${esc(dupCredit.id)}">Abrir el existente</button><button type="button" class="btn btn-small btn-quiet" data-action="credit-dup-ok">Guardar otro de todos modos</button></span>`;return null;}
+ creditDupOk=false;
  const next=clone(db);next.creditForms??=[];const now=new Date().toISOString();
  const old=next.creditForms.find(f=>f.id===creditDraft?.id);
  if(old){Object.assign(old,rec,{updatedAt:now});rec=old;}
@@ -296,6 +302,9 @@ document.addEventListener('change',e=>{
  if(e.target.name==='months')updateCreditPreview();
  if(e.target.name==='clientId'&&e.target.value){const form=$('credit-form'),p=clientPrefill(e.target.value);for(const k of ['name','phone','model','year','price'])if(form[k]&&!form[k].value&&p[k]!==undefined&&p[k]!==null)form[k].value=p[k];updateCreditPreview();}
  if(e.target.name==='dui'){try{e.target.value=normalizeDUI(e.target.value);}catch{}}
+ // Al elegir la moto se completan el precio y el año guardados en Motos y precios (si están vacíos)
+ if(e.target.name==='model'){const form=$('credit-form'),key=norm(e.target.value).replace(/^TVS/,''),s=db.stock.find(s=>norm(s.label).replace(/^TVS/,'')===key);
+  if(s){if(form.price&&!form.price.value&&s.price!=null)form.price.value=s.price;if(form.year&&!form.year.value&&s.year)form.year.value=s.year;updateCreditPreview();}}
 });
 document.addEventListener('submit',e=>{if(e.target.id!=='credit-form')return;e.preventDefault();if(saveCreditForm())$('modal').close();});
 document.addEventListener('click',e=>{
@@ -305,6 +314,7 @@ document.addEventListener('click',e=>{
  else if(action==='credit-edit')openCreditForm(id);
  else if(action==='credit-pdf'){const f=(db.creditForms||[]).find(f=>f.id===id);if(f)downloadCreditPDF(b.dataset.doc,f);}
  else if(action==='credit-save-pdf'){const f=saveCreditForm();if(f){$('credit-error')&&($('credit-error').hidden=true);downloadCreditPDF(b.dataset.doc,f);}}
+ else if(action==='credit-dup-ok'){creditDupOk=true;const f=saveCreditForm();if(f)$('modal').close();}
  else if(action==='credit-delete'){const f=(db.creditForms||[]).find(f=>f.id===id);if(!f)return;openModal('Borrar crédito',`<p>¿Querés borrar los datos de crédito de <strong>${esc(f.name)}</strong> (DUI ${esc(f.dui)})?</p><p class="subtext">La ficha del cliente y sus cotizaciones no se borran.</p>`,`<button class="btn" data-close>Cancelar</button><button class="btn btn-danger" data-action="credit-delete-confirm" data-id="${esc(id)}">Sí, borrar</button>`,480);}
  else if(action==='credit-delete-confirm'){const next=clone(db);next.creditForms=(next.creditForms||[]).filter(f=>f.id!==id);if(commit(next,'Crédito borrado.'))$('modal').close();}
 });

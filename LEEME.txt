@@ -1,4 +1,4 @@
-PANEL DE VENTAS DANIEL CAMPOS · VERSIÓN 1.10.0 · RESPALDO, WHATSAPP Y BUSCADOR
+PANEL DE VENTAS DANIEL CAMPOS · VERSIÓN 1.11.0 · METAS, GRÁFICAS Y REPETIDOS
 4 de noviembre de 2026
 
 PAQUETE PARA WINDOWS
@@ -6,6 +6,13 @@ Usá Extraer todo en Windows y abrí Panel-Ventas-Daniel.html con Chrome o Edge.
 También se entrega el HTML por separado: ese archivo incluye toda la aplicación y se puede abrir directamente.
 El ZIP evita duplicar las imágenes de las fichas técnicas. Todas están incluidas dentro del HTML con sus bytes originales.
 Para trabajar con el código fuente, ejecutá python Proyecto/panel/build.py. Si faltan las imágenes sueltas, se recuperan automáticamente del HTML antes de generar la aplicación. Conservá el HTML en la carpeta principal.
+
+METAS, GRÁFICAS Y REPETIDOS (VERSIÓN 1.11)
+Meta del mes: en el Resumen y en Ventas y comisiones hay una barra de avance hacia tu meta (15 motos), con la marca de la meta y, en el mes actual, la proyección: "a este ritmo cerrarás N motos".
+Gráficas en Ventas y comisiones: ventas por mes (últimos 6 meses, el mes elegido resaltado), modelos más vendidos y de dónde vienen tus clientes (con cuántos compraron). Al pasar el mouse se ven los detalles.
+Repetidos: si guardás un cliente con un teléfono que ya existe, el aviso dice de quién es y ofrece Abrir la ficha existente. En Ingresar crédito, un DUI repetido avisa y permite abrir el existente o guardar otro.
+Ingresar crédito: al elegir la moto se completan solos el precio y el año guardados en Motos y precios. En Cotizar el precio ya se llenaba solo: para que funcione, cargá los precios en Motos y precios.
+Oficina virtual: el botón Nombres muestra el nombre corto de cada personaje (se recuerda en esta PC). Los pisos tienen textura: madera, alfombra o baldosa según la sala.
 
 RESPALDO, WHATSAPP Y BUSCADOR (VERSIÓN 1.10)
 Respaldo: si en esta PC nunca descargaste un respaldo, o pasaron 7 días desde el último, aparece un aviso arriba con el botón Descargar respaldo. Más tarde lo oculta hasta mañana. El aviso es por PC, porque cada navegador guarda sus propios datos.

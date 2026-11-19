@@ -25,3 +25,12 @@
 #office-scene:fullscreen{width:100vw;height:100vh;max-height:none;background:#f8faf8}
 #office-scene:fullscreen .camera-3d-tools{bottom:24px;left:24px}
 .camera-3d-tools .fullscreen-camera{font-size:15px}
+
+/* Nombres siempre visibles (botón Nombres) */
+.client-3d-tag{display:none;position:absolute;left:50%;top:-4px;transform:translate(-50%,-100%);padding:2px 7px;border-radius:6px;background:#ffffffeb;color:#16243b;border:1px solid #dfe5ee;font:600 11px/1.35 var(--font-ui,sans-serif);white-space:nowrap;box-shadow:0 2px 6px #16243b1a;pointer-events:none}
+.show-names .client-3d-tag{display:block}
+.show-names .client-3d-hit:hover .client-3d-tag,.show-names .client-3d-hit:focus-visible .client-3d-tag,.grabbing-client .client-3d-tag{display:none}
+.show-names .client-3d-alert{left:100%;top:34%;transform:translate(-35%,-50%)}
+.camera-3d-tools .names-camera[aria-pressed=true]{background:var(--primary-soft,#e8eefb);color:var(--primary,#1747b5);font-weight:650}
+.camera-3d-tools button.names-camera{width:auto;padding:0 10px;font-size:12px;font-weight:600;color:#5f6b82;border-left:1px solid #e9e8ed;border-radius:0 4px 4px 0;margin-left:2px}
+.camera-3d-tools button.focus-sold-camera{font-size:12px}

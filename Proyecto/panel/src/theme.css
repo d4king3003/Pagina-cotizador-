@@ -277,3 +277,63 @@ dialog[data-instant],dialog[data-instant]::backdrop{transition:none!important}
 .btn.btn-wa-icon{width:32px;height:32px;min-width:32px;padding:0;gap:0;flex:none;border-radius:9px}
 .btn.btn-wa-icon .wa-icon{width:18px;height:18px}
 .btn.btn-wa-icon:disabled{background:#cfeedd;border-color:#cfeedd;box-shadow:none;opacity:.7}
+
+/* ---------- Aviso de repetidos ---------- */
+.dup-actions{display:inline-flex;gap:6px;margin-left:6px;flex-wrap:wrap;vertical-align:middle}
+
+/* ---------- Meta del mes ---------- */
+.goal-card{padding:20px 22px;margin-bottom:22px}
+.goal-card.compact{padding:18px 20px}
+.goal-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px}
+.goal-title{margin:0;font-size:12.5px;font-weight:550;color:var(--muted)}
+.goal-figure{margin:6px 0 0;display:flex;align-items:baseline;gap:8px;font-variant-numeric:tabular-nums}
+.goal-figure strong{font-family:var(--font-display);font-size:34px;font-weight:750;letter-spacing:-1px;line-height:1}
+.goal-figure span{color:var(--muted);font-size:13px}
+.goal-status{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;background:var(--soft);color:var(--muted);font-size:12px;font-weight:600;white-space:nowrap}
+.goal-status.good{background:#e3f5ec;color:#0f6b4c}
+.goal-status svg{width:14px;height:14px}
+.goal-meter{position:relative;height:14px;margin:22px 0 8px}
+.goal-track{position:absolute;inset:0;border-radius:999px;background:#e3eaf8}
+.goal-fill{position:absolute;left:0;top:0;bottom:0;border-radius:999px;background:var(--primary)}
+.goal-projection{position:absolute;top:0;bottom:0;border-radius:0 999px 999px 0;background:repeating-linear-gradient(135deg,#b9cbef 0 4px,#d4e0f6 4px 8px)}
+.goal-target{position:absolute;top:-6px;bottom:-6px;width:2px;margin-left:-1px;background:var(--ink);border-radius:2px}
+.goal-target span{position:absolute;top:-20px;left:50%;transform:translateX(-50%);font-size:11px;font-weight:650;color:var(--ink);white-space:nowrap}
+.goal-note{margin:14px 0 0;font-size:13px;color:var(--muted)}
+.goal-note strong{color:var(--ink)}
+html[data-theme=dark] .goal-track{background:#22324d}
+html[data-theme=dark] .goal-projection{background:repeating-linear-gradient(135deg,#34507f 0 4px,#283f66 4px 8px)}
+html[data-theme=dark] .goal-status.good{background:#173a2e;color:#9fe3c5}
+
+/* ---------- Gráficas de Ventas y comisiones ---------- */
+.charts-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr) minmax(0,1fr);gap:22px;margin:22px 0}
+.chart-card .card-head{flex-direction:column;align-items:flex-start;gap:4px}
+.chart-card .card-head .subtext{font-size:12px}
+.chart-empty{padding:22px}
+.chart-tip{position:absolute;z-index:5;left:50%;bottom:calc(100% + 6px);transform:translateX(-50%);background:var(--navy);color:#fff;border-radius:8px;padding:7px 10px;font-size:12px;line-height:1.45;white-space:nowrap;pointer-events:none;display:none;box-shadow:0 8px 20px #0b1a3340}
+.chart-tip strong{display:block;font-weight:650}
+.col-item:hover .chart-tip,.col-item:focus-visible .chart-tip,.rank-row:hover .chart-tip,.rank-row:focus-visible .chart-tip{display:block}
+.col-item:last-child .chart-tip,.col-item:nth-last-child(2) .chart-tip{left:auto;right:0;transform:none}
+.col-item:first-child .chart-tip{left:0;transform:none}
+/* Columnas: una por mes, el mes elegido en el tono fuerte */
+.col-chart{display:flex;align-items:flex-end;justify-content:space-around;gap:8px;height:210px;padding:26px 20px 14px;border-bottom:0}
+.col-item{position:relative;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;outline:none}
+.col-bar{width:24px;max-height:calc(100% - 44px);border-radius:4px 4px 0 0;background:#b9cbef}
+.col-item.current .col-bar{background:var(--primary)}
+.col-value{font-size:12.5px;font-weight:650;color:var(--ink);margin-bottom:6px;font-variant-numeric:tabular-nums}
+.col-label{margin-top:8px;font-size:12px;color:var(--muted);text-transform:capitalize}
+.col-item.current .col-label{color:var(--ink);font-weight:650}
+.col-chart{background:linear-gradient(to top,var(--line) 0 1px,transparent 1px) left calc(100% - 36px)/100% 100% no-repeat}
+/* Barras horizontales ordenadas */
+.rank-chart{display:flex;flex-direction:column;gap:12px;padding:18px 22px 22px}
+.rank-row{position:relative;display:grid;grid-template-columns:minmax(0,130px) minmax(0,1fr);align-items:center;gap:12px;outline:none}
+.rank-name{font-size:12.5px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rank-track{display:flex;align-items:center;gap:8px;min-width:0}
+/* Largo proporcional al espacio que queda después de reservar el lugar del número */
+.rank-bar{height:14px;border-radius:0 4px 4px 0;background:var(--primary);flex:none;width:max(3px,calc((100% - 110px) * var(--v)))}
+.rank-value{font-size:12.5px;font-weight:650;color:var(--ink);white-space:nowrap;font-variant-numeric:tabular-nums}
+.rank-row .chart-tip{left:auto;right:0;transform:none}
+.col-item:focus-visible .col-bar,.rank-row:focus-visible .rank-bar{outline:2px solid var(--ink);outline-offset:2px}
+html[data-theme=dark] .col-bar{background:#34507f}
+html[data-theme=dark] .col-item.current .col-bar,html[data-theme=dark] .rank-bar{background:#7aa7ff}
+@media(max-width:1180px){.charts-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.charts-grid>:first-child{grid-column:1/-1}}
+@media(max-width:700px){.charts-grid{grid-template-columns:minmax(0,1fr)}}

@@ -78,3 +78,26 @@ document.addEventListener('click',e=>{
  else if(b.dataset.action==='whatsapp-client')openClientWhatsApp(b.dataset.id);
  else if(b.dataset.action==='backup-later'){writeLocal(BACKUP_SNOOZE_KEY,today());renderBackupBanner();}
 });
+
+/* ---------- Clientes repetidos ----------
+   El panel ya impedía guardar un teléfono repetido; ahora el aviso dice de quién es y permite abrir esa ficha. */
+function duplicateClientFor(phone,id){
+ const key=phoneKey(phone);if(!key||key.replace(/\D/g,'').length<8)return null;
+ return db.clients.find(c=>c.id!==id&&phoneKey(c.phone)===key)||null;
+}
+const submitRecordNoDup=submitRecord;
+submitRecord=function(form){
+ if(form?.dataset?.form==='client'){
+  const phone=String(new FormData(form).get('phone')||'').trim(),old=client(form.dataset.id||'');
+  // Solo si el teléfono es nuevo o cambió: una ficha ya guardada no vuelve a avisar
+  const dup=old&&phoneKey(old.phone)===phoneKey(phone)?null:duplicateClientFor(phone,form.dataset.id||'');
+  if(dup){
+   const box=$('form-error');
+   if(box){box.innerHTML=`<strong>Ya existe un cliente con este teléfono:</strong> ${esc(dup.name)} (${esc(dup.stage)}${dup.archived?', archivado':''}). <span class="dup-actions"><button type="button" class="btn btn-small" data-action="view-client" data-id="${esc(dup.id)}">Abrir la ficha existente</button></span>`;box.hidden=false;box.scrollIntoView({block:'nearest'});}
+   else toast('Ya existe un cliente con este teléfono: '+dup.name,true);
+   return;
+  }
+ }
+ return submitRecordNoDup(form);
+};
+
