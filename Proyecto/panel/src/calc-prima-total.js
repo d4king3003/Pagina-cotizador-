@@ -17,6 +17,10 @@
   btn.type = 'button'; btn.id = 'down-total'; btn.textContent = 'Total'; btn.setAttribute('aria-pressed', 'false');
   btn.title = 'Escribí lo que da el cliente; se le restan los gastos administrativos';
   group.append(btn);
+  // Los botones $ y % miden 28 px; «Total» necesita su propio ancho para quedar centrado.
+  const style = document.createElement('style');
+  style.textContent = '.unit-toggle #down-total{width:auto;min-width:44px;padding:0 9px;text-align:center;font-weight:500}';
+  document.head.append(style);
 
   function sync() {
     const now = active();
