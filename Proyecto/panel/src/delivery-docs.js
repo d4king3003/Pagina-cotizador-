@@ -240,7 +240,7 @@ function deliveryPDF(kind,f){
  const J=globalThis.jspdf?.jsPDF;if(!J)throw Error('No se pudo cargar el generador de PDF.');
  const doc=new J({unit:'pt',format:'letter',orientation:'portrait',compress:true});creditFonts(doc);
  const v=deliveryValues(f);let first=true;
- if(kinds.includes('compraventa')&&D.fonts?.gothic){doc.addFileToVFS('DidactGothic.ttf',D.fonts.gothic);doc.addFont('DidactGothic.ttf','Gothic','normal');}
+ if(kinds.includes('compraventa')&&D.fonts?.gothic){doc.addFileToVFS('DidactGothic.ttf',D.fonts.gothic);doc.addFont('DidactGothic.ttf','Gothic','normal');if(D.fonts.gothicBold){doc.addFileToVFS('JostBold.ttf',D.fonts.gothicBold);doc.addFont('JostBold.ttf','Gothic','bold');}}
  for(const k of kinds){const lay=D.layouts[k];
   if(lay.flow){deliveryDrawFlow(doc,lay,v,first);first=false;continue;}
   for(let p=0;p<lay.pages;p++){
@@ -255,7 +255,7 @@ function deliveryPDF(kind,f){
  return doc;
 }
 // Documento de solo texto (compraventa): se compone completo con los márgenes, el interlineado y la letra del Word
-// (Century Gothic → Didact Gothic; la negrita se dibuja con un trazo). Si el texto crece, pasa a la hoja siguiente.
+// (Century Gothic → Didact Gothic; negrita → Jost Bold). Si el texto crece, pasa a la hoja siguiente.
 function deliveryDrawFlow(doc,lay,v,first){
  const [W,H]=lay.size,m=lay.margins,left=m.left,width=W-m.left-m.right,bottom=H-m.bottom;
  if(first){if(doc.getNumberOfPages()===1&&!doc.__flowUsed){/* primera hoja ya creada (carta) */}}else doc.addPage([W,H],'portrait');
@@ -263,8 +263,9 @@ function deliveryDrawFlow(doc,lay,v,first){
  const font=doc.getFontList().Gothic?'Gothic':'helvetica';
  let y=m.top;
  const newPage=()=>{doc.addPage([W,H],'portrait');y=m.top;};
- const setRun=w=>{doc.setFont(font,font==='Gothic'?'normal':(w.b?'bold':'normal'));doc.setFontSize(w.size);};
- const draw=(w,x,base)=>{setRun(w);if(w.b&&font==='Gothic'){doc.setLineWidth(w.size*.035);doc.setDrawColor(0,0,0);doc.text(w.t,x,base,{renderingMode:'fillThenStroke'});}else doc.text(w.t,x,base);return doc.getTextWidth(w.t);};
+ const hasBold=!!doc.getFontList().Gothic?.includes('bold');
+ const setRun=w=>{doc.setFont(font,w.b&&(font!=='Gothic'||hasBold)?'bold':'normal');doc.setFontSize(w.size);};
+ const draw=(w,x,base)=>{setRun(w);if(w.b&&font==='Gothic'&&!hasBold){doc.setLineWidth(w.size*.035);doc.setDrawColor(0,0,0);doc.text(w.t,x,base,{renderingMode:'fillThenStroke'});}else doc.text(w.t,x,base);return doc.getTextWidth(w.t);};
  doc.setTextColor(0,0,0);
  for(const para of lay.paragraphs){
   const runs=para.runs.map(r=>({...r,t:r.t.replace(/\{\{(\w+)\}\}/g,(mm,k)=>v[k]??'')}));
@@ -283,7 +284,7 @@ function deliveryDrawFlow(doc,lay,v,first){
   const words=[];
   for(const r of runs){for(const part of r.t.split(/( +)/)){if(!part)continue;if(/^ +$/.test(part)){if(words.length)words[words.length-1].space=true;continue;}words.push({t:part,b:!!r.b,size:r.size,glue:words.length>0&&!words[words.length-1].space});}}
   const spaceW=w=>{setRun(w);return doc.getTextWidth(' ');};
-  const wordW=w=>{setRun(w);return doc.getTextWidth(w.t)*(w.b&&font==='Gothic'?1.02:1);};
+  const wordW=w=>{setRun(w);return doc.getTextWidth(w.t);};
   const lines=[];let line=[],lw=0,first=true;
   const avail=()=>width-para.indLeft-(first?para.firstLine:0);
   for(const w of words){const add=(line.length&&!w.glue?spaceW(w):0)+wordW(w);

@@ -441,7 +441,13 @@ def main():
         font = subset.load_font(str(ROOT / 'src/vendor/fonts/DidactGothic-Regular.ttf'), opts)
         sub = subset.Subsetter(opts); sub.populate(unicodes=list(range(0x20, 0x7f)) + list(range(0xa0, 0x180)) + [0x2013, 0x2014, 0x2018, 0x2019, 0x201c, 0x201d, 0x2026]); sub.subset(font)
         tmp = work / 'gothic.ttf'; font.save(str(tmp))
-        (OUT / 'gothic.json').write_text(json.dumps({'gothic': base64.b64encode(tmp.read_bytes()).decode()}))
+        fonts = {'gothic': base64.b64encode(tmp.read_bytes()).decode()}
+        # Negrita: Jost Bold (licencia OFL), muy parecida a Century Gothic Bold
+        bold = subset.load_font(str(ROOT / 'src/vendor/fonts/Jost-Bold.ttf'), opts)
+        sub = subset.Subsetter(opts); sub.populate(unicodes=list(range(0x20, 0x7f)) + list(range(0xa0, 0x180)) + [0x2013, 0x2014, 0x2018, 0x2019, 0x201c, 0x201d, 0x2026]); sub.subset(bold)
+        tmpb = work / 'gothic-bold.ttf'; bold.save(str(tmpb))
+        fonts['gothicBold'] = base64.b64encode(tmpb.read_bytes()).decode()
+        (OUT / 'gothic.json').write_text(json.dumps(fonts))
     shutil.rmtree(work)
     print(json.dumps(summary))
 
