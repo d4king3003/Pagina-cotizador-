@@ -68,3 +68,17 @@ html[data-theme=dark] .credit-form .credit-missing{background:#3a2230}
 .delivery-actions-print::before{content:"Imprimir:"}
 html[data-theme=dark] .delivery-sap.drag{background:#1d2a44}
 html[data-theme=dark] .delivery-form input.delivery-filled{background:#1b2d27}
+
+/* Ventana emergente de confirmación (número repetido) */
+.credit-confirm{position:fixed;inset:0;z-index:200;display:grid;place-items:center;padding:16px;background:#0b1b3a66;backdrop-filter:blur(2px);animation:credit-confirm-in .16s ease-out}
+.credit-confirm-card{width:min(460px,100%);background:var(--paper);color:var(--ink);border-radius:16px;box-shadow:0 24px 80px #0b1b3a55;padding:24px 24px 20px;animation:credit-confirm-pop .18s cubic-bezier(.2,.8,.2,1)}
+.credit-confirm-card h3{font-size:17px;margin:0 0 10px}
+.credit-confirm-card p{font-size:13px;line-height:1.6;margin:0 0 12px;color:var(--ink)}
+.credit-confirm-client{display:flex;flex-direction:column;gap:3px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--soft);margin:0 0 12px}
+.credit-confirm-client strong{font-size:14px}
+.credit-confirm-client span{font-size:12px;color:var(--muted)}
+.credit-confirm-actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:6px}
+@keyframes credit-confirm-in{from{opacity:0}}
+@keyframes credit-confirm-pop{from{opacity:0;transform:translateY(6px) scale(.98)}}
+@media(prefers-reduced-motion:reduce){.credit-confirm,.credit-confirm-card{animation:none}}
+@media(max-width:520px){.credit-confirm-actions .btn{flex:1}}

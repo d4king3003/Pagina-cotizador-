@@ -257,6 +257,20 @@ def clean(entries):
     return out
 
 
+def pack_entries(entries):
+    """Partes con marcas {{…}}: sin comprimir (el panel las llena). El resto: comprimidas como en el archivo original."""
+    import zlib
+    out = []
+    for k, v in entries.items():
+        if (k.endswith('.xml') or k.endswith('.vml')) and b'{{' in v:
+            out.append([k, base64.b64encode(v).decode()])
+        else:
+            co = zlib.compressobj(9, zlib.DEFLATED, -15)
+            packed = co.compress(v) + co.flush()
+            out.append([k, base64.b64encode(packed).decode(), zlib.crc32(v) & 0xffffffff, len(v)])
+    return out
+
+
 def main():
     src = Path(sys.argv[1])
     OUT.mkdir(parents=True, exist_ok=True)
@@ -303,7 +317,7 @@ def main():
                            'para': {'left': min(w['x0'] for w in body), 'right': max(w['x1'] for w in body), 'top': yo['top'], 'bottom': yo['bottom'], 'lineGap': (tops[1] - tops[0]) if len(tops) > 1 else 14, 'size': round(yo['size'], 2), 'font': yo['fontname'], 'lines': len(tops)}}
 
     for name, entries in (('solicitud', marked), ('cotizador', pmarked), ('buro', bmarked)):
-        payload = {'type': 'docx' if name == 'buro' else 'xlsx', 'entries': [[k, base64.b64encode(v).decode()] for k, v in entries.items()]}
+        payload = {'type': 'docx' if name == 'buro' else 'xlsx', 'entries': pack_entries(entries)}
         (OUT / f'{name}.json').write_text(json.dumps(payload))
     specs = {'solicitud': solicitud_spec(layouts['solicitud']), 'cotizador': cotizador_spec(layouts['cotizador']), 'buro': buro_spec(layouts['buro'])}
     for name, spec in specs.items():

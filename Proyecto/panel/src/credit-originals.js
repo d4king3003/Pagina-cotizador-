@@ -39,14 +39,16 @@ function creditCrc(data){
 function creditZip(files){
  const enc=new TextEncoder(),chunks=[],central=[];let offset=0;
  const now=new Date(),time=(now.getHours()<<11)|(now.getMinutes()<<5)|(now.getSeconds()>>1),date=((now.getFullYear()-1980)<<9)|((now.getMonth()+1)<<5)|now.getDate();
- for(const [name,data] of files){
-  const nameBytes=enc.encode(name),crc=creditCrc(data),head=new DataView(new ArrayBuffer(30));
-  head.setUint32(0,0x04034b50,true);head.setUint16(4,20,true);head.setUint16(6,0x0800,true);head.setUint16(8,0,true);head.setUint16(10,time,true);head.setUint16(12,date,true);
-  head.setUint32(14,crc,true);head.setUint32(18,data.length,true);head.setUint32(22,data.length,true);head.setUint16(26,nameBytes.length,true);head.setUint16(28,0,true);
+ // Cada parte: [nombre, bytes] sin comprimir, o [nombre, bytes comprimidos, crc, tamaño real] (ya viene comprimida).
+ for(const [name,data,preCrc,realSize] of files){
+  const packed=preCrc!==undefined,method=packed?8:0,crc=packed?preCrc>>>0:creditCrc(data),usize=packed?realSize:data.length;
+  const nameBytes=enc.encode(name),head=new DataView(new ArrayBuffer(30));
+  head.setUint32(0,0x04034b50,true);head.setUint16(4,20,true);head.setUint16(6,0x0800,true);head.setUint16(8,method,true);head.setUint16(10,time,true);head.setUint16(12,date,true);
+  head.setUint32(14,crc,true);head.setUint32(18,data.length,true);head.setUint32(22,usize,true);head.setUint16(26,nameBytes.length,true);head.setUint16(28,0,true);
   chunks.push(new Uint8Array(head.buffer),nameBytes,data);
   const c=new DataView(new ArrayBuffer(46));
-  c.setUint32(0,0x02014b50,true);c.setUint16(4,20,true);c.setUint16(6,20,true);c.setUint16(8,0x0800,true);c.setUint16(10,0,true);c.setUint16(12,time,true);c.setUint16(14,date,true);
-  c.setUint32(16,crc,true);c.setUint32(20,data.length,true);c.setUint32(24,data.length,true);c.setUint16(28,nameBytes.length,true);c.setUint32(42,offset,true);
+  c.setUint32(0,0x02014b50,true);c.setUint16(4,20,true);c.setUint16(6,20,true);c.setUint16(8,0x0800,true);c.setUint16(10,method,true);c.setUint16(12,time,true);c.setUint16(14,date,true);
+  c.setUint32(16,crc,true);c.setUint32(20,data.length,true);c.setUint32(24,usize,true);c.setUint16(28,nameBytes.length,true);c.setUint32(42,offset,true);
   central.push(new Uint8Array(c.buffer),nameBytes);
   offset+=30+nameBytes.length+data.length;
  }
@@ -59,7 +61,8 @@ function creditOfficeFile(kind,f){
  if(kind==='cotizador')creditCotizadorCheck(f);
  const v=creditValues(kind,f),dec=new TextDecoder(),enc=new TextEncoder();
  const raw={ctrlF:v.sex==='F'?' checked="Checked"':'',ctrlM:v.sex==='M'?' checked="Checked"':'',vmlF:v.sex==='F'?'<x:Checked>1</x:Checked>':'',vmlM:v.sex==='M'?'<x:Checked>1</x:Checked>':''};
- const files=tpl.entries.map(([name,b64])=>{
+ const files=tpl.entries.map(([name,b64,crc,size])=>{
+  if(crc!==undefined)return [name,creditB64(b64),crc,size];
   let data=creditB64(b64);
   if(/\.(xml|vml)$/.test(name)){const text=dec.decode(data);if(text.includes('{{')){
    data=enc.encode(text

@@ -164,6 +164,19 @@ function creditSyncClient(next,rec,isNew,phoneChoice=''){
  rec.clientId=c.id;
  return {client:c,stage,created:isNew};
 }
+// Ventana emergente en el centro, encima del formulario (el formulario queda abierto detrás).
+function creditConfirm(title,html,buttons){
+ document.querySelector('.credit-confirm')?.remove();
+ const box=document.createElement('div');box.className='credit-confirm';box.setAttribute('role','alertdialog');box.setAttribute('aria-modal','true');box.setAttribute('aria-labelledby','credit-confirm-title');
+ box.innerHTML=`<div class="credit-confirm-card"><h3 id="credit-confirm-title">${esc(title)}</h3>${html}<div class="credit-confirm-actions"><button type="button" class="btn" data-confirm-cancel>Cancelar</button>${buttons.map(([action,label,cls])=>`<button type="button" class="btn ${cls}" data-action="${action}">${esc(label)}</button>`).join('')}</div></div>`;
+ ($('modal').open?$('modal'):document.body).append(box);
+ box.querySelector('.btn-primary')?.focus();
+}
+document.addEventListener('click',e=>{const box=e.target.closest?.('.credit-confirm');if(!box)return;
+ if(e.target.closest('[data-confirm-cancel]')||e.target===box){box.remove();creditPendingAction=null;return;}
+ if(e.target.closest('[data-action]'))setTimeout(()=>box.remove());},true);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.querySelector('.credit-confirm')){e.preventDefault();e.stopPropagation();document.querySelector('.credit-confirm').remove();creditPendingAction=null;}},true);
+document.addEventListener('cancel',e=>{if(document.querySelector('.credit-confirm'))e.preventDefault();},true);
 function saveCreditForm(){
  const form=$('credit-form');if(!form)return null;
  let rec;try{rec=checkCreditRecord(readCreditForm(form));}catch(err){showCreditError(err.message);return null;}
@@ -177,10 +190,9 @@ function saveCreditForm(){
  const linked=stored?.clientId||rec.clientId,owner=owners[0];
  // Si el crédito ya está unido a una ficha con ese número, no se vuelve a preguntar.
  if(owner&&!owners.some(o=>o.id===linked)&&!creditPhoneChoice){
-  showCreditError('');const el=$('credit-error');
-  el.innerHTML=`<strong>El número ${esc(rec.phone)} ya existe en Clientes del mes:</strong> ${esc(owner.name)} (${esc(owner.stage)}${owner.archived?', archivado':''}). ¿Querés sobrescribir esa ficha con los datos de esta solicitud? <span class="dup-actions"><button type="button" class="btn btn-small btn-primary" data-action="credit-phone-overwrite">Sí, sobrescribir</button><button type="button" class="btn btn-small" data-action="credit-phone-new">No, crear otro cliente</button></span>`;
-  el.hidden=false;el.scrollIntoView({block:'nearest'});
-  toast('Ese número ya existe. Elegí si sobrescribís la ficha.',true);
+  showCreditError('');
+  creditConfirm('Este número ya existe',`<p>El número <strong>${esc(rec.phone)}</strong> ya está en Clientes del mes:</p><div class="credit-confirm-client"><strong>${esc(owner.name)}</strong><span>${esc(owner.phone)} · ${esc(owner.stage)}${owner.archived?' · archivado':''}</span></div><p>¿Querés sobrescribir esa ficha con los datos de esta solicitud de crédito (nombre, teléfono, moto y precio)?</p>`,
+   [['credit-phone-new','No, crear otro cliente',''],['credit-phone-overwrite','Sí, sobrescribir','btn-primary']]);
   return null;
  }
  const phoneChoice=creditPhoneChoice;creditPhoneChoice='';

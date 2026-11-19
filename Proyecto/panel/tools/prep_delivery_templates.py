@@ -21,7 +21,7 @@ FIELDS = {
     'Nombre_cliente_': 'name', 'Modelo_numerico_': 'model', 'POLIZA_NUMERICO': 'poliza', 'DUI_NUMERICO': 'dui', 'Color': 'color',
     'Precio': 'priceWords', 'MOTOR_NUMERICO': 'motor', 'CHASIS_NUMERICO': 'chasis', 'Año': 'year', 'Dia': 'dayWords', 'DIA': 'dayWords',
     'Mes': 'month', 'Ocupacion': 'occupation', 'municipio': 'municipio', 'departamento': 'departamento', 'DUI': 'duiWords',
-    'Poliza': 'polizaWords', 'Modelo': 'modelWords', 'Motor_': 'motorWords', 'Chasis': 'chasisWords',
+    'Poliza': 'polizaWords', 'Modelo': 'modelWords', 'Motor_': 'motorWords', 'Chasis': 'chasisWords', 'NIT': 'duiWords',
 }
 # Valores de ejemplo (largo típico) para dibujar las hojas en blanco y medir dónde va cada párrafo.
 SAMPLE = {
@@ -34,6 +34,7 @@ SAMPLE = {
     'dateLong': '16 DE NOVIEMBRE DE 2026', 'yearWords': 'DOS MIL VEINTISEIS', 'motoYearWords': 'DOS MIL VEINTISIETE',
     'prima': '$367.07', 'plan': 'SIETE TRES 47%', 'payment': '$99.62', 'months': '24', 'balance': '$1,531.93',
     'xContado': 'X', 'xCredito': 'X', 'financiera': 'CREDIOPCIONES',
+    'docDateWords': 'diecinueve de noviembre de dos mil veintiseis', 'purchaseDateWords': 'treinta de septiembre de dos mil veintiseis', 'age': '23',
 }
 
 
@@ -164,6 +165,12 @@ def prepare(src, kind):
                     t.text = ''
                 next(tc.iter(Q + 't')).text = '{{financiera}}'
                 break
+    elif kind == 'exoneracion':
+        # Fechas y edad que en la plantilla estaban escritas fijas
+        replace_text(root, 'seis de octubre de dos mil veintiseis', '{{docDateWords}}', 1)
+        replace_text(root, 'treinta de septiembre de dos mil veintiseis', '{{purchaseDateWords}}', 1)
+        replace_text(root, 'veintidos de septiembre de dos mil veintiseis', '{{docDateWords}}', 1)
+        replace_text(root, '23.0', '{{age}}', 1)
     else:
         replace_text(root, 'DOS MIL VEINTISEIS', '{{yearWords}}')
         fix_year(root)
@@ -171,9 +178,10 @@ def prepare(src, kind):
     entries['word/document.xml'] = etree.tostring(root, xml_declaration=True, encoding='UTF-8', standalone=True)
     # Sin conexión al Excel de la combinación de correspondencia: Word ya no pregunta por Base.xlsx al abrir.
     st = entries['word/settings.xml'].decode()
-    st = re.sub(r'<w:mailMerge>.*?</w:mailMerge>', '', st, flags=re.S)
+    if '<w:mailMerge>' in st:
+        st = re.sub(r'<w:mailMerge>.*?</w:mailMerge>', '', st, flags=re.S)
+        entries.pop('word/_rels/settings.xml.rels', None)
     entries['word/settings.xml'] = st.encode()
-    entries.pop('word/_rels/settings.xml.rels', None)
     st2 = entries['word/settings.xml'].decode()
     assert 'r:id=' not in st2 or 'attachedTemplate' in st2
     return entries
@@ -310,9 +318,23 @@ def measure(pdf, color_map):
                               'right': round(max(l['x1'] for l in lines), 2), 'left': round(min(l['x0'] for l in lines), 2),
                               'limit': round(min(([min(after) - 5] if after else []) + ([min(rights) - 3] if rights else []) + [page.width - 50]), 2),
                               'lineGap': round(lines[1]['top'] - lines[0]['top'], 2) if len(lines) > 1 else round(size * 1.15, 2),
-                              'size': size, 'font': 'carlito' if 'Carlito' in font else 'times'}
+                              'size': size, 'font': 'carlito' if 'Carlito' in font else 'helvetica' if re.search(r'Sans|Arial|Helvetica', font) else 'times'}
         npages = len(doc.pages)
     return found, npages
+
+
+def pack_entries(entries):
+    """Partes con marcas {{…}}: sin comprimir (el panel las llena). El resto: comprimidas como en el archivo original."""
+    import zlib
+    out = []
+    for k, v in entries.items():
+        if (k.endswith('.xml') or k.endswith('.vml')) and b'{{' in v:
+            out.append([k, base64.b64encode(v).decode()])
+        else:
+            co = zlib.compressobj(9, zlib.DEFLATED, -15)
+            packed = co.compress(v) + co.flush()
+            out.append([k, base64.b64encode(packed).decode(), zlib.crc32(v) & 0xffffffff, len(v)])
+    return out
 
 
 def main():
@@ -320,7 +342,7 @@ def main():
     OUT.mkdir(parents=True, exist_ok=True)
     work = Path(tempfile.mkdtemp())
     summary = {}
-    for kind in ('carta', 'matricula'):
+    for kind in ('carta', 'matricula', 'exoneracion'):
         marked = prepare(src / f'{kind}.docx', kind)
         sp = specs(marked)
         colors = {}
@@ -353,7 +375,7 @@ def main():
             print('AVISO: no se ubicó', kind, m)
         layout = {'pages': npages, 'size': [612, 792], 'images': images, 'items': items}
         (OUT / f'{kind}-layout.json').write_text(json.dumps(layout, ensure_ascii=False, indent=1))
-        (OUT / f'{kind}.json').write_text(json.dumps({'type': 'docx', 'entries': [[k, base64.b64encode(v).decode()] for k, v in marked.items()]}))
+        (OUT / f'{kind}.json').write_text(json.dumps({'type': 'docx', 'entries': pack_entries(marked)}))
         summary[kind] = {'pages': npages, 'items': len(items)}
     shutil.rmtree(work)
     print(json.dumps(summary))

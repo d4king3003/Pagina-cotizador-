@@ -1,0 +1,289 @@
+{
+ "pages": 2,
+ "size": [
+  612,
+  792
+ ],
+ "images": [
+  "exoneracion-fondo-1.jpg",
+  "exoneracion-fondo-2.jpg"
+ ],
+ "items": [
+  {
+   "page": 0,
+   "top": 94.06,
+   "size": 10.0,
+   "font": "helvetica",
+   "runs": [
+    {
+     "t": "{{docDateWords}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    }
+   ],
+   "align": "left",
+   "left": 129.55,
+   "right": 562,
+   "lineGap": 11.5
+  },
+  {
+   "page": 0,
+   "top": 158.56,
+   "size": 10.0,
+   "font": "helvetica",
+   "runs": [
+    {
+     "t": "Yo, ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "{{name}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": ", con Documento de Identidad Único ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "{{duiWords}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " y Número de Identificación Tributaria ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "{{duiWords}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " por este medio hago constar:",
+     "b": false,
+     "u": false,
+     "caps": false
+    }
+   ],
+   "align": "justify",
+   "left": 90.1,
+   "right": 522.05,
+   "lineGap": 13.2
+  },
+  {
+   "page": 0,
+   "top": 218.71,
+   "size": 10.0,
+   "font": "helvetica",
+   "runs": [
+    {
+     "t": "Que el día {{purchaseDateWords}} adquirí una motocicleta con las siguientes características: MARCA: TVS MODELO: ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "{{modelWords}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " MOTOR: ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "{{motor}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " CHASIS GRABADO: ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "{{chasis}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " COLOR: ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "{{color}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " y PÓLIZA: ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "{{poliza}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": ", y que estoy sabedor (a) que por disposición de las entidades correspondientes en El Salvador, a partir del primero de marzo del dos mil diecinueve para poder retirar las placas de toda motocicleta será necesario adjuntar al trámite de retiro de placas fotocopia de licencia vigente para conducir motocicleta, ya sea esta del propietario de la moto o de la persona que hará uso de ella. Por lo que me comprometo a presentar dicha licencia en las condiciones señaladas por las entidades correspondientes al momento que inicie tramite y cuando retire las placas de la moto en Sertracen, por medio de la tramitadora correspondiente, según la marca que aplique.",
+     "b": false,
+     "u": false,
+     "caps": false
+    }
+   ],
+   "align": "justify",
+   "left": 90.1,
+   "right": 522.05,
+   "lineGap": 13.2
+  },
+  {
+   "page": 1,
+   "top": 199.66,
+   "size": 10.0,
+   "font": "helvetica",
+   "runs": [
+    {
+     "t": "{{name}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    }
+   ],
+   "align": "left",
+   "left": 306.1,
+   "right": 562,
+   "lineGap": 11.5
+  },
+  {
+   "page": 1,
+   "top": 248.91,
+   "size": 10.0,
+   "font": "helvetica",
+   "runs": [
+    {
+     "t": "DOY FE que la firma que calza el anterior documento es auténtica y pertenece a ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "{{name}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "De {{age}} años de edad, de profesión ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "{{occupation}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " del domicilio ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "{{municipio}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": ", DEL DEPARTAMENTO ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "{{departamento}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": ", persona a quien identifico por medio de su Documento Único de Identidad ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "{{duiWords}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " y Número de Identificación Tributaria ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "{{duiWords}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": ". San Salvador ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "{{docDateWords}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": ". -",
+     "b": false,
+     "u": false,
+     "caps": false
+    }
+   ],
+   "align": "justify",
+   "left": 90.1,
+   "right": 521.73,
+   "lineGap": 13.2
+  }
+ ]
+}
