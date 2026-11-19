@@ -60,10 +60,10 @@ function validateCreditForms(v){
  }
 }
 
-/* ---------- Pantalla de Solicitudes ---------- */
+/* ---------- Pantalla de Créditos y entregas ---------- */
 // Solicitudes muestra solo Ingresar crédito. Las gestiones antiguas (db.requests) se conservan en los respaldos.
 renderRequests=function(){
- $('view-financieras').innerHTML=heading('Solicitudes de crédito','Ingresá los datos del cliente una vez y descargá el Buró, el Cotizador o la Solicitud en PDF.')+creditPanel();
+ $('view-financieras').innerHTML=heading('Créditos y entregas','Ingresá el crédito del cliente (Buró, Cotizador y Solicitud) y prepará la documentación de entrega de la moto.')+creditPanel();
 };
 function creditPanel(){
  const list=[...(db.creditForms||[])].sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt)));
