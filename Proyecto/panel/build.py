@@ -55,6 +55,9 @@ const resizeForPanel = () => { clearTimeout(heightTimer); heightTimer = setTimeo
 new ResizeObserver(resizeForPanel).observe(document.body);
 resizeForPanel();
 '''
+# Prima total (Siete Tres y Cinco Cinco): se conecta antes del primer render del panel.
+assert bridge.count('// A new panel starts')==1
+bridge=bridge.replace('// A new panel starts',(ROOT/'src/calc-prima-total.js').read_text()+'\n// A new panel starts')
 needle="window.addEventListener('beforeprint', preparePrint);\nrender();"
 assert original.count(needle)==1
 branding = json.loads((ROOT/'data/logos.json').read_text())
