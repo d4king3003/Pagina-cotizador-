@@ -57,6 +57,9 @@ En En evaluación hay un sillón de tres plazas: hasta tres clientes se sientan 
 INGRESAR CRÉDITO CREDIOPCIONES · PLAN SIETE TRES 47% (VERSIÓN 1.8.0)
 En Solicitudes usá + Ingresar crédito. Un solo formulario llena los tres documentos y cada uno se descarga en PDF con su propio botón: Buró, Cotizador y Solicitud.
 Para la precalificación basta con el nombre completo según DUI y el número de DUI: guardá y descargá el Buró. Los demás datos se pueden completar después con Editar.
+Los PDF salen con los documentos originales de Crediopciones de fondo (la carta de buró, el cotizador Siete Tres y la solicitud) y los datos escritos en su lugar. Si un nombre o una dirección es muy largo, la letra se achica o el texto pasa a otra línea para que quepa en su casilla.
+Para corregir algo a mano, usá Buró Word, Cotizador Excel o Solicitud Excel en el formulario, o el botón Excel/Word en la lista. Se descarga tu archivo original de Crediopciones ya lleno: abrilo, corregí lo que haga falta y guardalo como PDF desde Excel o Word. No hace falta instalar nada.
+Si Crediopciones cambia algún formato, los documentos se vuelven a preparar con tools/prep_credit_templates.py.
 La fecha se pone sola en los tres documentos con el formato SAN MIGUEL día/mes/año, usando la fecha del día en que se descarga el PDF.
 El Cotizador usa la fórmula del Excel PLAN SIETE TRES 47: gastos de formalización del 7% del valor, monto a financiar igual al valor menos la prima y las cuotas de 12, 18, 24, 30, 36, 40 y 48 meses al 47% anual. El plazo elegido aparece en # DE CUOTAS y resaltado en la tabla.
 La Solicitud corresponde a la hoja SOLICITUD versión 3.0 (CC-CI-P-F-01): datos personales, laborales, dos referencias familiares, dos de amigos o compañeros y el detalle.

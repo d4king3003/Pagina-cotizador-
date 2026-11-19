@@ -1,0 +1,258 @@
+{
+ "page": [
+  612,
+  792
+ ],
+ "image": "cotizador-fondo.jpg",
+ "items": [
+  {
+   "key": "name",
+   "align": "center",
+   "x": 337.6,
+   "w": 237.0,
+   "top": 165.52,
+   "h": 8.8,
+   "size": 8.8,
+   "bold": false,
+   "font": "carlito"
+  },
+  {
+   "key": "phone",
+   "align": "center",
+   "x": 337.6,
+   "w": 237.0,
+   "top": 177.52,
+   "h": 8.8,
+   "size": 8.8,
+   "bold": false,
+   "font": "carlito"
+  },
+  {
+   "key": "vendor",
+   "align": "center",
+   "x": 337.6,
+   "w": 237.0,
+   "top": 201.51,
+   "h": 8.8,
+   "size": 8.8,
+   "bold": false,
+   "font": "carlito"
+  },
+  {
+   "key": "agency",
+   "align": "left",
+   "x": 217.91,
+   "w": 78.36,
+   "top": 214.38,
+   "h": 8.0,
+   "size": 8.0,
+   "bold": false,
+   "font": "carlito"
+  },
+  {
+   "key": "agencyPhone",
+   "align": "center",
+   "x": 414.35,
+   "w": 83.51,
+   "top": 214.38,
+   "h": 8.0,
+   "size": 8.0,
+   "bold": false,
+   "font": "carlito"
+  },
+  {
+   "key": "date",
+   "align": "center",
+   "x": 337.58,
+   "w": 236.99,
+   "top": 226.38,
+   "h": 8.0,
+   "size": 8.0,
+   "bold": false,
+   "font": "carlito"
+  },
+  {
+   "key": "model",
+   "align": "left",
+   "x": 217.91,
+   "w": 78.36,
+   "top": 238.37,
+   "h": 8.0,
+   "size": 8.0,
+   "bold": false,
+   "font": "carlito"
+  },
+  {
+   "key": "year",
+   "align": "center",
+   "x": 414.35,
+   "w": 83.51,
+   "top": 238.37,
+   "h": 8.0,
+   "size": 8.0,
+   "bold": false,
+   "font": "carlito"
+  },
+  {
+   "key": "fee",
+   "align": "right",
+   "x": 294.6,
+   "w": 90,
+   "top": 284.8,
+   "h": 10,
+   "size": 9.59,
+   "bold": false,
+   "font": "carlito"
+  },
+  {
+   "key": "price",
+   "align": "right",
+   "x": 295.3,
+   "w": 90,
+   "top": 308.7,
+   "h": 10,
+   "size": 9.59,
+   "bold": false,
+   "font": "carlito"
+  },
+  {
+   "key": "primaRate",
+   "align": "right",
+   "x": 165,
+   "w": 90,
+   "top": 321.3,
+   "h": 10,
+   "size": 9.59,
+   "bold": true,
+   "font": "carlito"
+  },
+  {
+   "key": "down",
+   "align": "right",
+   "x": 295.2,
+   "w": 90,
+   "top": 321.3,
+   "h": 10,
+   "size": 9.59,
+   "bold": true,
+   "font": "carlito"
+  },
+  {
+   "key": "cuotaOk",
+   "align": "center",
+   "x": 378.2,
+   "w": 90,
+   "top": 321.3,
+   "h": 10,
+   "size": 9.59,
+   "bold": true,
+   "font": "carlito"
+  },
+  {
+   "key": "amount",
+   "align": "right",
+   "x": 294.6,
+   "w": 90,
+   "top": 333.9,
+   "h": 10,
+   "size": 9.59,
+   "bold": true,
+   "font": "carlito"
+  },
+  {
+   "key": "months",
+   "align": "center",
+   "x": 191.45,
+   "w": 90,
+   "top": 372.0,
+   "h": 10,
+   "size": 9.59,
+   "bold": true,
+   "font": "carlito"
+  },
+  {
+   "key": "q12",
+   "align": "right",
+   "x": 295.2,
+   "w": 90,
+   "top": 409.72,
+   "h": 10,
+   "size": 9.59,
+   "bold": false,
+   "font": "carlito",
+   "dollarX": 219.4
+  },
+  {
+   "key": "q18",
+   "align": "right",
+   "x": 295.2,
+   "w": 90,
+   "top": 422.3,
+   "h": 10,
+   "size": 9.59,
+   "bold": false,
+   "font": "carlito",
+   "dollarX": 219.4
+  },
+  {
+   "key": "q24",
+   "align": "right",
+   "x": 295.2,
+   "w": 90,
+   "top": 434.89,
+   "h": 10,
+   "size": 9.59,
+   "bold": false,
+   "font": "carlito",
+   "dollarX": 219.4
+  },
+  {
+   "key": "q30",
+   "align": "right",
+   "x": 295.2,
+   "w": 90,
+   "top": 447.18,
+   "h": 10,
+   "size": 9.59,
+   "bold": false,
+   "font": "carlito",
+   "dollarX": 219.4
+  },
+  {
+   "key": "q36",
+   "align": "right",
+   "x": 295.2,
+   "w": 90,
+   "top": 460.67,
+   "h": 10,
+   "size": 9.59,
+   "bold": false,
+   "font": "carlito",
+   "dollarX": 219.4
+  },
+  {
+   "key": "q40",
+   "align": "right",
+   "x": 295.2,
+   "w": 90,
+   "top": 474.46,
+   "h": 10,
+   "size": 9.59,
+   "bold": false,
+   "font": "carlito",
+   "dollarX": 219.4
+  },
+  {
+   "key": "q48",
+   "align": "right",
+   "x": 295.2,
+   "w": 90,
+   "top": 487.05,
+   "h": 10,
+   "size": 9.59,
+   "bold": false,
+   "font": "carlito",
+   "dollarX": 219.4
+  }
+ ]
+}

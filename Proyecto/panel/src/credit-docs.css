@@ -37,3 +37,11 @@
 .credit-form .credit-missing{border-color:var(--red)!important;box-shadow:0 0 0 3px #dc29441f!important;background:#fff6f8}
 html[data-theme=dark] .credit-form .credit-missing{background:#3a2230}
 .credit-sex.credit-missing{border:1px solid var(--red);border-radius:9px;padding:0 10px}
+/* Descargas del Excel / Word original para editar */
+.credit-actions-office{display:flex;align-items:center;gap:6px;flex-wrap:wrap;order:-3;width:100%;padding-bottom:10px;margin-bottom:2px;border-bottom:1px dashed var(--line)}
+.credit-actions-office::before{content:"Para corregir a mano:";font-size:11px;color:var(--muted);margin-right:4px}
+.credit-actions-office .btn{height:32px;font-size:11px;padding:0 10px;border-color:var(--line);background:var(--paper);color:var(--ink)}
+.credit-office-list{display:grid;gap:8px;margin-top:14px}
+.credit-office-list .btn{justify-content:flex-start}
+.credit-office-tag{margin-left:auto;font-size:10px;font-weight:650;color:var(--muted);background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:3px 8px}
+@media(max-width:760px){.credit-actions-office .btn{flex:1}}

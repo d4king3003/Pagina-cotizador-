@@ -108,6 +108,13 @@ quick_lead=(ROOT/'src/quick-lead.js').read_text()+'\n'+(ROOT/'src/client-actions
 credit_logos={'credi':'data:image/png;base64,'+base64.b64encode((ROOT/'assets/credit/crediopciones.png').read_bytes()).decode(),'buro':'data:image/jpeg;base64,'+base64.b64encode((ROOT/'assets/credit/crediopciones-buro.jpg').read_bytes()).decode()}
 extras=(ROOT/'src/extras.js').read_text()+'\n'+(ROOT/'src/charts.js').read_text()
 credit_docs=(ROOT/'src/credit-docs.js').read_text().replace('/*CREDIT_LOGOS*/null',json.dumps(credit_logos))
+# Documentos originales de Crediopciones (los prepara tools/prep_credit_templates.py)
+TPL=ROOT/'assets/credit/templates'
+credit_originals={'templates':{k:json.loads((TPL/f'{k}.json').read_text()) for k in ('buro','cotizador','solicitud')},
+ 'layouts':{k:json.loads((TPL/f'{k}-layout.json').read_text()) for k in ('buro','cotizador','solicitud')},
+ 'images':{k:'data:image/jpeg;base64,'+base64.b64encode((TPL/f'{k}-fondo.jpg').read_bytes()).decode() for k in ('buro','cotizador','solicitud')},
+ 'fonts':json.loads((TPL/'fonts.json').read_text())}
+credit_docs+='\n'+(ROOT/'src/credit-originals.js').read_text().replace('/*CREDIT_ORIGINALS*/null',json.dumps(credit_originals,separators=(',',':')))
 app_source=app_source.replace('/*INITIAL_BACKUP*/null',(ROOT/'data/initial-backup.json').read_text().replace('</','<\\/'))
 cash=(ROOT/'src/cash-quote.js').read_text().replace('/*CASH_SPEC_DATA*/null',(ROOT/'data/cash-specs.json').read_text().replace('</','<\\/')).replace('/*CASH_BRANDING*/null',json.dumps(branding,ensure_ascii=False).replace('</','<\\/'))
 catalog=json.loads((ROOT/'data/fichas.json').read_text())
