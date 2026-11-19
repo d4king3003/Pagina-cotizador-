@@ -219,3 +219,4 @@ Proyecto/panel/src/quick-lead.js y quick-lead.css contienen el registro por tel�
 Proyecto/panel/data/initial-backup.json conserva los datos proporcionados. Fuentes contiene una copia intacta del JSON original.
 Qa/test-client-actions.cjs verifica el alta, formatos de teléfono, duplicados, completar el nombre, conservar el respaldo, cancelar y confirmar un borrado, recalcular ventas y proteger cambios concurrentes. Se ejecuta con node Proyecto/panel/qa/test-client-actions.cjs después de generar la aplicación con build.py.
 VALIDACION-CLIENTES.json resume las pruebas. Las verificaciones de formularios usan un entorno JavaScript simulado; no equivalen a una revisión visual completa en un navegador.
+Cotizar: arriba solo quedan Crédito/Contado, la promoción o nota y la fecha de validez. En Crédito, la moto se elige en el Modelo del cotizador; en Contado, en el campo «Moto» de «Prepará tu propuesta».

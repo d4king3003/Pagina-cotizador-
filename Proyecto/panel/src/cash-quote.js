@@ -70,6 +70,7 @@ function renderCashQuote() {
  const s=stock(ui.quoteStockId),d=ensureCashDraft();
  $('cash-quote').innerHTML=`<div class="cash-layout">
  <section class="card cash-editor" aria-labelledby="cash-editor-title"><div class="card-head"><div><p class="eyebrow">CONTADO</p><h2 id="cash-editor-title">Prepará tu propuesta</h2></div>${badge('USD','green')}</div><div class="card-body">
+ <div class="field" style="margin-bottom:16px"><label for="quote-stock">Moto *</label><select id="quote-stock">${stockOptions(ui.quoteStockId)}</select></div>
  <div class="field"><label for="cash-price">Precio al contado *</label><input id="cash-price" type="number" inputmode="decimal" min="0.01" step="0.01" value="${esc(ui.cashPrice??s?.price??'')}" placeholder="Ingresá el precio vigente"></div>
  <div class="cash-discount-row"><div class="field"><label for="cash-discount">Descuento opcional</label><input id="cash-discount" type="number" inputmode="decimal" min="0" step="0.01" value="${esc(d.discount)}"></div><div class="field"><label for="cash-discount-mode">Formato</label><select id="cash-discount-mode">${options([['amount','Dólares ($)'],['percent','Porcentaje (%)']],d.discountMode)}</select></div></div>
  <div class="cash-discount-row"><div class="field"><label for="cash-extra">Gastos adicionales</label><input id="cash-extra" type="number" inputmode="decimal" min="0" step="0.01" value="${esc(d.extra)}"></div><div class="field"><label for="cash-extra-label">Concepto</label><input id="cash-extra-label" maxlength="80" value="${esc(d.extraLabel)}"></div></div>
