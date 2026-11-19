@@ -85852,10 +85852,14 @@ function openDeliveryForm(id='',creditId=''){
  else if(f.saleType==='credito'&&f.creditId){const c=(db.creditForms||[]).find(x=>x.id===f.creditId);if(c&&c.price){const fresh=deliveryFromCredit(c);f={...f,prima:fresh.prima,plan:fresh.plan,payment:fresh.payment,months:fresh.months,balance:fresh.balance};}}
  deliveryDraft={id:f.id};
  const credits=[...(db.creditForms||[])].sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt)));
- const creditOpts=`<option value="">Contado / sin crédito ingresado</option>`+credits.map(c=>`<option value="${esc(c.id)}"${c.id===f.creditId?' selected':''}>${esc(c.name)} · ${esc(c.model||'sin moto')}</option>`).join('');
+ // Clientes del mes que compran de contado (forma de pago «Contado»)
+ const cashClients=db.clients.filter(c=>c.paymentMode==='Contado'&&!c.archived&&!c.namePending).sort((a,b)=>String(b.recordDate||'').localeCompare(String(a.recordDate||'')));
+ const creditOpts=`<option value="">Sin elegir (escribir a mano)</option>`
+  +(credits.length?`<optgroup label="Créditos ingresados">${credits.map(c=>`<option value="${esc(c.id)}"${c.id===f.creditId?' selected':''}>${esc(c.name)} · ${esc(c.model||'sin moto')}</option>`).join('')}</optgroup>`:'')
+  +(cashClients.length?`<optgroup label="Clientes de contado (Clientes del mes)">${cashClients.map(c=>`<option value="client:${esc(c.id)}"${!f.creditId&&f.clientId===c.id?' selected':''}>${esc(c.name)} · ${esc(stock(c.stockId)?.label||'sin moto')} · ${esc(c.stage)}</option>`).join('')}</optgroup>`:'');
  const body=`<form id="delivery-form" class="credit-form delivery-form" novalidate><p class="form-error" id="delivery-error" hidden></p>
  <div class="form-grid">
-  <div class="field"><label for="df-creditId">Crédito ingresado</label><select id="df-creditId" name="creditId">${creditOpts}</select><small>Al elegirlo se copian nombre, DUI, moto, precio y financiamiento.</small></div>
+  <div class="field"><label for="df-creditId">Crédito o cliente de contado</label><select id="df-creditId" name="creditId">${creditOpts}</select><small>Crédito: se copian nombre, DUI, moto, precio y financiamiento. Contado: nombre, moto y precio de Clientes del mes.</small></div>
   <div class="field"><span class="field-label">Tipo de venta</span><div class="delivery-sale" role="radiogroup"><label><input type="radio" name="saleType" value="credito"${f.saleType==='credito'?' checked':''}> Crédito</label><label><input type="radio" name="saleType" value="contado"${f.saleType==='contado'?' checked':''}> Contado</label></div></div>
  </div>
  <h3 class="section-label">Datos de SAP</h3>
@@ -85884,7 +85888,8 @@ function readDeliveryForm(form){
  if(r.price!==null&&(!Number.isFinite(r.price)||r.price<0))throw Error('Revisá el valor de venta.');
  if(r.dui){try{r.dui=normalizeDUI(r.dui);}catch(e){throw e;}}
  for(const k of ['motor','chasis'])r[k]=r[k].toUpperCase().replace(/\s+/g,'');
- r.clientId=r.creditId?((db.creditForms||[]).find(c=>c.id===r.creditId)?.clientId||''):'';
+ if(r.creditId.startsWith('client:')){r.clientId=r.creditId.slice(7);r.creditId='';}
+ else r.clientId=r.creditId?((db.creditForms||[]).find(c=>c.id===r.creditId)?.clientId||''):'';
  return r;
 }
 function saveDeliveryForm(){
@@ -86046,6 +86051,15 @@ document.addEventListener('change',e=>{
  if(e.target.id==='delivery-sap-file'&&e.target.files?.[0]){handleSAPInput({files:e.target.files});e.target.value='';return;}
  if(!e.target.closest?.('#delivery-form'))return;
  if(e.target.name==='saleType')deliverySaleToggle();
+ // Cliente de contado de Clientes del mes
+ if(e.target.name==='creditId'&&e.target.value.startsWith('client:')){
+  const c=client(e.target.value.slice(7)),form=$('delivery-form');
+  if(c){form.querySelector('input[name="saleType"][value="contado"]').checked=true;
+   const vals={name:c.name,model:stock(c.stockId)?.label||'',price:clientPrice(c)};
+   for(const [k,val] of Object.entries(vals))if(form[k]&&val!==''&&val!==null&&val!==undefined)form[k].value=val;
+   deliverySaleToggle();}
+  return;
+ }
  if(e.target.name==='creditId'&&e.target.value){const c=(db.creditForms||[]).find(x=>x.id===e.target.value);if(c){const form=$('delivery-form'),p=deliveryFromCredit(c);for(const [k,val] of Object.entries(p)){if(k==='saleType'){form.querySelector(`input[name="saleType"][value="${val}"]`).checked=true;continue;}if(form[k]&&form[k].type!=='radio'&&val!==''&&val!==null&&val!==undefined)form[k].value=val;}deliverySaleToggle();}}
  if(e.target.name==='dui'){try{e.target.value=normalizeDUI(e.target.value);}catch{}}
 });
