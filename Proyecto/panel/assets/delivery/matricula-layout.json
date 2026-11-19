@@ -1,0 +1,480 @@
+{
+ "pages": 1,
+ "size": [
+  612,
+  792
+ ],
+ "images": [
+  "matricula-fondo-1.jpg"
+ ],
+ "items": [
+  {
+   "page": 0,
+   "top": 122.3,
+   "size": 11.0,
+   "font": "carlito",
+   "runs": [
+    {
+     "t": "San Salvador, ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "{{dayWords}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " días del mes de ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "{{month}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " del año ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "{{yearWords}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": ".",
+     "b": false,
+     "u": false,
+     "caps": false
+    }
+   ],
+   "align": "justify",
+   "left": 85.15,
+   "right": 527.5,
+   "lineGap": 12.65
+  },
+  {
+   "page": 0,
+   "top": 161.6,
+   "size": 11.0,
+   "font": "carlito",
+   "runs": [
+    {
+     "t": "Yo, ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "{{name}}",
+     "b": true,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": ", de ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "Mayor de edad",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": ", ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "{{occupation}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": ", ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "del domicilio de ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "{{municipio}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": ", departamento de ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "{{departamento}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": ", con Documento Único de identidad número",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "{{duiWords}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": ", con Número de Identificación Tributaria ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "{{duiWords}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": ". Por este medio autorizo a la sociedad ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "MOTOPREMIUM",
+     "b": true,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": ", SOCIEDAD ANONIMA DE CAPITAL VARIABLE",
+     "b": true,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": ", para que, por medio de sus DELEGADOS, pueda en mi nombre tramitar ante el Ministerio de Hacienda todo lo relacionado al pago en línea del Impuesto de la Primera Matrícula. DE UNA MOTOCICLETA NUEVA de mi propiedad y de las características siguientes",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "Póliza: ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "{{polizaWords}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": ", País de Origen: INDIA, Marca: ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "TVS",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": ", Año: ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "{{motoYearWords}} ,",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "Clase: MOTOCICLETA, Tipo: ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "DEPORTIVA  ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": ", Modelo: ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "{{modelWords}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "; Motor Número: ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "{{motorWords}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "; Chasis Número: ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "{{chasisWords}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "; color: ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "{{color}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "; Capacidad: UN ASIENTO PARA DOS PERSONAS, Combustible: GASOLINA",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": ". ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "También queda facultado para presentar cualquiera otra documentación resultada de este trámite.",
+     "b": false,
+     "u": false,
+     "caps": false
+    }
+   ],
+   "align": "justify",
+   "left": 85.15,
+   "right": 527.5,
+   "lineGap": 20.15
+  },
+  {
+   "page": 0,
+   "top": 575.5,
+   "size": 11.0,
+   "font": "carlito",
+   "runs": [
+    {
+     "t": "DOY FE:",
+     "b": true,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " Que la firma que calza el documento que antecede y que se lee: \"ILEGIBLE\", es auténtica por haber sido reconocida a mi presencia por ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "{{name}}",
+     "b": true,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": ", de ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " Mayor de edad",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": ", {{occupation}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": ", ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "del domicilio de ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "{{municipio}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": ", departamento de ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "{{departamento}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": ", con Documento Único de identidad número",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "{{duiWords}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": ", con Número de Identificación Tributaria ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "{{duiWords}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": ", San Salvador,  ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "{{dayWords}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " días del mes de ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "{{month}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " del año ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "{{yearWords}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": ".",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " ",
+     "b": false,
+     "u": false,
+     "caps": false
+    }
+   ],
+   "align": "justify",
+   "left": 85.15,
+   "right": 527.5,
+   "lineGap": 20.15
+  }
+ ]
+}

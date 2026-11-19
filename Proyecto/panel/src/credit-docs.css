@@ -50,3 +50,21 @@ html[data-theme=dark] .credit-form .credit-missing{background:#3a2230}
 .credit-summary .credit-net strong{color:var(--primary)}
 .credit-summary small{display:inline!important;margin:0 0 0 4px!important;font-size:11px;color:var(--muted);font-weight:500}
 .credit-summary>span{white-space:nowrap}
+/* Entrega de la moto */
+.delivery-panel{margin-top:22px}
+.delivery-sap{display:flex;align-items:center;gap:14px;padding:16px 18px;border:1.5px dashed var(--line);border-radius:12px;background:var(--soft);cursor:pointer;margin-bottom:10px}
+.delivery-sap:focus-visible,.delivery-sap.drag{border-color:var(--primary);outline:none;background:#eef4fe}
+.delivery-sap>svg{width:26px;height:26px;color:var(--primary);flex:none}
+.delivery-sap>div{flex:1;min-width:0}
+.delivery-sap strong{display:block;font-size:13px}
+.delivery-sap span{display:block;font-size:11px;color:var(--muted);margin-top:3px}
+.delivery-sap-status{font-size:12px;margin:0 0 12px;padding:9px 12px;border-radius:8px;background:#e7f5ee;color:#14684a}
+.delivery-sap-status.bad{background:#fff5df;color:#8a5d14}
+.delivery-form input.delivery-filled{background:#f1f9f4}
+.delivery-form .delivery-upper{text-transform:uppercase}
+.delivery-form .form-grid.full{grid-column:1/-1}
+.delivery-sale{display:flex;gap:16px;align-items:center;min-height:39px}
+.delivery-sale label{display:flex;align-items:center;gap:6px;font-size:12px}
+.delivery-actions-print::before{content:"Imprimir:"}
+html[data-theme=dark] .delivery-sap.drag{background:#1d2a44}
+html[data-theme=dark] .delivery-form input.delivery-filled{background:#1b2d27}

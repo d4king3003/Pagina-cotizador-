@@ -118,6 +118,16 @@ credit_originals={'templates':{k:json.loads((TPL/f'{k}.json').read_text()) for k
  'images':{k:'data:image/jpeg;base64,'+base64.b64encode((TPL/f'{k}-fondo.jpg').read_bytes()).decode() for k in ('buro','cotizador','solicitud')},
  'fonts':json.loads((TPL/'fonts.json').read_text())}
 credit_docs+='\n'+(ROOT/'src/credit-originals.js').read_text().replace('/*CREDIT_ORIGINALS*/null',json.dumps(credit_originals,separators=(',',':')))
+# Entrega de la moto (los prepara tools/prep_delivery_templates.py)
+DLV=ROOT/'assets/delivery'
+delivery_docs={'templates':{k:json.loads((DLV/f'{k}.json').read_text()) for k in ('carta','matricula')},
+ 'layouts':{k:json.loads((DLV/f'{k}-layout.json').read_text()) for k in ('carta','matricula')}}
+delivery_docs['images']={k:['data:image/jpeg;base64,'+base64.b64encode((DLV/n).read_bytes()).decode() for n in delivery_docs['layouts'][k]['images']] for k in ('carta','matricula')}
+credit_docs+='\n'+(ROOT/'src/delivery-docs.js').read_text().replace('/*DELIVERY_DOCS*/null',json.dumps(delivery_docs,separators=(',',':'),ensure_ascii=False))
+# Lector de capturas (OCR) sin internet: se guarda como texto y solo se usa al pegar una captura de SAP.
+OCR=ROOT/'src/vendor/ocr'
+ocr_tags=''.join(f'<script type="text/plain" id="{i}">'+base64.b64encode((OCR/n).read_bytes()).decode()+'</script>' for i,n in (('tvs-ocr-worker','worker.min.js'),('tvs-ocr-core','tesseract-core-simd-lstm.wasm.js'),('tvs-ocr-eng','eng.traineddata.gz')))
+ocr_tags+='<script type="text/plain" id="tvs-ocr-lib">'+(OCR/'tesseract.min.js').read_text().replace('</','<\\/')+'</script>'
 app_source=app_source.replace('/*INITIAL_BACKUP*/null',(ROOT/'data/initial-backup.json').read_text().replace('</','<\\/'))
 cash=(ROOT/'src/cash-quote.js').read_text().replace('/*CASH_SPEC_DATA*/null',(ROOT/'data/cash-specs.json').read_text().replace('</','<\\/')).replace('/*CASH_BRANDING*/null',json.dumps(branding,ensure_ascii=False).replace('</','<\\/'))
 catalog=json.loads((ROOT/'data/fichas.json').read_text())
@@ -137,6 +147,8 @@ font_url=lambda name:'data:font/woff2;base64,'+base64.b64encode((ROOT/'src/vendo
 theme_css=(ROOT/'src/theme.css').read_text().replace('/*FONT_INTER*/',font_url('inter-latin-wght-normal.woff2')).replace('/*FONT_JAKARTA*/',font_url('plus-jakarta-sans-latin-wght-normal.woff2'))
 html=shell.replace('/*APP_CSS*/',(ROOT/'src/style.css').read_text()+'\n'+(ROOT/'src/fichas.css').read_text()+'\n'+(ROOT/'src/cash-quote.css').read_text()+'\n'+(ROOT/'src/office-scene.css').read_text()+'\n'+(ROOT/'src/office.css').read_text()+'\n'+(ROOT/'src/quick-lead.css').read_text()+'\n'+(ROOT/'src/refresh.css').read_text()+'\n'+(ROOT/'src/credit-docs.css').read_text()+'\n'+theme_css).replace('/*CALCULATOR_BASE64*/',base64.b64encode(embedded.encode()).decode()).replace('/*TECHNICAL_ASSETS*/','\n'.join(assets)).replace('/*APP_JS*/',app_source).replace('/*BRAND_LOGO*/',png_url('tvs-logo.png')).replace('/*ICON_32*/',png_url('tvs-icon-32.png')).replace('/*ICON_64*/',png_url('tvs-icon-64.png')).replace('/*ICON_180*/',png_url('tvs-icon-180.png')).replace('/*JSPDF_JS*/',(ROOT/'src/vendor/jspdf.umd.min.js').read_text()).replace('/*OFFICE_SCENE_JS*/',office_render_source)
 (ROOT/'dist').mkdir(exist_ok=True)
+_end=html.rindex('</body>')
+html=html[:_end]+ocr_tags+html[_end:]
 (ROOT/'dist/index.pending').write_text(html)
 (ROOT/'dist/index.pending').replace(ROOT/'dist/index.html')
 print(json.dumps({'output':str(ROOT/'dist/index.html'),'bytes':len(html.encode()),'original_sha256':hashlib.sha256(SOURCE.read_bytes()).hexdigest(),'engine_unchanged':True}))

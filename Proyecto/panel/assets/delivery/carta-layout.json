@@ -1,0 +1,885 @@
+{
+ "pages": 4,
+ "size": [
+  612,
+  792
+ ],
+ "images": [
+  "carta-fondo-1.jpg",
+  "carta-fondo-2.jpg",
+  "carta-fondo-3.jpg",
+  "carta-fondo-4.jpg"
+ ],
+ "items": [
+  {
+   "page": 0,
+   "top": 130.94,
+   "size": 12.0,
+   "font": "times",
+   "runs": [
+    {
+     "t": "{{dateLong}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    }
+   ],
+   "align": "right",
+   "left": 310.15,
+   "right": 570.15,
+   "lineGap": 13.8
+  },
+  {
+   "page": 0,
+   "top": 158.34,
+   "size": 12.0,
+   "font": "times",
+   "runs": [
+    {
+     "t": "{{name}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    }
+   ],
+   "align": "left",
+   "left": 73.35,
+   "right": 562,
+   "lineGap": 13.8
+  },
+  {
+   "page": 0,
+   "top": 185.79,
+   "size": 12.0,
+   "font": "times",
+   "runs": [
+    {
+     "t": "De acuerdo a la compra realizada por usted, en nuestro establecimiento, con la siguiente descripción: Motocicleta,",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "marca:",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "TVS",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": ",",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "Modelo:",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "{{model}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": ",",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "Correspondiente",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "a",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "la",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "Póliza",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "#",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "{{poliza}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "La cual le entregamos este día, sin tarjeta de circulación y sin placas, por lo que",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "MOTOPREMIUM, S.A.",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "DE C.V., se encuentra realizando tramites de traspaso a propiedad o tenencia, y no se hace responsable de cualquier daño, o situación, ante las autoridades de ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "tránsito",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "Hacemos de su conocimiento que de acuerdo al Registro Público de Vehículos (SERTRACEN), si un documento presentado a nombre de: ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "{{name}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "es observado por ellos, ejemplo: Por multas pendientes de pago, Documentos Ilegibles, etc. MOTOPREMIUM, S.A. DE C.V., le notificará",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "y",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "Usted,",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "tendrá",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "un",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "periodo",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "de",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "20",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "días,",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "para",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "poder",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "solventarlo,",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "si",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "no",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "lo",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": " ",
+     "b": false,
+     "u": false,
+     "caps": false
+    },
+    {
+     "t": "hiciere, MOTOPREMIUM, S.A. DE C.V., desistirá de este trámite, hasta ser solventado.",
+     "b": false,
+     "u": false,
+     "caps": false
+    }
+   ],
+   "align": "justify",
+   "left": 42.1,
+   "right": 569.85,
+   "lineGap": 13.8
+  },
+  {
+   "page": 0,
+   "top": 507.01,
+   "size": 10.0,
+   "font": "times",
+   "runs": [
+    {
+     "t": "{{name}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    }
+   ],
+   "align": "left",
+   "left": 312.4,
+   "right": 562,
+   "lineGap": 11.5
+  },
+  {
+   "page": 0,
+   "top": 520.34,
+   "size": 12.0,
+   "font": "times",
+   "runs": [
+    {
+     "t": "{{dui}}",
+     "b": true,
+     "u": false,
+     "caps": false
+    }
+   ],
+   "align": "left",
+   "left": 417.2,
+   "right": 562,
+   "lineGap": 13.8
+  },
+  {
+   "page": 1,
+   "top": 148.14,
+   "size": 12.0,
+   "font": "times",
+   "runs": [
+    {
+     "t": "{{model}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    }
+   ],
+   "align": "left",
+   "left": 213.4,
+   "right": 562,
+   "lineGap": 13.8
+  },
+  {
+   "page": 1,
+   "top": 162.99,
+   "size": 12.0,
+   "font": "times",
+   "runs": [
+    {
+     "t": "{{color}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    }
+   ],
+   "align": "left",
+   "left": 214.5,
+   "right": 562,
+   "lineGap": 13.8
+  },
+  {
+   "page": 1,
+   "top": 177.89,
+   "size": 12.0,
+   "font": "times",
+   "runs": [
+    {
+     "t": "{{priceWords}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    }
+   ],
+   "align": "left",
+   "left": 214.5,
+   "right": 562,
+   "lineGap": 13.8
+  },
+  {
+   "page": 1,
+   "top": 192.69,
+   "size": 12.0,
+   "font": "times",
+   "runs": [
+    {
+     "t": "{{prima}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    }
+   ],
+   "align": "left",
+   "left": 213.4,
+   "right": 562,
+   "lineGap": 13.8
+  },
+  {
+   "page": 1,
+   "top": 207.54,
+   "size": 12.0,
+   "font": "times",
+   "runs": [
+    {
+     "t": "{{plan}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    }
+   ],
+   "align": "left",
+   "left": 213.4,
+   "right": 562,
+   "lineGap": 13.8
+  },
+  {
+   "page": 1,
+   "top": 222.44,
+   "size": 12.0,
+   "font": "times",
+   "runs": [
+    {
+     "t": "{{payment}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    }
+   ],
+   "align": "left",
+   "left": 213.4,
+   "right": 562,
+   "lineGap": 13.8
+  },
+  {
+   "page": 1,
+   "top": 252.14,
+   "size": 12.0,
+   "font": "times",
+   "runs": [
+    {
+     "t": "{{months}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    }
+   ],
+   "align": "left",
+   "left": 213.4,
+   "right": 562,
+   "lineGap": 13.8
+  },
+  {
+   "page": 1,
+   "top": 266.69,
+   "size": 12.0,
+   "font": "times",
+   "runs": [
+    {
+     "t": "{{balance}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    }
+   ],
+   "align": "left",
+   "left": 213.4,
+   "right": 562,
+   "lineGap": 13.8
+  },
+  {
+   "page": 1,
+   "top": 282.01,
+   "size": 10.0,
+   "font": "times",
+   "runs": [
+    {
+     "t": "{{xContado}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    }
+   ],
+   "align": "left",
+   "left": 258.6,
+   "right": 284.75,
+   "lineGap": 11.5
+  },
+  {
+   "page": 1,
+   "top": 281.29,
+   "size": 12.0,
+   "font": "times",
+   "runs": [
+    {
+     "t": "{{xCredito}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    }
+   ],
+   "align": "left",
+   "left": 331.05,
+   "right": 340.0,
+   "lineGap": 13.8
+  },
+  {
+   "page": 1,
+   "top": 296.29,
+   "size": 12.0,
+   "font": "times",
+   "runs": [
+    {
+     "t": "{{financiera}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    }
+   ],
+   "align": "left",
+   "left": 214.5,
+   "right": 286.5,
+   "lineGap": 12.75
+  },
+  {
+   "page": 1,
+   "top": 544.49,
+   "size": 12.0,
+   "font": "times",
+   "runs": [
+    {
+     "t": "{{dui}}",
+     "b": true,
+     "u": false,
+     "caps": false
+    }
+   ],
+   "align": "left",
+   "left": 425.75,
+   "right": 562,
+   "lineGap": 13.8
+  },
+  {
+   "page": 2,
+   "top": 125.39,
+   "size": 12.0,
+   "font": "times",
+   "runs": [
+    {
+     "t": "{{dateLong}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    }
+   ],
+   "align": "right",
+   "left": 310.19,
+   "right": 570.19,
+   "lineGap": 13.8
+  },
+  {
+   "page": 2,
+   "top": 180.04,
+   "size": 12.0,
+   "font": "times",
+   "runs": [
+    {
+     "t": "{{name}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    }
+   ],
+   "align": "left",
+   "left": 83.1,
+   "right": 562,
+   "lineGap": 13.8
+  },
+  {
+   "page": 2,
+   "top": 237.19,
+   "size": 12.0,
+   "font": "times",
+   "runs": [
+    {
+     "t": "{{model}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    }
+   ],
+   "align": "left",
+   "left": 288.0,
+   "right": 487.8,
+   "lineGap": 13.8
+  },
+  {
+   "page": 2,
+   "top": 253.99,
+   "size": 12.0,
+   "font": "times",
+   "runs": [
+    {
+     "t": "{{motor}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    }
+   ],
+   "align": "left",
+   "left": 288.0,
+   "right": 487.8,
+   "lineGap": 13.8
+  },
+  {
+   "page": 2,
+   "top": 270.79,
+   "size": 12.0,
+   "font": "times",
+   "runs": [
+    {
+     "t": "{{chasis}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    }
+   ],
+   "align": "left",
+   "left": 288.0,
+   "right": 487.8,
+   "lineGap": 13.8
+  },
+  {
+   "page": 2,
+   "top": 303.89,
+   "size": 12.0,
+   "font": "times",
+   "runs": [
+    {
+     "t": "{{color}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    }
+   ],
+   "align": "left",
+   "left": 289.85,
+   "right": 487.8,
+   "lineGap": 13.3
+  },
+  {
+   "page": 2,
+   "top": 350.94,
+   "size": 12.0,
+   "font": "times",
+   "runs": [
+    {
+     "t": "{{year}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    }
+   ],
+   "align": "left",
+   "left": 289.85,
+   "right": 487.8,
+   "lineGap": 13.8
+  },
+  {
+   "page": 2,
+   "top": 553.56,
+   "size": 10.0,
+   "font": "times",
+   "runs": [
+    {
+     "t": "{{name}}",
+     "b": false,
+     "u": false,
+     "caps": false
+    }
+   ],
+   "align": "left",
+   "left": 72.6,
+   "right": 353.85,
+   "lineGap": 11.5
+  },
+  {
+   "page": 2,
+   "top": 567.54,
+   "size": 12.0,
+   "font": "times",
+   "runs": [
+    {
+     "t": "{{dui}}",
+     "b": true,
+     "u": false,
+     "caps": false
+    }
+   ],
+   "align": "left",
+   "left": 62.6,
+   "right": 562,
+   "lineGap": 13.8
+  },
+  {
+   "page": 3,
+   "top": 258.01,
+   "size": 41.0,
+   "font": "times",
+   "runs": [
+    {
+     "t": "{{poliza}}",
+     "b": true,
+     "u": false,
+     "caps": false
+    }
+   ],
+   "align": "left",
+   "left": 238.1,
+   "right": 562,
+   "lineGap": 47.15
+  }
+ ]
+}

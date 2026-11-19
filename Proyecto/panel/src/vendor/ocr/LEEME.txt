@@ -1,0 +1,2 @@
+Lector de texto de imágenes (OCR) usado para leer la captura de SAP sin internet.
+tesseract.js 5.1.1 y tesseract.js-core 5.1.1 (Apache-2.0). Datos de idioma: inglés 4.0.0_best_int de @tesseract.js-data/eng (Apache-2.0).

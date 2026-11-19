@@ -1,0 +1,295 @@
+// Entrega de la moto: carta de entrega (4 hojas) y autorización para pago en línea del impuesto de primera matrícula.
+// Los datos de la moto (motor, chasis, póliza, color) se pegan desde SAP: como texto o como captura (se lee sin internet).
+const DELIVERY_DOCS=/*DELIVERY_DOCS*/null;
+const DELIVERY_TEXT=['creditId','clientId','name','dui','occupation','municipio','departamento','model','color','year','motor','chasis','poliza','prima','plan','payment','months','balance','deliveryDate','matriculaDate'];
+const DELIVERY_KINDS={carta:{label:'Carta de entrega',file:'Carta de entrega'},matricula:{label:'Autorización de matrícula',file:'Autorizacion primera matricula'}};
+const DELIVERY_REQUIRED={
+ carta:['name','dui','model','color','year','motor','chasis','poliza','price','deliveryDate'],
+ matricula:['name','dui','occupation','municipio','departamento','model','color','year','motor','chasis','poliza','matriculaDate']};
+const DELIVERY_LABELS={name:'nombre',dui:'DUI',occupation:'ocupación',municipio:'municipio',departamento:'departamento',model:'modelo',color:'color',year:'año',motor:'número de motor',chasis:'número de chasis',poliza:'número de póliza',price:'valor de venta',deliveryDate:'fecha de entrega',matriculaDate:'fecha de la autorización'};
+let deliveryDraft=null;
+
+/* ---------- Números y letras ---------- */
+const ES_UNITS=['CERO','UNO','DOS','TRES','CUATRO','CINCO','SEIS','SIETE','OCHO','NUEVE','DIEZ','ONCE','DOCE','TRECE','CATORCE','QUINCE','DIECISEIS','DIECISIETE','DIECIOCHO','DIECINUEVE','VEINTE','VEINTIUNO','VEINTIDOS','VEINTITRES','VEINTICUATRO','VEINTICINCO','VEINTISEIS','VEINTISIETE','VEINTIOCHO','VEINTINUEVE'];
+const ES_TENS=['','','','TREINTA','CUARENTA','CINCUENTA','SESENTA','SETENTA','OCHENTA','NOVENTA'];
+const ES_HUNDREDS=['','CIENTO','DOSCIENTOS','TRESCIENTOS','CUATROCIENTOS','QUINIENTOS','SEISCIENTOS','SETECIENTOS','OCHOCIENTOS','NOVECIENTOS'];
+const ES_MONTHS=['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
+// Número entero en letras, como en los documentos: 2099 → DOS MIL NOVENTA Y NUEVE (sin tildes, como la plantilla).
+function numberWords(n){
+ n=Math.floor(Math.abs(Number(n)||0));
+ if(n<30)return ES_UNITS[n];
+ if(n<100)return ES_TENS[Math.floor(n/10)]+(n%10?' Y '+ES_UNITS[n%10]:'');
+ if(n===100)return 'CIEN';
+ if(n<1000)return ES_HUNDREDS[Math.floor(n/100)]+(n%100?' '+numberWords(n%100):'');
+ if(n<1e6){const k=Math.floor(n/1000),rest=n%1000;return (k===1?'MIL':numberWords(k).replace(/UNO$/,'UN')+' MIL')+(rest?' '+numberWords(rest):'');}
+ const m=Math.floor(n/1e6),rest=n%1e6;return (m===1?'UN MILLON':numberWords(m).replace(/UNO$/,'UN')+' MILLONES')+(rest?' '+numberWords(rest):'');
+}
+function moneyWords(v){const n=Math.round((Number(v)||0)*100),whole=Math.floor(n/100),cents=n%100;return numberWords(whole)+(cents?` CON ${String(cents).padStart(2,'0')}/100`:'');}
+// Cada número y letra por separado: DE4A-21 → D E CUATRO A - DOS UNO
+function spellChars(s){return String(s||'').toUpperCase().replace(/\s+/g,'').split('').map(ch=>/\d/.test(ch)?ES_UNITS[+ch]:ch==='-'?'-':ch).join(' ');}
+// Modelo: las palabras quedan; las cifras se dicen una por una: APACHE RTR 160 2V REF → APACHE RTR UNO SEIS CERO DOS V REF
+function modelWords(s){return String(s||'').toUpperCase().trim().split(/\s+/).map(w=>/\d/.test(w)?w.split('').map(ch=>/\d/.test(ch)?ES_UNITS[+ch]:ch).join(' '):w).join(' ');}
+function dateParts(iso){const [y,m,d]=String(iso||'').split('-').map(Number);return y&&m&&d?{y,m,d}:null;}
+
+/* ---------- Datos ---------- */
+function emptyDelivery(){return {id:'',creditId:'',clientId:'',saleType:'credito',name:'',dui:'',occupation:'',municipio:'',departamento:'',model:'',color:'',year:'',motor:'',chasis:'',poliza:'',price:null,prima:'',plan:'',payment:'',months:'',balance:'',deliveryDate:today(),matriculaDate:today(),createdAt:'',updatedAt:''};}
+function deliveryFromCredit(f){
+ const q=creditQuote(f),chosen=q.terms.find(t=>t.months===f.months);
+ return {creditId:f.id,clientId:f.clientId||'',saleType:'credito',name:f.name,dui:f.dui,occupation:f.position||'',model:f.model||'',year:f.year||'',price:f.price??null,
+  prima:f.price?'$'+creditMoney(q.prima):'',plan:'SIETE TRES 47%',payment:chosen&&f.price?'$'+creditMoney(chosen.payment):'',months:f.price?String(f.months):'',balance:f.price?'$'+creditMoney(q.amount):''};
+}
+function deliveryValues(f){
+ const up=v=>String(v??'').trim().toUpperCase(),d=dateParts(f.deliveryDate),m=dateParts(f.matriculaDate),credit=f.saleType==='credito';
+ return {name:up(f.name),dui:up(f.dui),occupation:up(f.occupation),municipio:up(f.municipio),departamento:up(f.departamento),model:up(f.model),color:up(f.color),year:up(f.year),
+  motor:up(f.motor),chasis:up(f.chasis),poliza:up(f.poliza),priceWords:f.price!=null&&f.price!==''?moneyWords(f.price):'',
+  dateLong:d?`${d.d} DE ${ES_MONTHS[d.m-1]} DE ${d.y}`:'',
+  dayWords:m?numberWords(m.d):'',month:m?ES_MONTHS[m.m-1]:'',yearWords:m?numberWords(m.y):'',motoYearWords:/^\d{4}$/.test(String(f.year).trim())?numberWords(f.year):up(f.year),
+  duiWords:spellChars(f.dui),polizaWords:spellChars(f.poliza).replace(/ - /g,' - '),modelWords:modelWords(f.model),motorWords:spellChars(f.motor),chasisWords:spellChars(f.chasis),
+  prima:credit?up(f.prima):'',plan:credit?up(f.plan):'',payment:credit?up(f.payment):'',months:credit?up(f.months):'',balance:credit?up(f.balance):'',
+  xContado:credit?'':'X',xCredito:credit?'X':'',financiera:credit?'CREDIOPCIONES':''};
+}
+function validateDeliveryForms(v){
+ if(v.deliveryForms===undefined)return;
+ if(!Array.isArray(v.deliveryForms)||v.deliveryForms.length>25000)throw new Error('La colección de entregas no es válida.');
+ const ids=new Set(),str=(s,max)=>typeof s==='string'&&s.length<=max;
+ for(const f of v.deliveryForms){
+  if(!f||typeof f.id!=='string'||!/^[\w-]{1,100}$/.test(f.id)||ids.has(f.id))throw new Error('Hay una entrega sin identificador válido o repetido.');ids.add(f.id);
+  if(!['credito','contado'].includes(f.saleType)||DELIVERY_TEXT.some(k=>!str(f[k],300))||!(f.price===null||(typeof f.price==='number'&&Number.isFinite(f.price)&&f.price>=0&&f.price<=1e10)))throw new Error('Hay una entrega con datos inválidos.');
+ }
+}
+validateCreditForms=(base=>v=>{base(v);validateDeliveryForms(v);})(validateCreditForms);
+
+/* ---------- Datos de SAP ---------- */
+// Lee motor, chasis, póliza, color y año del texto de SAP (pegado o leído de la captura).
+function parseSAP(text){
+ const t=String(text||'').replace(/\r/g,'').replace(/[|]/g,' ');
+ const line=re=>{const m=t.match(re);return m?m[1].trim().replace(/\s{2,}/g,' '):'';};
+ const code=v=>v.replace(/[^A-Z0-9-]/gi,'').toUpperCase();
+ const out={};
+ const motor=code(line(/^\s*MOTOR\b[\s:]*([A-Z0-9][A-Z0-9 ]{4,})\s*$/im));if(motor)out.motor=motor;
+ const chasis=code(line(/^\s*CHASIS\b[\s:]*([A-Z0-9][A-Z0-9 ]{8,})\s*$/im)||line(/^\s*VIN\b[\s:]*([A-Z0-9][A-Z0-9 ]{8,})\s*$/im));if(chasis)out.chasis=chasis;
+ const poliza=line(/N[UÚ]MERO[\s_]*DE[\s_]*P[OÓ]LIZA\b[\s:]*([0-9][0-9 -]*[0-9])/i).replace(/\s+/g,'');if(poliza)out.poliza=poliza;
+ const c1=line(/COLOR[\s_]*COMERCIAL[\s_]*1\b[\s:]*(.+)$/im),c2=line(/COLOR[\s_]*COMERCIAL[\s_]*2\b[\s:]*(.+)$/im);
+ const color=[c1,c2].filter(Boolean).join(' ').toUpperCase();if(color)out.color=color;
+ const den=line(/Denominaci[oó]n\b[\s:]*(.+)$/im);const y=den.match(/\b(20\d\d)\b/);if(y)out.year=y[1];
+ return out;
+}
+let deliveryOcrWorker=null;
+function ocrTag(id){const el=document.getElementById(id);if(!el)throw Error('El lector de capturas no está incluido en este archivo.');return el.textContent.trim();}
+async function deliveryReadImage(blob,status){
+ status('Leyendo la captura… la primera vez tarda unos segundos.');
+ if(!globalThis.Tesseract){const s=document.createElement('script');s.textContent=ocrTag('tvs-ocr-lib');document.head.append(s);}
+ if(!deliveryOcrWorker){
+  // Abierto como archivo, Chrome no deja que el lector cargue piezas aparte: núcleo y trabajador van en un solo script.
+  // Los datos del idioma también van dentro: el lector los «descarga» de una dirección local que nunca sale a internet.
+  const dec=new TextDecoder();
+  const prelude=`const __tvsEng=${JSON.stringify(ocrTag('tvs-ocr-eng'))};self.fetch=(f=>(u,...a)=>String(u).startsWith('https://tvs-panel.local/')?Promise.resolve(new Response(Uint8Array.from(atob(__tvsEng),c=>c.charCodeAt(0)))):f(u,...a))(self.fetch);`;
+  const script=dec.decode(creditB64(ocrTag('tvs-ocr-core')))+'\n;\n'+prelude+'\n;\n'+dec.decode(creditB64(ocrTag('tvs-ocr-worker')));
+  const workerPath=URL.createObjectURL(new Blob([script],{type:'text/javascript'}));
+  deliveryOcrWorker=await Tesseract.createWorker('eng',1,{workerPath,workerBlobURL:false,corePath:'incluido.js',langPath:'https://tvs-panel.local/ocr',cacheMethod:'none',gzip:true});
+ }
+ // Se amplía la captura al doble: el texto chico de SAP se lee mejor.
+ const bmp=await createImageBitmap(blob),c=document.createElement('canvas');c.width=bmp.width*2;c.height=bmp.height*2;
+ const g=c.getContext('2d');g.imageSmoothingQuality='high';g.fillStyle='#fff';g.fillRect(0,0,c.width,c.height);g.drawImage(bmp,0,0,c.width,c.height);
+ const big=await new Promise(r=>c.toBlob(r,'image/png'));
+ const {data}=await deliveryOcrWorker.recognize(big);
+ return data.text;
+}
+function applySAP(found,status){
+ const form=$('delivery-form');if(!form)return;
+ const keys=Object.keys(found);
+ if(!keys.length){status('No encontré motor, chasis ni póliza. Revisá que la captura muestre las Características, o escribilos a mano.',true);return;}
+ for(const k of keys){if(form[k]){form[k].value=found[k];form[k].classList.add('delivery-filled');}}
+ const warn=found.chasis&&found.chasis.length!==17?' El chasis no tiene 17 caracteres: revisalo.':'';
+ status(`Listo: ${keys.map(k=>DELIVERY_LABELS[k]||k).join(', ')}. Revisá que estén bien antes de descargar.${warn}`,!!warn);
+}
+async function handleSAPInput(dataTransfer){
+ const box=$('delivery-sap-status'),status=(msg,bad=false)=>{if(box){box.textContent=msg;box.hidden=false;box.classList.toggle('bad',!!bad);}};
+ const file=[...(dataTransfer?.files||[])].find(f=>f.type.startsWith('image/'))||[...(dataTransfer?.items||[])].map(i=>i.kind==='file'&&i.type.startsWith('image/')?i.getAsFile():null).find(Boolean);
+ try{
+  if(file){applySAP(parseSAP(await deliveryReadImage(file,status)),status);return true;}
+  const text=dataTransfer?.getData?.('text/plain');
+  if(text){applySAP(parseSAP(text),status);return true;}
+ }catch(err){status('No se pudo leer la captura: '+(err?.message||err)+'. Escribí los datos a mano.',true);return true;}
+ return false;
+}
+
+/* ---------- Pantalla ---------- */
+function deliveryPanel(){
+ const list=[...(db.deliveryForms||[])].sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt)));
+ const rows=list.map(f=>`<tr><td><strong>${esc(f.name)}</strong><small>DUI ${esc(f.dui)} · ${f.saleType==='credito'?'Crédito':'Contado'} · entrega ${esc(fmtDate(f.deliveryDate))}</small></td><td>${esc(f.model||'—')}<small>${f.chasis?'Chasis '+esc(f.chasis):'Sin chasis'}${f.poliza?' · Póliza '+esc(f.poliza):''}</small></td><td><div class="table-actions credit-pdf-actions"><button class="btn" data-action="delivery-pdf" data-doc="carta" data-id="${esc(f.id)}">${icon('download')}Carta</button><button class="btn" data-action="delivery-pdf" data-doc="matricula" data-id="${esc(f.id)}">${icon('download')}Matrícula</button><button class="btn" data-action="delivery-print-menu" data-id="${esc(f.id)}">Imprimir</button><button class="btn" data-action="delivery-word-menu" data-id="${esc(f.id)}" title="Descargar los Word originales llenos, para corregirlos a mano">Word</button><button class="btn" data-action="delivery-edit" data-id="${esc(f.id)}">Editar</button><button class="btn btn-quiet" data-action="delivery-delete" data-id="${esc(f.id)}" aria-label="Borrar entrega de ${esc(f.name)}">Borrar</button></div></td></tr>`).join('');
+ return `<section class="card credit-panel delivery-panel" aria-labelledby="delivery-panel-title"><div class="card-head"><div><h2 id="delivery-panel-title">Entrega de la moto</h2><p class="subtext">Carta de entrega y autorización de primera matrícula con los formatos originales. Pegá la captura de SAP para llenar motor, chasis, póliza y color.</p></div><button class="btn btn-primary" data-action="delivery-new">+ Nueva entrega</button></div>${list.length?`<div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Moto</th><th><span class="sr-only">Documentos y acciones</span></th></tr></thead><tbody>${rows}</tbody></table></div>`:`<div class="empty compact">${icon('document')}<h3>Todavía no hay entregas</h3><p>Elegí un crédito ingresado (o una venta de contado) y pegá la captura de SAP.</p></div>`}</section>`;
+}
+renderRequests=(base=>function(){base();$('view-financieras').insertAdjacentHTML('beforeend',deliveryPanel());})(renderRequests);
+
+function dIn(label,name,value,opts={}){const {type='text',full=false,hint='',list='',max=200,upper=false}=opts;return `<div class="field${full?' full':''}"><label for="df-${name}">${esc(label)}</label><input id="df-${name}" name="${name}" type="${type}" value="${esc(value??'')}" maxlength="${max}"${type==='number'?' min="0" step="0.01" inputmode="decimal"':''}${list?` list="${list}"`:''}${upper?' class="delivery-upper" autocapitalize="characters"':''}>${hint?`<small>${esc(hint)}</small>`:''}</div>`;}
+function openDeliveryForm(id='',creditId=''){
+ let f=id?(db.deliveryForms||[]).find(x=>x.id===id):null;
+ if(!f){f=emptyDelivery();if(creditId){const c=(db.creditForms||[]).find(x=>x.id===creditId);if(c)Object.assign(f,deliveryFromCredit(c));}}
+ deliveryDraft={id:f.id};
+ const credits=[...(db.creditForms||[])].sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt)));
+ const creditOpts=`<option value="">Contado / sin crédito ingresado</option>`+credits.map(c=>`<option value="${esc(c.id)}"${c.id===f.creditId?' selected':''}>${esc(c.name)} · ${esc(c.model||'sin moto')}</option>`).join('');
+ const body=`<form id="delivery-form" class="credit-form delivery-form" novalidate><p class="form-error" id="delivery-error" hidden></p>
+ <div class="form-grid">
+  <div class="field"><label for="df-creditId">Crédito ingresado</label><select id="df-creditId" name="creditId">${creditOpts}</select><small>Al elegirlo se copian nombre, DUI, moto, precio y financiamiento.</small></div>
+  <div class="field"><span class="field-label">Tipo de venta</span><div class="delivery-sale" role="radiogroup"><label><input type="radio" name="saleType" value="credito"${f.saleType==='credito'?' checked':''}> Crédito</label><label><input type="radio" name="saleType" value="contado"${f.saleType==='contado'?' checked':''}> Contado</label></div></div>
+ </div>
+ <h3 class="section-label">Datos de SAP</h3>
+ <div class="delivery-sap" id="delivery-sap" tabindex="0" role="button" aria-describedby="delivery-sap-help">${icon('document')}<div><strong>Pegá aquí la captura de SAP (Ctrl+V)</strong><span id="delivery-sap-help">O el texto copiado, o arrastrá la imagen. Se llenan motor, chasis, póliza, color y año.</span></div><label class="btn btn-small">Elegir imagen<input type="file" accept="image/*" id="delivery-sap-file" hidden></label></div>
+ <p class="delivery-sap-status" id="delivery-sap-status" role="status" aria-live="polite" hidden></p>
+ <div class="form-grid">${dIn('Número de motor','motor',f.motor,{upper:true})}${dIn('Número de chasis (VIN)','chasis',f.chasis,{upper:true})}${dIn('Número de póliza','poliza',f.poliza)}${dIn('Año','year',f.year,{max:10})}${dIn('Color','color',f.color,{full:true,upper:true})}</div>
+ <h3 class="section-label">Cliente</h3>
+ <div class="form-grid">${dIn('Nombre completo según DUI','name',f.name,{full:true,upper:true,max:150})}${dIn('DUI','dui',f.dui,{max:20})}${dIn('Ocupación','occupation',f.occupation,{upper:true})}${dIn('Municipio','municipio',f.municipio,{upper:true})}${dIn('Departamento','departamento',f.departamento,{upper:true})}</div>
+ <h3 class="section-label">Venta</h3>
+ <div class="form-grid">${dIn('Modelo','model',f.model,{list:'credit-models',upper:true})}${dIn('Valor de venta $','price',f.price,{type:'number',hint:'En la carta sale en letras.'})}
+ <div class="delivery-credit-only form-grid full">${dIn('Prima o enganche','prima',f.prima)}${dIn('Plan seleccionado','plan',f.plan)}${dIn('Cuotas de','payment',f.payment)}${dIn('Plazo (meses)','months',f.months,{max:10})}${dIn('Saldo para financiar','balance',f.balance)}</div>
+ ${dIn('Fecha de entrega','deliveryDate',f.deliveryDate,{type:'date',hint:'Fecha de la carta de entrega.'})}${dIn('Fecha de la autorización','matriculaDate',f.matriculaDate,{type:'date',hint:'En la matrícula sale en letras.'})}</div>
+ <datalist id="credit-models">${db.stock.filter(s=>s.active!==false).map(s=>`<option value="${esc(s.label)}"></option>`).join('')}</datalist>
+ </form>`;
+ const actions=`<button class="btn" data-close>Cancelar</button><span class="credit-actions-office"><button class="btn btn-quiet" data-action="delivery-save-word" data-doc="carta">Carta Word</button><button class="btn btn-quiet" data-action="delivery-save-word" data-doc="matricula">Matrícula Word</button></span><span class="credit-actions-office delivery-actions-print"><button class="btn btn-quiet" data-action="delivery-save-print" data-doc="carta">Carta</button><button class="btn btn-quiet" data-action="delivery-save-print" data-doc="matricula">Matrícula</button><button class="btn btn-quiet" data-action="delivery-save-print" data-doc="todo">Las dos</button></span><span class="credit-actions-pdf"><button class="btn" data-action="delivery-save-pdf" data-doc="carta">${icon('download')}Carta de entrega PDF</button><button class="btn" data-action="delivery-save-pdf" data-doc="matricula">${icon('download')}Matrícula PDF</button></span><button class="btn btn-primary" type="submit" form="delivery-form">Guardar</button>`;
+ openModal(id?'Editar entrega':'Entrega de la moto',body,actions,860);
+ deliverySaleToggle();
+}
+function deliverySaleToggle(){const form=$('delivery-form');if(!form)return;const credit=form.querySelector('input[name="saleType"]:checked')?.value==='credito';form.querySelector('.delivery-credit-only').hidden=!credit;}
+function readDeliveryForm(form){
+ const fd=new FormData(form),text=k=>String(fd.get(k)??'').trim();
+ const r={};for(const k of DELIVERY_TEXT)r[k]=text(k);
+ r.saleType=text('saleType')==='contado'?'contado':'credito';
+ const raw=text('price');r.price=raw===''?null:Math.round(Number(raw)*100)/100;
+ if(r.price!==null&&(!Number.isFinite(r.price)||r.price<0))throw Error('Revisá el valor de venta.');
+ if(r.dui){try{r.dui=normalizeDUI(r.dui);}catch(e){throw e;}}
+ for(const k of ['motor','chasis'])r[k]=r[k].toUpperCase().replace(/\s+/g,'');
+ r.clientId=r.creditId?((db.creditForms||[]).find(c=>c.id===r.creditId)?.clientId||''):'';
+ return r;
+}
+function saveDeliveryForm(){
+ const form=$('delivery-form');if(!form)return null;
+ let rec;try{rec=readDeliveryForm(form);if(!rec.name)throw Error('Escribí el nombre del cliente.');}catch(err){deliveryError(err.message);return null;}
+ const next=clone(db);next.deliveryForms??=[];const now=new Date().toISOString();
+ const old=next.deliveryForms.find(f=>f.id===deliveryDraft?.id);
+ if(old){Object.assign(old,rec,{updatedAt:now});rec=old;}
+ else{rec=Object.assign({id:uid(),createdAt:now,updatedAt:now},rec);next.deliveryForms.push(rec);deliveryDraft={id:rec.id};}
+ if(!commit(next,old?'Entrega actualizada.':'Entrega guardada.'))return null;
+ return (db.deliveryForms||[]).find(f=>f.id===rec.id)||rec;
+}
+function deliveryError(msg){const el=$('delivery-error');if(el){el.textContent=msg;el.hidden=!msg;if(msg)el.scrollIntoView({block:'nearest'});}else if(msg)toast(msg,true);}
+function deliveryMissing(kind,f){return DELIVERY_REQUIRED[kind].filter(k=>f[k]===null||f[k]===undefined||String(f[k]).trim()==='');}
+function deliveryCheck(kind,f){
+ const missing=deliveryMissing(kind,f);
+ if(missing.length){
+  const msg=`No se puede descargar la ${DELIVERY_KINDS[kind].label.toLowerCase()}: faltan ${missing.map(k=>DELIVERY_LABELS[k]).join(', ')}.`;
+  if(!($('modal').open&&$('delivery-form'))&&f.id)openDeliveryForm(f.id);
+  deliveryError(msg);toast(`Faltan ${missing.length} ${missing.length===1?'dato':'datos'} para ${DELIVERY_KINDS[kind].label.toLowerCase()}.`,true);
+  const form=$('delivery-form');if(form){form.querySelectorAll('.credit-missing').forEach(el=>el.classList.remove('credit-missing'));for(const k of missing)form[k]?.classList.add('credit-missing');form[missing[0]]?.focus({preventScroll:true});}
+  return false;
+ }
+ return true;
+}
+function deliveryFileName(kind,f,ext){return `${DELIVERY_KINDS[kind].file} - ${f.name.replace(/[\\/:*?"<>|]+/g,' ').replace(/\s+/g,' ').trim().slice(0,80)} - ${creditDate().replace(/\//g,'-')}.${ext}`;}
+
+/* ---------- Word lleno ---------- */
+function deliveryWord(kind,f){
+ const tpl=DELIVERY_DOCS?.templates?.[kind];if(!tpl)throw Error('No se encontró el documento original.');
+ const v=deliveryValues(f),dec=new TextDecoder(),enc=new TextEncoder();
+ const files=tpl.entries.map(([name,b64])=>{let data=creditB64(b64);if(/\.xml$/.test(name)){const text=dec.decode(data);if(text.includes('{{'))data=enc.encode(text.replace(/\{\{(\w+)\}\}/g,(m,k)=>creditXml(v[k]??'')));}return [name,data];});
+ return creditZip(files);
+}
+/* ---------- PDF con el documento original de fondo ---------- */
+// kind puede ser 'carta', 'matricula' o 'todo' (las dos en un solo PDF, para imprimir de una vez).
+function deliveryPDF(kind,f){
+ const D=DELIVERY_DOCS,kinds=kind==='todo'?['carta','matricula']:[kind];
+ if(kinds.some(k=>!D?.layouts?.[k]))throw Error('No se encontró el documento original.');
+ const J=globalThis.jspdf?.jsPDF;if(!J)throw Error('No se pudo cargar el generador de PDF.');
+ const doc=new J({unit:'pt',format:'letter',orientation:'portrait',compress:true});creditFonts(doc);
+ const v=deliveryValues(f);let first=true;
+ for(const k of kinds){const lay=D.layouts[k];
+  for(let p=0;p<lay.pages;p++){
+   if(!first)doc.addPage('letter','portrait');first=false;
+   doc.addImage(D.images[k][p],'JPEG',0,0,612,792,undefined,'FAST');
+   for(const item of lay.items.filter(i=>i.page===p))deliveryDrawItem(doc,item,v);
+  }}
+ return doc;
+}
+// Imprimir: abre el PDF en una pestaña con la ventana de impresión lista.
+function deliveryPrint(kind,f){
+ const kinds=kind==='todo'?['carta','matricula']:[kind];
+ if(!kinds.every(k=>deliveryCheck(k,f)))return false;
+ try{const doc=deliveryPDF(kind,f);doc.autoPrint();const url=doc.output('bloburl');const w=window.open(url,'_blank');
+  if(!w){toast('El navegador bloqueó la ventana para imprimir. Permití las ventanas emergentes para este archivo.',true);return false;}
+  setTimeout(()=>URL.revokeObjectURL(url),120000);toast('Se abrió la ventana para imprimir.');return true;}
+ catch(err){toast(err.message,true);deliveryError(err.message);return false;}
+}
+function deliveryFont(doc,item,bold){doc.setFont(item.font==='carlito'?'Carlito':'times',bold?'bold':'normal');}
+function deliveryDrawItem(doc,item,v){
+ // Palabras con su formato (negrita, subrayado, mayúsculas)
+ const words=[];
+ for(const r of item.runs){
+  let t=r.t.replace(/\{\{(\w+)\}\}/g,(m,k)=>v[k]??'');if(r.caps)t=t.toUpperCase();
+  const parts=t.replace(/\t/g,' ').split(/( +)/);
+  for(const part of parts){if(part==='')continue;if(/^ +$/.test(part)){if(words.length)words[words.length-1].space=true;continue;}
+   const glue=words.length&&!words[words.length-1].space;words.push({t:part,b:!!r.b,u:!!r.u,glue});}
+ }
+ if(!words.length)return;
+ doc.setTextColor(0,0,0);doc.setDrawColor(0,0,0);
+ const width=item.right-item.left;let size=item.size;
+ const wW=w=>{deliveryFont(doc,item,w.b);return doc.getTextWidth(w.t);};
+ const spaceW=()=>{deliveryFont(doc,item,false);return doc.getTextWidth(' ');};
+ const lineW=l=>l.reduce((n,w,i)=>n+wW(w)+(i&&!w.glue?spaceW():0),0);
+ if(item.align!=='justify'){
+  // Un dato suelto: una línea; si no cabe, la letra se achica (hasta 60 %).
+  doc.setFontSize(size);while(size>item.size*.6&&lineW(words)>width){size-=.25;doc.setFontSize(size);}
+  let x=item.align==='right'?item.right-lineW(words):item.left;
+  words.forEach((w,i)=>{if(i&&!w.glue)x+=spaceW();deliveryFont(doc,item,w.b);doc.text(w.t,x,item.top,{baseline:'top'});const ww=doc.getTextWidth(w.t);if(w.u){doc.setLineWidth(.5);doc.line(x,item.top+size*.95,x+ww,item.top+size*.95);}x+=ww;});
+  return;
+ }
+ // Párrafo justificado, como en el Word
+ doc.setFontSize(size);
+ const lines=[];let line=[];
+ for(const w of words){if(line.length&&lineW([...line,w])>width&&!w.glue){lines.push(line);line=[];}line.push(w);}
+ if(line.length)lines.push(line);
+ let y=item.top;
+ lines.forEach((l,li)=>{const last=li===lines.length-1,gaps=l.filter((w,i)=>i&&!w.glue).length,extra=last||!gaps?0:(width-lineW(l))/gaps;let x=item.left;
+  l.forEach((w,i)=>{if(i&&!w.glue)x+=spaceW()+extra;deliveryFont(doc,item,w.b);doc.text(w.t,x,y,{baseline:'top'});const ww=doc.getTextWidth(w.t);if(w.u){doc.setLineWidth(.5);doc.line(x,y+size*.95,x+ww,y+size*.95);}x+=ww;});
+  y+=item.lineGap;});
+}
+function downloadDelivery(kind,f,format){
+ if(!deliveryCheck(kind,f))return false;
+ try{
+  if(format==='word')creditSaveBlob(deliveryWord(kind,f),deliveryFileName(kind,f,'docx'));
+  else deliveryPDF(kind,f).save(deliveryFileName(kind,f,'pdf'));
+  toast(`${DELIVERY_KINDS[kind].label} descargada${format==='word'?' en Word. Abrila, revisala y guardala como PDF.':' en PDF.'}`);return true;
+ }catch(err){toast(err.message,true);deliveryError(err.message);return false;}
+}
+
+/* ---------- Eventos ---------- */
+document.addEventListener('paste',e=>{if(!$('delivery-form'))return;const inSap=e.target.closest?.('#delivery-sap');const hasImage=[...(e.clipboardData?.items||[])].some(i=>i.kind==='file'&&i.type.startsWith('image/'));
+ // Una imagen pegada en cualquier parte del formulario es la captura de SAP; el texto solo si se pega en el recuadro.
+ if(hasImage||inSap){e.preventDefault();handleSAPInput(e.clipboardData);}});
+document.addEventListener('dragover',e=>{if(e.target.closest?.('#delivery-sap')){e.preventDefault();e.target.closest('#delivery-sap').classList.add('drag');}});
+document.addEventListener('dragleave',e=>{e.target.closest?.('#delivery-sap')?.classList.remove('drag');});
+document.addEventListener('drop',e=>{const box=e.target.closest?.('#delivery-sap');if(!box)return;e.preventDefault();box.classList.remove('drag');handleSAPInput(e.dataTransfer);});
+document.addEventListener('change',e=>{
+ if(e.target.id==='delivery-sap-file'&&e.target.files?.[0]){handleSAPInput({files:e.target.files});e.target.value='';return;}
+ if(!e.target.closest?.('#delivery-form'))return;
+ if(e.target.name==='saleType')deliverySaleToggle();
+ if(e.target.name==='creditId'&&e.target.value){const c=(db.creditForms||[]).find(x=>x.id===e.target.value);if(c){const form=$('delivery-form'),p=deliveryFromCredit(c);for(const [k,val] of Object.entries(p)){if(k==='saleType'){form.querySelector(`input[name="saleType"][value="${val}"]`).checked=true;continue;}if(form[k]&&form[k].type!=='radio'&&val!==''&&val!==null&&val!==undefined)form[k].value=val;}deliverySaleToggle();}}
+ if(e.target.name==='dui'){try{e.target.value=normalizeDUI(e.target.value);}catch{}}
+});
+document.addEventListener('input',e=>{if(e.target.closest?.('#delivery-form')&&e.target.classList.contains('credit-missing')&&String(e.target.value).trim())e.target.classList.remove('credit-missing');});
+document.addEventListener('keydown',e=>{if(e.target.id==='delivery-sap'&&(e.key==='Enter'||e.key===' ')){e.preventDefault();$('delivery-sap-file')?.click();}});
+document.addEventListener('submit',e=>{if(e.target.id!=='delivery-form')return;e.preventDefault();if(saveDeliveryForm())$('modal').close();});
+document.addEventListener('click',e=>{
+ const b=e.target.closest('[data-action^="delivery-"]');if(!b)return;const action=b.dataset.action,id=b.dataset.id||'';
+ const rec=()=>(db.deliveryForms||[]).find(f=>f.id===id);
+ if(action==='delivery-new')openDeliveryForm('',b.dataset.credit||'');
+ else if(action==='delivery-edit')openDeliveryForm(id);
+ else if(action==='delivery-pdf'){const f=rec();if(f)downloadDelivery(b.dataset.doc,f,'pdf');}
+ else if(action==='delivery-word'){const f=rec();if(f&&downloadDelivery(b.dataset.doc,f,'word')&&$('modal').open&&!$('delivery-form'))$('modal').close();}
+ else if(action==='delivery-save-print'){const f=saveDeliveryForm();if(f){deliveryError('');deliveryPrint(b.dataset.doc,f);}}
+ else if(action==='delivery-print'){const f=rec();if(f&&deliveryPrint(b.dataset.doc,f)&&$('modal').open&&!$('delivery-form'))$('modal').close();}
+ else if(action==='delivery-print-menu'){const f=rec();if(!f)return;openModal('Imprimir',`<p>Se abre el documento con tu formato original y la ventana para imprimir.</p><div class="credit-office-list">${[['carta','Carta de entrega (4 hojas)'],['matricula','Autorización de matrícula'],['todo','Las dos juntas']].map(([k,l])=>`<button class="btn" data-action="delivery-print" data-doc="${k}" data-id="${esc(f.id)}">${esc(l)}</button>`).join('')}</div>`,`<button class="btn" data-close>Cerrar</button>`,480);}
+ else if(action==='delivery-save-pdf'||action==='delivery-save-word'){const f=saveDeliveryForm();if(f){deliveryError('');downloadDelivery(b.dataset.doc,f,action==='delivery-save-pdf'?'pdf':'word');}}
+ else if(action==='delivery-word-menu'){const f=rec();if(!f)return;openModal('Descargar en Word',`<p>Se descargan tus documentos originales con los datos de <strong>${esc(f.name)}</strong>. Abrilos en Word, corregí lo que haga falta y guardalos como PDF.</p><div class="credit-office-list">${Object.entries(DELIVERY_KINDS).map(([k,d])=>`<button class="btn" data-action="delivery-word" data-doc="${k}" data-id="${esc(f.id)}">${icon('download')}${esc(d.label)} <span class="credit-office-tag">Word</span></button>`).join('')}</div>`,`<button class="btn" data-close>Cerrar</button>`,520);}
+ else if(action==='delivery-delete'){const f=rec();if(!f)return;openModal('Borrar entrega',`<p>¿Querés borrar la entrega de <strong>${esc(f.name)}</strong>?</p><p class="subtext">El crédito y la ficha del cliente no se borran.</p>`,`<button class="btn" data-close>Cancelar</button><button class="btn btn-danger" data-action="delivery-delete-confirm" data-id="${esc(id)}">Sí, borrar</button>`,480);}
+ else if(action==='delivery-delete-confirm'){const next=clone(db);next.deliveryForms=(next.deliveryForms||[]).filter(f=>f.id!==id);if(commit(next,'Entrega borrada.'))$('modal').close();}
+});
