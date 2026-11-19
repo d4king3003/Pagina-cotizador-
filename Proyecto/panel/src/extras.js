@@ -104,3 +104,32 @@ submitRecord=function(form){
  return submitRecordNoDup(form);
 };
 
+
+/* ---------- DUI: formato automático en todo el panel ---------- */
+// Solo números, máximo 9 dígitos, y el guion antes del último: 01234567-8 (se pone solo mientras se escribe o se pega).
+function formatDUIInput(el){
+ const before=el.value,caret=el.selectionStart??before.length;
+ const digitsBefore=before.slice(0,caret).replace(/\D/g,'').length;
+ const d=before.replace(/\D/g,'').slice(0,9),next=d.length>8?d.slice(0,8)+'-'+d.slice(8):d;
+ if(next===before)return;
+ el.value=next;
+ // El cursor queda después del mismo número de dígitos que antes
+ let pos=0,count=0;while(pos<next.length&&count<Math.min(digitsBefore,d.length)){if(/\d/.test(next[pos]))count++;pos++;}
+ if(document.activeElement===el)try{el.setSelectionRange(pos,pos);}catch{}
+}
+const isDUIField=el=>el?.matches?.('input[name="dui"],input[data-dui]');
+document.addEventListener('focusin',e=>{const el=e.target;if(!isDUIField(el))return;el.removeAttribute('maxlength');el.setAttribute('inputmode','numeric');el.setAttribute('autocomplete','off');if(!el.placeholder)el.placeholder='01234567-8';});
+document.addEventListener('input',e=>{if(isDUIField(e.target))formatDUIInput(e.target);},true);
+
+/* ---------- Teléfonos: solo números en todo el panel ---------- */
+// Se aceptan números, espacios, guiones y un «+» al inicio (números de otro país). Las letras y otros signos se quitan solos.
+const isPhoneField=el=>el?.matches?.('input[type="tel"],input[name="phone"],input[name$="Phone"],input[name$="-phone"],input[data-phone]')&&!isDUIField(el);
+function cleanPhoneInput(el){
+ const before=el.value,caret=el.selectionStart??before.length;
+ const clean=s=>s.replace(/[^\d+\s-]/g,'').replace(/(?!^)\+/g,'').replace(/^(\s*)\+/,'+');
+ const next=clean(before);if(next===before)return;
+ const pos=clean(before.slice(0,caret)).length;
+ el.value=next;if(document.activeElement===el)try{el.setSelectionRange(pos,pos);}catch{}
+}
+document.addEventListener('focusin',e=>{if(isPhoneField(e.target))e.target.setAttribute('inputmode','tel');});
+document.addEventListener('input',e=>{if(isPhoneField(e.target))cleanPhoneInput(e.target);},true);
