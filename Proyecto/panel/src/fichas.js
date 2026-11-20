@@ -108,3 +108,131 @@ function downloadTechnicalSheet(id) {
   toast('No se pudo descargar la ficha. Volvé a seleccionar el modelo.', true);
  }
 }
+
+// ===== Visor con zoom: para enseñarle la ficha al cliente =====
+// Pellizcar con dos dedos o la rueda del mouse acerca; arrastrar mueve; doble toque acerca o vuelve a la vista completa.
+function openSheetZoom(id) {
+ const sheet = technicalSheet(id);
+ if (!sheet) return;
+ let image;
+ try { image = technicalSheetImage(id); } catch { toast('No se pudo abrir la ficha. Volvé a seleccionar el modelo.', true); return; }
+ document.querySelector('.sheet-zoom')?.remove();
+ const W = sheet.width, H = sheet.height;
+ const box = document.createElement('div');
+ box.className = 'sheet-zoom';
+ box.setAttribute('role', 'dialog');
+ box.setAttribute('aria-modal', 'true');
+ box.setAttribute('aria-label', 'Ficha técnica de ' + sheet.title);
+ box.innerHTML = `<div class="sheet-zoom-stage"><img src="${image.url}" width="${W}" height="${H}" alt="Ficha técnica completa de ${esc(sheet.title)}" draggable="false"></div>
+ <div class="sheet-zoom-top"><strong>${esc(sheet.title)}</strong><button type="button" class="sheet-zoom-btn" data-zoom="close" aria-label="Cerrar visor">✕</button></div>
+ <div class="sheet-zoom-bar">
+  <button type="button" class="sheet-zoom-btn" data-zoom="out" aria-label="Alejar">−</button>
+  <button type="button" class="sheet-zoom-btn sheet-zoom-level" data-zoom="fit" aria-label="Ver la ficha completa">100%</button>
+  <button type="button" class="sheet-zoom-btn" data-zoom="in" aria-label="Acercar">+</button>
+  <span class="sheet-zoom-sep"></span>
+  <button type="button" class="sheet-zoom-btn" data-action="copy-sheet" data-id="${esc(sheet.id)}" aria-label="Copiar imagen">${icon('copy')}</button>
+  <button type="button" class="sheet-zoom-btn" data-action="download-sheet" data-id="${esc(sheet.id)}" aria-label="Guardar imagen">${icon('download')}</button>
+ </div>
+ <p class="sheet-zoom-hint">Pellizcá con dos dedos o tocá dos veces para acercar</p>`;
+ document.body.append(box);
+ const stage = box.querySelector('.sheet-zoom-stage'), img = stage.querySelector('img'), level = box.querySelector('.sheet-zoom-level');
+ let fit = 1, s = 1, x = 0, y = 0;
+ const view = () => stage.getBoundingClientRect();
+ const clamp = () => {
+  const r = view(), w = W * s, h = H * s;
+  x = w <= r.width ? (r.width - w) / 2 : Math.min(0, Math.max(r.width - w, x));
+  y = h <= r.height ? (r.height - h) / 2 : Math.min(0, Math.max(r.height - h, y));
+ };
+ const apply = (animate = false) => {
+  clamp();
+  img.style.transition = animate ? 'transform .22s cubic-bezier(.2,.8,.2,1)' : 'none';
+  img.style.transform = `translate(${x}px,${y}px) scale(${s})`;
+  level.textContent = Math.round(s / fit * 100) + '%';
+  box.classList.toggle('zoomed', s > fit * 1.01);
+ };
+ const fitView = () => { const r = view(); fit = Math.min(r.width / W, r.height / H); s = fit; x = 0; y = 0; apply(); };
+ // Acercar manteniendo fijo el punto (cx, cy) de la pantalla
+ const zoomAt = (ns, cx, cy, animate = false) => {
+  const r = view(); ns = Math.min(fit * 8, Math.max(fit, ns));
+  const px = cx - r.left, py = cy - r.top;
+  x = px - (px - x) * ns / s; y = py - (py - y) * ns / s; s = ns; apply(animate);
+ };
+ const center = () => { const r = view(); return [r.left + r.width / 2, r.top + r.height / 2]; };
+ fitView();
+ const onResize = () => { const rel = s / fit; const r = view(); fit = Math.min(r.width / W, r.height / H); s = fit * rel; apply(); };
+ window.addEventListener('resize', onResize);
+
+ // Toques y mouse
+ const pts = new Map();
+ let start = null, lastTap = 0, moved = false;
+ const snapshot = () => {
+  const p = [...pts.values()];
+  if (p.length >= 2) {
+   const [a, b] = p;
+   start = {two: true, d: Math.hypot(a.x - b.x, a.y - b.y), mx: (a.x + b.x) / 2, my: (a.y + b.y) / 2, s, x, y};
+  } else if (p.length === 1) start = {two: false, px: p[0].x, py: p[0].y, x, y};
+  else start = null;
+ };
+ stage.addEventListener('pointerdown', e => {
+  stage.setPointerCapture(e.pointerId); pts.set(e.pointerId, {x: e.clientX, y: e.clientY});
+  if (pts.size === 1) moved = false;
+  snapshot(); box.classList.add('touched');
+ });
+ stage.addEventListener('pointermove', e => {
+  if (!pts.has(e.pointerId) || !start) return;
+  pts.set(e.pointerId, {x: e.clientX, y: e.clientY});
+  const p = [...pts.values()];
+  if (start.two && p.length >= 2) {
+   const [a, b] = p, d = Math.hypot(a.x - b.x, a.y - b.y), mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
+   const r = view(), ns = Math.min(fit * 8, Math.max(fit * .9, start.s * d / start.d));
+   const px = start.mx - r.left, py = start.my - r.top;
+   x = mx - r.left - (px - start.x) * ns / start.s; y = my - r.top - (py - start.y) * ns / start.s; s = ns;
+   moved = true; apply();
+  } else if (!start.two) {
+   const dx = e.clientX - start.px, dy = e.clientY - start.py;
+   if (Math.abs(dx) + Math.abs(dy) > 6) moved = true;
+   x = start.x + dx; y = start.y + dy; apply();
+  }
+ });
+ const end = e => {
+  if (!pts.has(e.pointerId)) return;
+  pts.delete(e.pointerId);
+  if (s < fit) { s = fit; apply(true); }
+  snapshot();
+  if (e.type === 'pointerup' && pts.size === 0 && !moved) {
+   const now = Date.now();
+   if (now - lastTap < 320) { lastTap = 0; s > fit * 1.05 ? zoomAt(fit, e.clientX, e.clientY, true) : zoomAt(fit * 2.5, e.clientX, e.clientY, true); }
+   else lastTap = now;
+  }
+ };
+ stage.addEventListener('pointerup', end);
+ stage.addEventListener('pointercancel', end);
+ stage.addEventListener('wheel', e => { e.preventDefault(); zoomAt(s * Math.exp(-e.deltaY * .0018), e.clientX, e.clientY); }, {passive: false});
+
+ // Cerrar: botón, Esc o el botón «atrás» del teléfono
+ let closed = false;
+ const close = fromHistory => {
+  if (closed) return; closed = true;
+  window.removeEventListener('resize', onResize); window.removeEventListener('popstate', onPop); document.removeEventListener('keydown', onKey, true);
+  box.remove();
+  if (!fromHistory && history.state?.sheetZoom) history.back();
+ };
+ const onPop = () => close(true);
+ const onKey = e => {
+  if (e.key === 'Escape') { e.preventDefault(); close(false); }
+  else if (e.key === '+' || e.key === '=') zoomAt(s * 1.5, ...center(), true);
+  else if (e.key === '-') zoomAt(s / 1.5, ...center(), true);
+ };
+ history.pushState({sheetZoom: true}, '');
+ window.addEventListener('popstate', onPop);
+ document.addEventListener('keydown', onKey, true);
+ box.addEventListener('click', e => {
+  const b = e.target.closest('[data-zoom]'); if (!b) return;
+  const z = b.dataset.zoom;
+  if (z === 'close') close(false);
+  else if (z === 'in') zoomAt(s * 1.6, ...center(), true);
+  else if (z === 'out') zoomAt(s / 1.6, ...center(), true);
+  else if (z === 'fit') { s = fit; apply(true); }
+ });
+ box.querySelector('[data-zoom="close"]').focus({preventScroll: true});
+}

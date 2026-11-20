@@ -62,3 +62,26 @@
  .sheet-instructions { padding: 16px; gap: 10px; }
  .sheet-instructions p { font-size: 10px; }
 }
+
+/* Visor con zoom de la ficha técnica */
+.sheet-zoom{position:fixed;inset:0;z-index:1000;background:#070d1c;color:#ECE6DC;display:block;overscroll-behavior:contain;animation:sheet-zoom-in .18s ease-out}
+@keyframes sheet-zoom-in{from{opacity:0}to{opacity:1}}
+.sheet-zoom-stage{position:absolute;inset:0;overflow:hidden;touch-action:none;cursor:zoom-in;user-select:none;-webkit-user-select:none}
+.sheet-zoom.zoomed .sheet-zoom-stage{cursor:grab}
+.sheet-zoom.zoomed .sheet-zoom-stage:active{cursor:grabbing}
+.sheet-zoom-stage img{position:absolute;left:0;top:0;max-width:none;width:auto;height:auto;transform-origin:0 0;will-change:transform;-webkit-user-drag:none;pointer-events:none;background:#fff}
+.sheet-zoom-top{position:absolute;left:0;right:0;top:0;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:calc(10px + env(safe-area-inset-top)) 12px 18px 18px;background:linear-gradient(#070d1ccc,#070d1c00);pointer-events:none}
+.sheet-zoom-top strong{font-size:16px;font-weight:650;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sheet-zoom-top button,.sheet-zoom-bar{pointer-events:auto}
+.sheet-zoom-bar{position:absolute;left:50%;bottom:calc(16px + env(safe-area-inset-bottom));transform:translateX(-50%);display:flex;align-items:center;gap:4px;padding:6px;border-radius:999px;background:#13285Ae6;box-shadow:0 10px 30px #0008;backdrop-filter:blur(8px)}
+.sheet-zoom-btn{min-width:46px;height:46px;padding:0 10px;border:0;border-radius:999px;background:transparent;color:#ECE6DC;font:600 22px/1 var(--font-ui,system-ui);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .15s,transform .1s}
+.sheet-zoom-btn:hover{background:#ffffff1f}
+.sheet-zoom-btn:active{transform:scale(.94)}
+.sheet-zoom-btn:focus-visible{outline:2px solid #E0626A;outline-offset:2px}
+.sheet-zoom-btn svg{width:21px;height:21px}
+.sheet-zoom-level{font-size:14px;min-width:64px}
+.sheet-zoom-top .sheet-zoom-btn{background:#ffffff1a;font-size:18px}
+.sheet-zoom-sep{width:1px;height:24px;background:#ffffff33;margin:0 4px}
+.sheet-zoom-hint{position:absolute;left:0;right:0;bottom:calc(84px + env(safe-area-inset-bottom));text-align:center;font-size:13px;color:#ECE6DCcc;margin:0;pointer-events:none;transition:opacity .3s}
+.sheet-zoom.touched .sheet-zoom-hint{opacity:0}
+@media (prefers-reduced-motion:reduce){.sheet-zoom{animation:none}}

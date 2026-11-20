@@ -243,7 +243,7 @@ document.addEventListener('click',async e=>{
  else if(action==='select-sheet'){ui.sheetId=id;renderTechnicalSheets();}
  else if(action==='copy-sheet')await copyTechnicalSheet(id,b);
  else if(action==='download-sheet')downloadTechnicalSheet(id);
- else if(action==='preview-sheet'){const sheet=technicalSheet(id);if(sheet)showTechnicalSheet(sheet);}
+ else if(action==='preview-sheet')openSheetZoom(id);
  else if(action==='new-stock')editStock();else if(action==='edit-stock')editStock(id);else if(action==='quote-stock'){navigate('cotizar');chooseQuoteStock(id);}
  else if(action==='new-request')editRequest();else if(action==='edit-request')editRequest(id);else if(action==='request-client')editRequest('',id);
  else if(action==='new-postsale')editPostSale();else if(action==='edit-postsale')editPostSale(id);else if(action==='complete-postsale'){const p=clone(db.postSales.find(p=>p.id===id));p.done=true;upsert('postSales',p,'Seguimiento marcado como realizado.');}
