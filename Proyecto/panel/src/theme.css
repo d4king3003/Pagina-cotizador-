@@ -396,3 +396,4 @@ html.tvs-app .app-tabbar a.active{color:#fff;background:#ffffff1a}
 html.tvs-app .app-tabbar a.active svg{color:#fff}
 
 html.tvs-app .view.app-off{display:none!important}
+.page-heading.page-heading-actions{margin-bottom:18px;justify-content:flex-end}.page-heading.page-heading-actions>div:first-child{display:none}
