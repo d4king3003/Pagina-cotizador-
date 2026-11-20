@@ -340,3 +340,13 @@ html[data-theme=dark] .col-item.current .col-bar,html[data-theme=dark] .rank-bar
 /* Grupos del menú lateral */
 #main-nav .nav-group{margin:18px 0 8px}
 #main-nav .nav-group:first-child{margin-top:26px}
+/* Descuentos de ley */
+.deductions-table th[scope=row]{font-weight:500;color:var(--ink);text-align:left;text-transform:none;letter-spacing:0;font-size:13px;background:none}
+.deductions-table td{text-align:right;font-variant-numeric:tabular-nums}
+.deductions-table thead th:not(:first-child){text-align:right}
+.deductions-table .strong-row th,.deductions-table .strong-row td{font-weight:650}
+.deductions-table .net-row th,.deductions-table .net-row td{font-weight:700;font-size:14px;color:var(--primary);border-top:2px solid var(--ink)}
+.deductions-table .advance-input{width:110px;min-height:32px;padding:6px 10px;text-align:right;margin-left:auto;display:block}
+.deductions-card .deductions-table tbody th{text-transform:none!important;letter-spacing:0!important;font-size:13px!important;font-weight:500;color:var(--ink);background:transparent!important}
+.deductions-card .deductions-table tbody tr.strong-row th,.deductions-card .deductions-table tbody tr.net-row th{font-weight:700}
+.deductions-card .deductions-table tbody tr.net-row th{color:var(--primary)}

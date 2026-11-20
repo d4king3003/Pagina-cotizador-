@@ -109,7 +109,7 @@ technical=(ROOT/'src/fichas.js').read_text()
 office=(ROOT/'src/office.js').read_text()
 quick_lead=(ROOT/'src/quick-lead.js').read_text()+'\n'+(ROOT/'src/client-actions.js').read_text()
 credit_logos={'credi':'data:image/png;base64,'+base64.b64encode((ROOT/'assets/credit/crediopciones.png').read_bytes()).decode(),'buro':'data:image/jpeg;base64,'+base64.b64encode((ROOT/'assets/credit/crediopciones-buro.jpg').read_bytes()).decode()}
-extras=(ROOT/'src/extras.js').read_text()+'\n'+(ROOT/'src/charts.js').read_text()
+extras=(ROOT/'src/extras.js').read_text()+'\n'+(ROOT/'src/charts.js').read_text()+'\n'+(ROOT/'src/deductions.js').read_text()
 credit_docs=(ROOT/'src/credit-docs.js').read_text().replace('/*CREDIT_LOGOS*/null',json.dumps(credit_logos))
 # Documentos originales de Crediopciones (los prepara tools/prep_credit_templates.py)
 TPL=ROOT/'assets/credit/templates'

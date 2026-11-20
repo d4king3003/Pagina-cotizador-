@@ -99,6 +99,7 @@ submitRecord=function(form){
   if(type==='payroll'){
    if(['basePerFortnight','fortnights','unitBase','targetUnits'].some(k=>get(k)===''))throw new Error('Completá los datos del esquema. Un campo vacío no se toma como cero.');const period=form.dataset.month,tiers=[];for(let i=0;i<100;i++){if(!f.has('units-'+i))continue;if(['units-','rate-','bonus-'].some(k=>get(k+i)===''))throw new Error('Completá las unidades, porcentaje y bono de cada escala.');tiers.push({units:Number(get('units-'+i)),rate:Number(get('rate-'+i)),bonus:Number(get('bonus-'+i))});}
    const p={id:'pago-'+period,month:period,basePerFortnight:Number(get('basePerFortnight')),fortnights:Number(get('fortnights')),unitBase:Number(get('unitBase')),targetUnits:Number(get('targetUnits')),source:'Esquema configurado para '+period,tiers:tiers.sort((a,b)=>a.units-b.units)};
+   {const prev=db.payrollPlans.find(x=>x.month===period);if(prev){for(const k of ['advanceQ1','advanceQ2'])if(prev[k]!=null)p[k]=prev[k];}}
    const next=clone(db),index=next.payrollPlans.findIndex(p=>p.month===period);if(index<0)next.payrollPlans.push(p);else next.payrollPlans[index]=p;validateMonthlyFields(next);if(commit(next,'Esquema guardado únicamente para '+monthLabel(period)+'.'))$('modal').close();return;
   }
   const next=clone(db),id=form.dataset.id||uid();
