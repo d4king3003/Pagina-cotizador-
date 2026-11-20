@@ -88,7 +88,12 @@ async function makePanelQuoteImage(snapshot) {
   for (let i = 0; i < lines.length; i++) text(lines[i], x, y + i * lineHeight, size, color, 'left', weight);
   return lines.length * lineHeight;
  };
- const W = 680, pad = 18, content = W - pad * 2;
+ // En la app de Android la imagen va más junta: filas más bajas, menos espacio y un poco más angosta.
+ let compact = false;
+ try { compact = !!window.parent?.document?.documentElement?.classList.contains('tvs-app'); } catch {}
+ const W = compact ? 600 : 680, pad = compact ? 14 : 18, content = W - pad * 2;
+ const RH = compact ? 36 : 46, HH = compact ? 30 : 40, TOP = compact ? 16 : 26;
+ const PHOTO = compact ? 150 : 174, HEAD = compact ? 82 : 98, GAP = compact ? 12 : 18;
  canvas.width = W * 2;
  // Los logos reemplazan el encabezado de texto únicamente en el PNG exportado.
  const [tvsLogo, modelLogo] = await Promise.all([
@@ -103,58 +108,58 @@ async function makePanelQuoteImage(snapshot) {
  setFont(18, 600);
  const titleLines = modelLogo ? [] : quoteImageLines(ctx, snapshot.modelLabel || 'Cotización de motocicleta', modelW);
  const modelH = modelLogo ? modelLogo.height * modelSize : titleLines.length * 22;
- const brandingHeight = Math.max(66, tvsH, modelH);
- const brandingCenterY = 26 + brandingHeight / 2;
- const tvsX = pad + 50;
+ const brandingHeight = Math.max(compact ? 54 : 66, tvsH, modelH);
+ const brandingCenterY = TOP + brandingHeight / 2;
+ const tvsX = pad + (compact ? 30 : 50);
  const modelX = tvsX + tvsW + 28;
  const tvsY = brandingCenterY - tvsH / 2, modelY = brandingCenterY - modelH / 2;
- const brandingBottom = 26 + brandingHeight;
- const tableY = Math.ceil(brandingBottom + 21);
- const tableH = 40 + snapshot.terms.length * 46;
- const cardY = tableY + tableH + 18;
- const photoH = model ? 224 : 54;
- const detailsY = cardY + 98 + photoH + 20;
- const cardBottom = detailsY + (detailsVisible ? 130 : 62) + 18;
+ const brandingBottom = TOP + brandingHeight;
+ const tableY = Math.ceil(brandingBottom + (compact ? 14 : 21));
+ const tableH = HH + snapshot.terms.length * RH;
+ const cardY = tableY + tableH + GAP;
+ const photoH = model ? PHOTO + 50 : 54;
+ const detailsY = cardY + HEAD + photoH + (compact ? 14 : 20);
+ const cardBottom = detailsY + (detailsVisible ? (compact ? 118 : 130) : 62) + (compact ? 10 : 18);
  const estimatedTerms = quote.rows.some(row => row.estimated);
  const note = (estimatedTerms || quote.estimated ? 'Los plazos marcados «est.» y las cuotas indicadas como estimadas son referenciales. Confirmá cuota final, cargos y seguros con la financiera. ' : '') + 'Cotización sujeta a evaluación y condiciones de la financiera. El último pago puede variar por redondeo.';
  setFont(10);
  const noteLines = quoteImageLines(ctx, note, content);
- canvas.height = Math.ceil(cardBottom + 34 + noteLines.length * 15 + 54) * 2;
+ canvas.height = Math.ceil(cardBottom + (compact ? 24 : 34) + noteLines.length * 15 + (compact ? 44 : 54)) * 2;
  ctx.scale(2, 2);
  ctx.fillStyle = palette.bg; ctx.fillRect(0, 0, W, canvas.height / 2);
- quoteImagePath(ctx, pad, 12, content, tableY - 25, 14); ctx.fillStyle = '#ffffff'; ctx.fill();
+ quoteImagePath(ctx, pad, compact ? 8 : 12, content, tableY - (compact ? 22 : 25), 14); ctx.fillStyle = '#ffffff'; ctx.fill();
  if (tvsLogo) ctx.drawImage(tvsLogo, tvsX, tvsY, tvsW, tvsH);
  else text('TVS', tvsX + tvsW / 2, tvsY + 24, 24, '#245789', 'center', 600);
- text(snapshot.date, W - pad - 12, 32, 9, '#5e718f', 'right');
+ text(snapshot.date, W - pad - 12, compact ? 26 : 32, 9, '#5e718f', 'right');
  if (modelLogo) ctx.drawImage(modelLogo, modelX, modelY, modelW, modelH);
  else titleLines.forEach((line, i) => text(line, modelX + modelW / 2, modelY + 18 + i * 22, 18, '#102d52', 'center', 600));
 
  ctx.save();
  quoteImagePath(ctx, pad, tableY, content, tableH, 14); ctx.clip();
  ctx.fillStyle = palette.paper; ctx.fillRect(pad, tableY, content, tableH);
- ctx.fillStyle = palette.head; ctx.fillRect(pad, tableY, content, 40);
- text('Plazo', pad + 22, tableY + 25, 10, palette.muted);
- text('Cuota mensual', W - pad - 22, tableY + 25, 10, palette.muted, 'right');
+ ctx.fillStyle = palette.head; ctx.fillRect(pad, tableY, content, HH);
+ text('Plazo', pad + 22, tableY + HH / 2 + 4, 10, palette.muted);
+ text('Cuota mensual', W - pad - 22, tableY + HH / 2 + 4, 10, palette.muted, 'right');
  for (let i = 0; i < snapshot.terms.length; i++) {
   const months = snapshot.terms[i];
   const row = quote.rows.find(item => item.months === months);
-  const y = tableY + 40 + i * 46;
+  const y = tableY + HH + i * RH, mid = y + RH / 2;
   const selected = months === quote.selected.months;
-  if (selected) { ctx.fillStyle = palette.selected; ctx.fillRect(pad, y, content, 46); }
+  if (selected) { ctx.fillStyle = palette.selected; ctx.fillRect(pad, y, content, RH); }
   ctx.strokeStyle = palette.line; ctx.lineWidth = 1;
   ctx.beginPath(); ctx.moveTo(pad, y); ctx.lineTo(W - pad, y); ctx.stroke();
-  ctx.beginPath(); ctx.arc(pad + 26, y + 23, 6, 0, Math.PI * 2);
+  ctx.beginPath(); ctx.arc(pad + 26, mid, 6, 0, Math.PI * 2);
   ctx.strokeStyle = selected ? '#df2447' : '#a8bce5';
   ctx.lineWidth = selected ? 3 : 1; ctx.stroke();
-  if (selected) { ctx.beginPath(); ctx.arc(pad + 26, y + 23, 2, 0, Math.PI * 2); ctx.fillStyle = '#df2447'; ctx.fill(); }
-  text(months + ' meses', pad + 46, y + 27, 12, palette.ink, 'left', selected ? 600 : 400);
+  if (selected) { ctx.beginPath(); ctx.arc(pad + 26, mid, 2, 0, Math.PI * 2); ctx.fillStyle = '#df2447'; ctx.fill(); }
+  text(months + ' meses', pad + 46, mid + 4, 12, palette.ink, 'left', selected ? 600 : 400);
   if (row && row.eligible !== false) {
-   text(money(row.monthly) + (row.estimated ? ' · est.' : ''), W - pad - 22, y + 28, 15, palette.ink, 'right', 500);
+   text(money(row.monthly) + (row.estimated ? ' · est.' : ''), W - pad - 22, mid + 5, 15, palette.ink, 'right', 500);
   } else {
    const reason = row?.reason || 'No disponible';
    setFont(10);
    const lines = quoteImageLines(ctx, reason, content - 170);
-   lines.forEach((line, lineIndex) => text(line, W - pad - 22, y + (lines.length > 1 ? 18 : 27) + lineIndex * 13, 10, palette.muted, 'right'));
+   lines.forEach((line, lineIndex) => text(line, W - pad - 22, mid + (lines.length > 1 ? -5 : 4) + lineIndex * 13, 10, palette.muted, 'right'));
   }
  }
  ctx.restore();
@@ -168,24 +173,25 @@ async function makePanelQuoteImage(snapshot) {
  ctx.save(); quoteImagePath(ctx, pad, cardY, content, cardBottom - cardY, 15); ctx.clip();
  ctx.fillStyle = '#e3294a'; ctx.fillRect(pad, cardY, content, 2); ctx.restore();
  const left = pad + 23, right = W - pad - 23;
- text('CUOTA MENSUAL', left, cardY + 29, 9, '#c4d4f1', 'left', 500);
- text(money(quote.selected.monthly), left, cardY + 73, 43, '#ffffff', 'left', 400);
+ text('CUOTA MENSUAL', left, cardY + (compact ? 25 : 29), 9, '#c4d4f1', 'left', 500);
+ text(money(quote.selected.monthly), left, cardY + (compact ? 64 : 73), compact ? 40 : 43, '#ffffff', 'left', 400);
  const termLabel = quote.selected.months + ' meses' + (quote.selected.estimated ? ' · est.' : '');
  setFont(10); const termWidth = Math.max(74, ctx.measureText(termLabel).width + 22);
- quoteImagePath(ctx, right - termWidth, cardY + 34, termWidth, 31, 6); ctx.strokeStyle = '#8096be'; ctx.lineWidth = .7; ctx.stroke();
- text(termLabel, right - termWidth / 2, cardY + 54, 10, '#ffffff', 'center', 500);
+ const termY = cardY + (compact ? 30 : 34);
+ quoteImagePath(ctx, right - termWidth, termY, termWidth, 31, 6); ctx.strokeStyle = '#8096be'; ctx.lineWidth = .7; ctx.stroke();
+ text(termLabel, right - termWidth / 2, termY + 20, 10, '#ffffff', 'center', 500);
 
- const photoY = cardY + 98, photoW = right - left;
+ const photoY = cardY + HEAD, photoW = right - left;
  if (model) {
   quoteImagePath(ctx, left, photoY, photoW, photoH, 10); ctx.fillStyle = '#ffffff'; ctx.fill();
   const photo = await quoteImageLoadPhoto(model.image);
-  const ratio = Math.min((photoW - 30) / photo.width, 174 / photo.height);
+  const ratio = Math.min((photoW - 30) / photo.width, PHOTO / photo.height);
   const width = photo.width * ratio, height = photo.height * ratio;
-  ctx.drawImage(photo, left + (photoW - width) / 2, photoY + 10 + (174 - height) / 2, width, height);
+  ctx.drawImage(photo, left + (photoW - width) / 2, photoY + 10 + (PHOTO - height) / 2, width, height);
   ctx.strokeStyle = '#e4ebf8'; ctx.lineWidth = .8;
-  ctx.beginPath(); ctx.moveTo(left + 16, photoY + 193); ctx.lineTo(right - 16, photoY + 193); ctx.stroke();
-  text(model.label, left + 16, photoY + 211, 9, '#173d70', 'left', 500);
-  text('Imagen de referencia', right - 16, photoY + 211, 8, '#61718c', 'right');
+  ctx.beginPath(); ctx.moveTo(left + 16, photoY + PHOTO + 19); ctx.lineTo(right - 16, photoY + PHOTO + 19); ctx.stroke();
+  text(model.label, left + 16, photoY + PHOTO + 37, 9, '#173d70', 'left', 500);
+  text('Imagen de referencia', right - 16, photoY + PHOTO + 37, 8, '#61718c', 'right');
  } else {
   quoteImagePath(ctx, left, photoY, photoW, photoH, 9); ctx.strokeStyle = '#6c85ad'; ctx.lineWidth = 1; ctx.stroke();
   text(snapshot.modelLabel || 'Modelo por definir', (left + right) / 2, photoY + 32, 12, '#c4d4f1', 'center');
@@ -197,17 +203,18 @@ async function makePanelQuoteImage(snapshot) {
   text(money(quote.initialPayment), right, detailsY + 32, 22, '#e2ecff', 'right');
   text(snapshot.initialNote, right, detailsY + 50, 8, '#bacce9', 'right');
   ctx.strokeStyle = '#829ac050'; ctx.lineWidth = .8;
-  ctx.beginPath(); ctx.moveTo(left, detailsY + 69); ctx.lineTo(right, detailsY + 69); ctx.stroke();
-  text('Total estimado a pagar', left, detailsY + 94, 11, '#ffffff', 'left', 500);
-  text('Incluye prima, cuotas y gastos.', left, detailsY + 112, 9, '#bacce9');
-  text(money(quote.selected.total), right, detailsY + 107, 24, '#ffd0d8', 'right', 400);
+  const sep = compact ? 62 : 69;
+  ctx.beginPath(); ctx.moveTo(left, detailsY + sep); ctx.lineTo(right, detailsY + sep); ctx.stroke();
+  text('Total estimado a pagar', left, detailsY + sep + 25, 11, '#ffffff', 'left', 500);
+  text('Incluye prima, cuotas y gastos.', left, detailsY + sep + 43, 9, '#bacce9');
+  text(money(quote.selected.total), right, detailsY + sep + 38, 24, '#ffd0d8', 'right', 400);
  } else {
   text('Prima total', left, detailsY + 14, 11, '#d5e2fa', 'left', 500);
   text(snapshot.initialNote, left, detailsY + 35, 9, '#bacce9');
   text(money(quote.initialPayment), right, detailsY + 31, 27, '#e2ecff', 'right', 400);
  }
- block(note, pad, cardBottom + 27, content, 10, 15, palette.muted);
- const footerY = cardBottom + 34 + noteLines.length * 15;
+ block(note, pad, cardBottom + (compact ? 22 : 27), content, 10, 15, palette.muted);
+ const footerY = cardBottom + (compact ? 24 : 34) + noteLines.length * 15;
  ctx.strokeStyle = palette.line; ctx.lineWidth = 1;
  ctx.beginPath(); ctx.moveTo(pad, footerY + 3); ctx.lineTo(W - pad, footerY + 3); ctx.stroke();
  text('Daniel Campos · Asesor de ventas', pad, footerY + 27, 11, palette.ink, 'left', 500);
