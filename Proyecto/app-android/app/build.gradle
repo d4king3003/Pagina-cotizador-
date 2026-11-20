@@ -1,0 +1,45 @@
+plugins { id 'com.android.application' }
+
+// Firma: los datos van en keystore.properties (no se sube al repositorio).
+def ksFile = rootProject.file('keystore.properties')
+def ks = new Properties()
+if (ksFile.exists()) ks.load(new FileInputStream(ksFile))
+
+android {
+    namespace 'com.tvsroosevelt.cotizador'
+    compileSdk 34
+    defaultConfig {
+        applicationId 'com.tvsroosevelt.cotizador'
+        minSdk 29
+        targetSdk 34
+        versionCode 1
+        versionName '1.0'
+    }
+    signingConfigs {
+        release {
+            if (ksFile.exists()) {
+                storeFile rootProject.file(ks['storeFile'])
+                storePassword ks['storePassword']
+                keyAlias ks['keyAlias']
+                keyPassword ks['keyPassword']
+            }
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            if (ksFile.exists()) signingConfig signingConfigs.release
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+// El panel (solo Cotizar y Fichas) se copia desde panel/dist/app.html al compilar.
+tasks.register('copyPanel', Copy) {
+    from(rootProject.file('../panel/dist/app.html'))
+    into(layout.projectDirectory.dir('src/main/assets'))
+}
+preBuild.dependsOn copyPanel

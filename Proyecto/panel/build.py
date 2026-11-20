@@ -165,10 +165,26 @@ office_render_source=office_bundle()
 png_url=lambda name:'data:image/png;base64,'+base64.b64encode((ROOT/'assets/brand'/name).read_bytes()).decode()
 font_url=lambda name:'data:font/woff2;base64,'+base64.b64encode((ROOT/'src/vendor/fonts'/name).read_bytes()).decode()
 theme_css=(ROOT/'src/theme.css').read_text().replace('/*FONT_INTER*/',font_url('inter-latin-wght-normal.woff2')).replace('/*FONT_JAKARTA*/',font_url('plus-jakarta-sans-latin-wght-normal.woff2'))
-html=shell.replace('/*APP_CSS*/',(ROOT/'src/style.css').read_text()+'\n'+(ROOT/'src/fichas.css').read_text()+'\n'+(ROOT/'src/cash-quote.css').read_text()+'\n'+(ROOT/'src/office-scene.css').read_text()+'\n'+(ROOT/'src/office.css').read_text()+'\n'+(ROOT/'src/quick-lead.css').read_text()+'\n'+(ROOT/'src/refresh.css').read_text()+'\n'+(ROOT/'src/credit-docs.css').read_text()+'\n'+theme_css).replace('/*CALCULATOR_BASE64*/',base64.b64encode(embedded.encode()).decode()).replace('/*TECHNICAL_ASSETS*/','\n'.join(assets)).replace('/*APP_JS*/',app_source).replace('/*BRAND_LOGO*/',png_url('tvs-logo.png')).replace('/*ICON_32*/',png_url('tvs-icon-32.png')).replace('/*ICON_64*/',png_url('tvs-icon-64.png')).replace('/*ICON_180*/',png_url('tvs-icon-180.png')).replace('/*JSPDF_JS*/',(ROOT/'src/vendor/jspdf.umd.min.js').read_text()).replace('/*OFFICE_SCENE_JS*/',office_render_source)
+def assemble(app_source,office_render_source):
+    return shell.replace('/*APP_CSS*/',(ROOT/'src/style.css').read_text()+'\n'+(ROOT/'src/fichas.css').read_text()+'\n'+(ROOT/'src/cash-quote.css').read_text()+'\n'+(ROOT/'src/office-scene.css').read_text()+'\n'+(ROOT/'src/office.css').read_text()+'\n'+(ROOT/'src/quick-lead.css').read_text()+'\n'+(ROOT/'src/refresh.css').read_text()+'\n'+(ROOT/'src/credit-docs.css').read_text()+'\n'+theme_css).replace('/*CALCULATOR_BASE64*/',base64.b64encode(embedded.encode()).decode()).replace('/*TECHNICAL_ASSETS*/','\n'.join(assets)).replace('/*APP_JS*/',app_source).replace('/*BRAND_LOGO*/',png_url('tvs-logo.png')).replace('/*ICON_32*/',png_url('tvs-icon-32.png')).replace('/*ICON_64*/',png_url('tvs-icon-64.png')).replace('/*ICON_180*/',png_url('tvs-icon-180.png')).replace('/*JSPDF_JS*/',(ROOT/'src/vendor/jspdf.umd.min.js').read_text()).replace('/*OFFICE_SCENE_JS*/',office_render_source)
+html=assemble(app_source,office_render_source)
 (ROOT/'dist').mkdir(exist_ok=True)
 _end=html.rindex('</body>')
 html=html[:_end]+ocr_tags+html[_end:]
 (ROOT/'dist/index.pending').write_text(html)
 (ROOT/'dist/index.pending').replace(ROOT/'dist/index.html')
 print(json.dumps({'output':str(ROOT/'dist/index.html'),'bytes':len(html.encode()),'original_sha256':hashlib.sha256(SOURCE.read_bytes()).hexdigest(),'engine_unchanged':True}))
+
+
+# ===== App de Android: solo Cotizar y Fichas técnicas (dist/app.html) =====
+# Sin oficina 3D, lector de capturas ni documentos de crédito y entrega, para que la app pese menos.
+app_mode=(ROOT/'src/app-mode.js').read_text()
+credit_light=(ROOT/'src/credit-docs.js').read_text().replace('/*CREDIT_LOGOS*/null','null')+'\n'+(ROOT/'src/credit-originals.js').read_text()+'\n'+(ROOT/'src/delivery-docs.js').read_text()
+app_only=(ROOT/'src/app.js').read_text().replace('/*INITIAL_BACKUP*/null',(ROOT/'data/initial-backup.json').read_text().replace('</','<\\/'))
+_start="applyTheme();navigate(location.hash.slice(1)||'resumen');"
+assert app_only.count(_start)==1
+app_only=app_only.replace(_start,app_mode+"\napplyTheme();navigate(['cotizar','fichas'].includes(location.hash.slice(1))?location.hash.slice(1):'cotizar');")
+app_only=app_only.replace('let db=loadDB();',monthly+'\n'+technical+'\n'+cash+'\n'+office+'\n'+quick_lead+'\n'+credit_light+'\n'+extras+'\nlet db=loadDB();')
+app_html=assemble(app_only,'').replace('<title>','<title>TVS Cotizador · ',1)
+(ROOT/'dist/app.html').write_text(app_html)
+print(json.dumps({'app':str(ROOT/'dist/app.html'),'bytes':len(app_html.encode())}))

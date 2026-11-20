@@ -382,3 +382,17 @@ html[data-theme=dark] .btn-primary{background:#2B4C9B;border-color:#2B4C9B;color
 html[data-theme=dark] .col-item.current .col-bar,html[data-theme=dark] .rank-bar{background:#9DB4EC}
 html[data-theme=dark] thead,html[data-theme=dark] thead th{background:#0E1A33}
 html[data-theme=dark] .sidebar{background:linear-gradient(180deg,#0E1F47,#091634);border-right:1px solid #1B2B52}
+
+/* ===== App de Android (solo Cotizar y Fichas técnicas) ===== */
+.app-tabbar{display:none}
+html.tvs-app .sidebar,html.tvs-app .sidebar-shade,html.tvs-app #menu-toggle,html.tvs-app #backup-banner,html.tvs-app #demo-banner,html.tvs-app .app-footer,html.tvs-app .topbar-right>:not(#theme-toggle),html.tvs-app .breadcrumb>:not(strong){display:none!important}
+html.tvs-app .content-shell{margin-left:0!important}
+html.tvs-app .topbar{position:sticky;top:0;z-index:30;padding-top:env(safe-area-inset-top)}
+html.tvs-app main{padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+html.tvs-app .app-tabbar{display:grid;grid-template-columns:1fr 1fr;position:fixed;left:0;right:0;bottom:0;z-index:60;background:var(--navy);padding:8px 10px calc(8px + env(safe-area-inset-bottom));box-shadow:0 -6px 24px #13285a33}
+html.tvs-app .app-tabbar a{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 6px;border-radius:12px;color:#b9c4dc;text-decoration:none;font-size:12.5px;font-weight:600;-webkit-tap-highlight-color:transparent}
+html.tvs-app .app-tabbar a svg{width:22px;height:22px}
+html.tvs-app .app-tabbar a.active{color:#fff;background:#ffffff1a}
+html.tvs-app .app-tabbar a.active svg{color:#fff}
+
+html.tvs-app .view.app-off{display:none!important}
