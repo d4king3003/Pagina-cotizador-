@@ -86,11 +86,13 @@ body{background:transparent!important}.topbar,footer,.actions{display:none!impor
 .panel-details-toolbar .details-toggle-labeled{width:auto;max-width:100%;min-height:38px;height:auto;gap:8px;padding:10px 12px;font-size:11px;font-weight:500;white-space:normal}
 .panel-details-toolbar .details-toggle-labeled svg{flex:none;width:18px;height:18px}
 .panel-details-toolbar .quote-visibility-toggle{width:38px;height:38px;min-height:38px;flex:none;padding:8px}
-.panel-details-toolbar .quote-image-button{background:#185cc4;border-color:#185cc4;color:#fff}
-.panel-details-toolbar .quote-image-button:hover{background:#134d9e;color:#fff}
+.panel-details-toolbar .quote-image-button{background:#13285A;border-color:#13285A;color:#fff}
+.panel-details-toolbar .quote-image-button:hover{background:#0D1D45;color:#fff}
 .panel-details-toolbar button:disabled{cursor:not-allowed;opacity:.5}
 .panel-quote-image-status{margin:0 0 14px;padding:11px 13px;border:1px solid var(--line);border-radius:9px;color:var(--ink);font-size:11px;line-height:1.7;background:var(--paper)}
 @media(max-width:720px){.workspace{padding:0 4px}.page-heading h1{font-size:23px}.financial-active select{max-width:160px}.internal-label{font-size:9px}}
+/* Colores de marca del panel: Zafiro Profundo, Blanco Perla y rojo carmín */
+html:not([data-theme="dark"]){--ink:#13213D;--muted:#5D6478;--primary:#13285A;--dark:#13285A;--line:#DDD4C6;--paper:#F7F3EC;--bg:#ECE6DC;--soft:#E6DFD3;--brand-blue:#13285A;--brand-red:#B4232C;--rule-start:#13285A;--rule-end:#B4232C;--accent:#F3DCD8}
 </style></head>''')
 panel_footer = '<div style="margin:18px 4px 8px;padding:18px;border:1px solid var(--line);border-radius:12px;background:var(--paper);display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap"><p style="font-size:11px;color:var(--muted);margin:0">Guardá la propuesta para compartirla o descargar su PDF.</p><button type="button" id="panel-save-bottom" class="button button-primary" style="flex:none">Guardar cotización</button></div>'
 

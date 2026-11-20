@@ -9,7 +9,7 @@
 :root{
   --bg:#f1f3f7;--paper:#fff;--ink:#0f1b2d;--muted:#5f6b82;--faint:#8a95a8;--line:#e1e6ee;--line-strong:#cfd6e2;
   --primary:#1747b5;--primary-hover:#103a99;--primary-soft:#e8eefb;
-  --navy:#0b1a33;--navy-2:#11264a;--red:#e2231a;--red-soft:#fdeceb;--green:#0f7b5f;
+  --navy:#0b1a33;--navy-2:#11264a;--red:var(--red);--red-soft:#fdeceb;--green:#0f7b5f;
   --soft:#eef2f8;
   --radius:16px;--radius-sm:10px;
   --shadow:0 1px 2px #0f1b2d0a,0 4px 16px #0f1b2d08;--shadow-hover:0 2px 6px #0f1b2d10,0 16px 36px #0f1b2d14;
@@ -65,7 +65,7 @@ h3{font-weight:700}
 .btn-small{height:36px}
 .btn:active:not(:disabled){transform:scale(.97);transition-duration:0s}
 .btn-primary{background:var(--primary);border-color:var(--primary);box-shadow:0 1px 2px #1747b533,0 4px 12px #1747b526}
-.btn-danger{color:#b4231b;background:var(--red-soft);border-color:#f6cfcc}
+.btn-danger{color:var(--red-strong);background:var(--red-soft);border-color:var(--red-line)}
 .btn-quiet{color:var(--muted)}
 @media (hover:hover) and (pointer:fine){
   .btn:hover{background:var(--soft);border-color:var(--line-strong)}
@@ -111,7 +111,7 @@ tbody tr{transition:background-color .12s ease}
 @media (hover:hover) and (pointer:fine){tbody tr:hover{background:#f6f8fc}}
 td strong{font-weight:600}
 .badge{font-weight:600;border-radius:999px}
-.badge.red{background:var(--red-soft);color:#b4231b}
+.badge.red{background:var(--red-soft);color:var(--red-strong)}
 
 /* Selectores de la tabla de Clientes: que no corten el texto */
 .leads-table .inline-select,.leads-table td:nth-child(6) .inline-select,.leads-table td:nth-child(7) .inline-select{width:auto;min-width:128px;max-width:170px}
@@ -153,7 +153,7 @@ dialog[open]::backdrop{opacity:1;transition-duration:.2s}
 
 /* ---------- Ventas y comisiones ---------- */
 .payroll-total{background:linear-gradient(120deg,#0b1a33,#163a72);border-radius:14px;position:relative;overflow:hidden}
-.payroll-total::after{content:"";position:absolute;right:-30px;top:0;bottom:0;width:120px;background:linear-gradient(105deg,transparent 40%,#e2231a 40%,#e2231a 46%,transparent 46%);opacity:.9}
+.payroll-total::after{content:"";position:absolute;right:-30px;top:0;bottom:0;width:120px;background:linear-gradient(105deg,transparent 40%,var(--red) 40%,var(--red) 46%,transparent 46%);opacity:.9}
 .commission-table .current-tier{background:var(--primary-soft);box-shadow:inset 3px 0 var(--primary)}
 
 /* ---------- Ingresar crédito y registro rápido ---------- */
@@ -350,3 +350,19 @@ html[data-theme=dark] .col-item.current .col-bar,html[data-theme=dark] .rank-bar
 .deductions-card .deductions-table tbody th{text-transform:none!important;letter-spacing:0!important;font-size:13px!important;font-weight:500;color:var(--ink);background:transparent!important}
 .deductions-card .deductions-table tbody tr.strong-row th,.deductions-card .deductions-table tbody tr.net-row th{font-weight:700}
 .deductions-card .deductions-table tbody tr.net-row th{color:var(--primary)}
+
+/* ===== Colores de marca: Zafiro Profundo #13285A, Blanco Perla #ECE6DC y rojo carmín #B4232C ===== */
+:root{
+  --navy:#13285A;--navy-2:#1B3572;
+  --primary:#13285A;--primary-hover:#0D1D45;--primary-soft:#DFE0E6;
+  --bg:#ECE6DC;--paper:#F7F3EC;--soft:#E6DFD3;
+  --line:#DDD4C6;--line-strong:#CDC3B3;
+  --ink:#13213D;--muted:#5D6478;--faint:#878C9A;
+  --red:#B4232C;--red-strong:#8E1B23;--red-soft:#F3DCD8;--red-line:#E8C3BE;
+  --shadow:0 1px 2px #13285a0d,0 4px 16px #13285a0a;--shadow-hover:0 2px 6px #13285a14,0 16px 36px #13285a18;
+}
+.sidebar{background:linear-gradient(180deg,#13285A 0%,#0E1F47 100%)}
+html[data-theme=dark] .sidebar{background:linear-gradient(180deg,#0E1F47,#0A1734)}
+html[data-theme=dark]{--red:#E0626A;--red-strong:#F08A90;--red-line:#5a2a2f}
+html:not([data-theme=dark]) thead,html:not([data-theme=dark]) thead th{background:#EFE9DF}
+html:not([data-theme=dark]) .table-wrap,html:not([data-theme=dark]) table{background:var(--paper)}
