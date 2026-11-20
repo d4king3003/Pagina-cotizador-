@@ -452,7 +452,8 @@ const FLEX_MONTHLY_RATE = (flexLow + flexHigh) / 2;
 
 function availableTerms(state) {
   if (state.financierId === 'monge') return availableMongeTerms(state.mongePlanId);
-  if (state.financierId === 'flexiplan') return [6, ...TERMS];
+  // Flexiplan: plazos de 6 a 36 meses, y 42 y 48 (sin 40), como en la captura de la financiera.
+  if (state.financierId === 'flexiplan') return [6, 12, 18, 24, 30, 36, 42, 48];
   if (state.financierId !== 'bac') return [...TERMS];
   const profile = getBacProfile(state.bacProfile);
   if (!profile.salaried) return [12,18,24,30];
