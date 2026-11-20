@@ -86677,7 +86677,8 @@ const clientOptions=(value,first='Sin asignar')=>options(db.clients.filter(c=>!c
 const stockOptions=(value,first='Seleccioná la moto')=>options(db.stock.filter(s=>s.active!==false).map(s=>[s.id,s.label+(s.year?' · '+s.year:'')]),value,first);
 const searchBox=(id,value,placeholder)=>`<div class="search">${icon('search')}<input id="${id}" value="${esc(value)}" placeholder="${esc(placeholder)}" aria-label="${esc(placeholder)}" autocomplete="off"></div>`;
 const button=(text,action,id='',primary=false)=>`<button class="btn${primary?' btn-primary':''}" data-action="${action}" data-id="${esc(id)}">${esc(text)}</button>`;
-function heading(title,subtitle,actions='',eyebrow='PANEL DE VENTAS'){return `<div class="page-heading"><div>${eyebrow?`<p class="eyebrow">${eyebrow}</p>`:''}<h1>${title}</h1>${subtitle?`<p class="subtext">${subtitle}</p>`:''}</div>${actions?`<div class="heading-actions">${actions}</div>`:''}</div>`;}
+// Encabezado de cada sección: solo el título (sin el texto pequeño de arriba ni la frase de abajo)
+function heading(title,subtitle,actions='',eyebrow=''){return `<div class="page-heading"><div><h1>${title}</h1></div>${actions?`<div class="heading-actions">${actions}</div>`:''}</div>`;}
 function empty(title,description,action=''){return `<div class="empty">${icon('document')}<h3>${esc(title)}</h3><p>${esc(description)}</p>${action}</div>`;}
 function metric(label,value,note,ico){return `<div class="card metric"><p class="metric-label">${esc(label)}</p><div class="metric-icon">${icon(ico)}</div><div class="metric-value">${esc(value)}</div><p class="metric-note">${esc(note)}</p></div>`;}
 function render(){
