@@ -69,6 +69,21 @@ quote_image_source = (ROOT/'src/quote-image.js').read_text().replace('/*QUOTE_IM
 calc_font=lambda name:'data:font/woff2;base64,'+base64.b64encode((ROOT/'src/vendor/fonts'/name).read_bytes()).decode()
 embedded = original.replace(needle,"window.addEventListener('beforeprint', preparePrint);\n"+quote_image_source+'\n'+bridge)
 embedded = embedded.replace('crediopciones-android-v1','tvs-daniel-panel-calculator-v1')
+# Modo oscuro del cotizador: los tonos morados pasan a azul zafiro (misma luminosidad), solo en sus reglas de estilo oscuras.
+import colorsys
+def _sapphire(m):
+    h=m.group(1)
+    if len(h) in (3,4): h=''.join(c*2 for c in h)
+    rgb,alpha=h[:6],h[6:]
+    r,g,b=(int(rgb[i:i+2],16)/255 for i in (0,2,4))
+    hh,ll,ss=colorsys.rgb_to_hls(r,g,b)
+    if .64<=hh<=.86 and ss>.08:
+        r,g,b=colorsys.hls_to_rgb(.62,ll,min(ss,.55))
+    return '#'+''.join('%02x'%round(v*255) for v in (r,g,b))+alpha
+def _dark_rule(m):
+    return re.sub(r'#([0-9a-fA-F]{8}|[0-9a-fA-F]{6}|[0-9a-fA-F]{3,4})\b',_sapphire,m.group(0))
+_head_end=embedded.index('</head>')
+embedded=re.sub(r'html\[data-theme="dark"\][^{}]*\{[^{}]*\}',_dark_rule,embedded[:_head_end])+embedded[_head_end:]
 # Reuse the calculator's existing visibility control outside its hidden header.
 toggle = re.search(r'<button\b[^>]*id="details-toggle"[^>]*>.*?</button>', embedded, re.S)
 assert toggle is not None
@@ -92,6 +107,7 @@ body{background:transparent!important}.topbar,footer,.actions{display:none!impor
 .panel-quote-image-status{margin:0 0 14px;padding:11px 13px;border:1px solid var(--line);border-radius:9px;color:var(--ink);font-size:11px;line-height:1.7;background:var(--paper)}
 @media(max-width:720px){.workspace{padding:0 4px}.page-heading h1{font-size:23px}.financial-active select{max-width:160px}.internal-label{font-size:9px}}
 /* Colores de marca del panel: Zafiro Profundo, Blanco Perla y rojo carmín */
+html[data-theme="dark"]{--ink:#ECE6DC;--muted:#B3B4BC;--primary:#9DB4EC;--dark:#0E1F47;--line:#24365E;--paper:#111D38;--bg:#0A1328;--soft:#17264A;--accent:#E0626A;--brand-blue:#9DB4EC;--brand-red:#E0626A;--rule-start:#9DB4EC;--rule-end:#E0626A}
 html:not([data-theme="dark"]){--ink:#13213D;--muted:#5D6478;--primary:#13285A;--dark:#13285A;--line:#DDD4C6;--paper:#F7F3EC;--bg:#ECE6DC;--soft:#E6DFD3;--brand-blue:#13285A;--brand-red:#B4232C;--rule-start:#13285A;--rule-end:#B4232C;--accent:#F3DCD8}
 </style></head>''')
 panel_footer = '<div style="margin:18px 4px 8px;padding:18px;border:1px solid var(--line);border-radius:12px;background:var(--paper);display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap"><p style="font-size:11px;color:var(--muted);margin:0">Guardá la propuesta para compartirla o descargar su PDF.</p><button type="button" id="panel-save-bottom" class="button button-primary" style="flex:none">Guardar cotización</button></div>'

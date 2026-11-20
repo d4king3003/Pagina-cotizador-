@@ -366,3 +366,19 @@ html[data-theme=dark] .sidebar{background:linear-gradient(180deg,#0E1F47,#0A1734
 html[data-theme=dark]{--red:#E0626A;--red-strong:#F08A90;--red-line:#5a2a2f}
 html:not([data-theme=dark]) thead,html:not([data-theme=dark]) thead th{background:#EFE9DF}
 html:not([data-theme=dark]) .table-wrap,html:not([data-theme=dark]) table{background:var(--paper)}
+
+/* ===== Modo oscuro con la paleta de marca: zafiro muy oscuro, texto blanco perla y acentos carmín suaves ===== */
+html[data-theme=dark]{
+  --bg:#0A1328;--paper:#111D38;--soft:#17264A;--line:#24365E;--line-strong:#2E4372;
+  --ink:#ECE6DC;--muted:#B3B4BC;--faint:#8D91A0;
+  --primary:#9DB4EC;--primary-hover:#B9CAF2;--primary-soft:#1B2B52;
+  --navy:#0E1F47;--navy-2:#13285A;
+  --red:#E0626A;--red-strong:#F08A90;--red-soft:#3A1E26;--red-line:#5A2A2F;
+  --shadow:0 1px 2px #0008;--shadow-hover:0 16px 36px #000a;
+}
+html[data-theme=dark] body{background:var(--bg)}
+html[data-theme=dark] .btn-primary{background:#2B4C9B;border-color:#2B4C9B;color:#fff}
+@media (hover:hover) and (pointer:fine){html[data-theme=dark] .btn-primary:hover{background:#3559B0;border-color:#3559B0}html[data-theme=dark] tbody tr:hover{background:#15234A}}
+html[data-theme=dark] .col-item.current .col-bar,html[data-theme=dark] .rank-bar{background:#9DB4EC}
+html[data-theme=dark] thead,html[data-theme=dark] thead th{background:#0E1A33}
+html[data-theme=dark] .sidebar{background:linear-gradient(180deg,#0E1F47,#091634);border-right:1px solid #1B2B52}
