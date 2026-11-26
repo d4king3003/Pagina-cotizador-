@@ -33,7 +33,7 @@ function duiBlock(){
   <div class="dui-paste" id="dui-paste" tabindex="0" aria-describedby="dui-help">
    ${['front','back'].map(side=>`<div class="dui-slot" data-dui-slot="${side}"><span class="dui-slot-label">${side==='front'?'Frente':'Reverso'}</span><div class="dui-slot-img" id="dui-img-${side}"><span>Pegá aquí</span></div><div class="dui-slot-actions"><label class="text-button">Elegir<input type="file" accept="image/*" data-dui-file="${side}" hidden></label><button type="button" class="text-button" data-dui-clear="${side}" hidden>Quitar</button></div></div>`).join('')}
    <div class="dui-help"><strong>Copiá la foto del DUI y pegala con Ctrl+V</strong><span id="dui-help">Una vez el frente y otra el reverso, en cualquier parte del formulario. El panel reconoce qué lado es, lee nombre, DUI y demás datos, y arma el PDF con las dos caras.</span>
-    <div class="dui-buttons"><button type="button" class="btn btn-small" data-dui-swap>Cambiar de lado</button><button type="button" class="btn btn-small btn-primary" data-dui-pdf>${icon('document')}PDF del DUI</button></div></div>
+    <div class="dui-buttons"><button type="button" class="btn btn-small" data-dui-swap>Cambiar de lado</button><button type="button" class="btn btn-small" data-dui-reread>Volver a leer</button><button type="button" class="btn btn-small btn-primary" data-dui-pdf>${icon('document')}PDF del DUI</button></div></div>
   </div>
   <p class="dui-status" id="dui-status" role="status" aria-live="polite" hidden></p>
  </div>`;
@@ -182,7 +182,7 @@ function duiNameLine(raw){
  while(toks.length&&DUI_CONNECT.includes(toks.at(-1)))toks.pop();
  const letters=toks.join('').length;
  if(!toks.length||letters<6||!toks.some(t=>t.length>=5))return '';
- if(/REPUBLICA|SALVADOR|DOCUMENTO|IDENTIDAD|APELLIDO|SURNAME|NOMBRE|GIVEN|NACIMIENTO|SEXO|GENDER|FECHA|LUGAR|EXPEDICION|EXPIRA|FIRMA|REGISTRO|MIGUEL|CENTRO|NORTE|SUR|ESTE|OESTE|NAMES|KNOWN|HOLDER|SIGNATURE|CONOCIDO|GENERO|UNIQUE|NUMBER|NUMERO|PROFESI|OFICIO|TRADE|IDSLV|MADRE|PADRE|MOTHER|FATHER|CONYUGE|SPOUSE|RESIDENCIA|ADDRESS|MUNICIPIO|DEPARTAMENTO|STATE|CITY|TRAMITE|PROCEDURE|CODIGO|ZONA|MARITAL|SANGRE|BLOOD|ESTADO|FAMILIAR|NIT/.test(toks.join(' ')))return '';
+ if(new RegExp('(^| )('+'REPUBLICA|SALVADOR|DOCUMENTO|IDENTIDAD|APELLIDO|SURNAME|NOMBRE|GIVEN|NACIMIENTO|SEXO|GENDER|FECHA|LUGAR|EXPEDICION|EXPIRA|FIRMA|REGISTRO|MIGUEL|CENTRO|NORTE|SUR|ESTE|OESTE|NAMES|KNOWN|HOLDER|SIGNATURE|CONOCIDO|GENERO|UNIQUE|NUMBER|NUMERO|PROFESI|OFICIO|TRADE|IDSLV|MADRE|PADRE|MOTHER|FATHER|CONYUGE|SPOUSE|RESIDENCIA|ADDRESS|MUNICIPIO|DEPARTAMENTO|STATE|CITY|TRAMITE|PROCEDURE|CODIGO|ZONA|MARITAL|SANGRE|BLOOD|ESTADO|FAMILIAR|NIT'+')S?( |$)','').test(toks.join(' ')))return '';
  // Nombre original con tildes y Ñ si la lectura las trae
  return toks.join(' ');
 }
@@ -196,7 +196,7 @@ function duiParse(text){
   m=l.replace(/O/g,'0').match(/(\d{6})(\d)([MF])\d{6}\dSLV/);
   if(m&&!out.birth&&duiIcao(m[1])===+m[2]){out.birth=duiMrzDate(m[1]);out.sex=m[3];}
   m=l.match(/^([A-Z]+(?:<[A-Z]+)*)<<([A-Z]+(?:<[A-Z]+)*)<*$/);
-  if(m&&!out.mrzSur&&m[1].length>=3&&!l.startsWith('IDSLV')){out.mrzSur=m[1].replace(/</g,' ');out.mrzGiven=m[2].replace(/</g,' ');}
+  if(m&&!out.mrzSur&&m[1].length>=3&&!l.startsWith('IDSLV')){out.mrzSur=m[1].replace(/</g,' ');out.mrzGiven=m[2].replace(/</g,' ');out.mrzCut=l.length>=30&&!l.endsWith('<');}
  }
  // Frente: con las etiquetas «Apellidos / Nombres» o, si no se leen, las dos primeras líneas con nombre debajo del encabezado
  const isBack=duiSide(text)==='back';
@@ -257,27 +257,32 @@ function duiPickFront(cands,mrzGiven,mrzSur){
  return [...cands].sort((a,b)=>cost(a)-cost(b))[0];
 }
 // Palabra por palabra, entre todas las lecturas del frente, se elige la que coincide con el reverso
-function duiVote(cands,key,mrz){
+function duiVote(cands,key,mrz,cut=false){
  const lists=(cands||[]).map(c=>String(c[key]||'').split(' ').filter(Boolean)).filter(l=>l.length);
  if(!lists.length)return mrz||'';
  if(!mrz)return lists[0].join(' ');
- const m=mrz.split(' '),same=lists.filter(l=>l.length===m.length);
- if(!same.length)return duiFixName(lists[0].join(' '),mrz);
- return m.map((r,i)=>{
-  const opts=same.map(l=>l[i]);
-  const full=opts.filter(w=>w.startsWith(r)).sort((a,b)=>b.length-a.length)[0];
-  if(full)return full;
+ const m=mrz.split(' ').filter(Boolean),long=lists.filter(l=>l.length>=m.length);
+ if(!long.length)return duiFixName(lists[0].join(' '),mrz);
+ // Las palabras que confirma el reverso, elegidas entre las lecturas del frente
+ const words=m.map((r,i)=>{
+  const opts=long.map(l=>l[i]);
+  const full=opts.filter(w=>w.startsWith(r)&&(i<m.length-1?w===r||!cut:true)).sort((a,b)=>b.length-a.length)[0];
+  if(full&&(i===m.length-1||w0(full,r)))return i===m.length-1&&cut?full:(full===r?r:full);
   const best=[...opts].sort((a,b)=>duiLev(a.slice(0,r.length),r)-duiLev(b.slice(0,r.length),r))[0];
   return duiFixName(best,r);
- }).join(' ');
+ });
+ // Palabras de más (solo si el reverso viene cortado): tienen que parecer un nombre de verdad
+ if(cut){const extra=long[0].slice(m.length);for(const w of extra){if(w.length>=4&&/[AEIOU]/.test(w)&&/[^AEIOU]/.test(w))words.push(w);else break;}}
+ return words.join(' ');
 }
+const w0=(w,r)=>w===r||w.startsWith(r);
 function duiMerge(all){
  const out={...all};
- const given=duiVote(all.frontCands,'given',all.mrzGiven),sur=duiVote(all.frontCands,'sur',all.mrzSur);
+ const given=duiVote(all.frontCands,'given',all.mrzGiven,!!all.mrzCut),sur=duiVote(all.frontCands,'sur',all.mrzSur,false);
  if(given&&sur)out.name=(given+' '+sur).replace(/\s+/g,' ').trim();
  // DUI anterior: la residencia sirve como dirección del crédito
  if(all.residence)out.address=[all.residence,all.municipio,all.departamento].filter(Boolean).join(', ').toUpperCase();
- for(const k of ['frontCands','frontGiven','frontSur','mrzGiven','mrzSur','residence'])delete out[k];
+ for(const k of ['frontCands','frontGiven','frontSur','mrzGiven','mrzSur','mrzCut','residence'])delete out[k];
  return out;
 }
 function duiFindDistrict(v){
@@ -330,6 +335,22 @@ async function duiHandleImage(file,forcedSide='',preRead=null){
   const dif=diff.length?` En el formulario ya había otro valor en: ${diff.map(k=>DUI_LABELS[k]||k).join(', ')}.`:'';
   duiStatus(`${sideTxt} del DUI listo${cropped?' (recortado al borde del DUI)':''}.${got}${dif}${missing}`,!filled.length&&!Object.keys(found).length,diff.length?' <button type="button" class="text-button" data-dui-use>Usar los datos del DUI</button>':'');
  }catch(err){duiStatus('No se pudo leer la foto: '+(err?.message||err)+'.',true);}
+}
+// Lee otra vez las fotos guardadas y compara con lo que tiene el formulario
+async function duiReread(){
+ if(!duiState.front&&!duiState.back){duiStatus('Primero pegá las fotos del DUI.',true);return;}
+ duiLastFound={};
+ try{
+  for(const side of ['back','front']){
+   const blob=duiState[side];if(!blob)continue;
+   const read=await duiRead(blob,m=>duiStatus(m));
+   const parsed=duiParseAll(read.texts||[read.text]);
+   for(const [k,v] of Object.entries(parsed))if(v&&k!=='frontCands'&&!duiLastFound[k])duiLastFound[k]=v;
+   if(side==='front'&&parsed.frontCands.length)duiLastFound.frontCands=parsed.frontCands;
+  }
+  const {filled,diff}=duiApply(duiMerge(duiLastFound));
+  duiStatus(`Leído otra vez.${filled.length?' Llené: '+filled.map(k=>DUI_LABELS[k]||k).join(', ')+'.':''}${diff.length?' Según el DUI cambiarían: '+diff.map(k=>DUI_LABELS[k]||k).join(', ')+'.':filled.length?'':' Todo coincide con el formulario.'}`,false,diff.length?' <button type="button" class="text-button" data-dui-use>Usar los datos del DUI</button>':'');
+ }catch(err){duiStatus('No se pudo leer: '+(err?.message||err)+'.',true);}
 }
 const duiImageFrom=dt=>[...(dt?.files||[])].find(f=>f.type.startsWith('image/'))||[...(dt?.items||[])].map(i=>i.kind==='file'&&i.type.startsWith('image/')?i.getAsFile():null).find(Boolean);
 
@@ -395,6 +416,7 @@ document.addEventListener('click',async e=>{
  const t=e.target;
  const clear=t.closest?.('[data-dui-clear]');
  if(clear){duiState[clear.dataset.duiClear]=null;duiRender();await duiSave();const key=duiKey(duiFormEl()?.dui?.value);if(key&&!duiState.front&&!duiState.back){try{await duiStore('readwrite',s=>s.delete(key));}catch{}}duiStatus('Foto quitada.');return;}
+ if(t.closest?.('[data-dui-reread]')){duiReread();return;}
  if(t.closest?.('[data-dui-swap]')){[duiState.front,duiState.back]=[duiState.back,duiState.front];duiRender();await duiSave();duiStatus('Se cambiaron de lado el frente y el reverso.');return;}
  if(t.closest?.('[data-dui-use]')){const {filled}=duiApply(duiMerge(duiLastFound),true);await duiSave();duiStatus(`Listo: ${filled.map(k=>DUI_LABELS[k]||k).join(', ')} con los datos del DUI. Revisalos antes de guardar.`);return;}
  if(t.closest?.('[data-dui-pdf]')){await duiSave();duiOpenPDF(duiState.front,duiState.back,duiFormEl()?.name?.value);return;}
