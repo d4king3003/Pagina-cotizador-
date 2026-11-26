@@ -182,7 +182,7 @@ function duiNameLine(raw){
  while(toks.length&&DUI_CONNECT.includes(toks.at(-1)))toks.pop();
  const letters=toks.join('').length;
  if(!toks.length||letters<6||!toks.some(t=>t.length>=5))return '';
- if(/REPUBLICA|SALVADOR|DOCUMENTO|IDENTIDAD|APELLIDO|SURNAME|NOMBRE|GIVEN|NACIMIENTO|SEXO|GENDER|FECHA|LUGAR|EXPEDICION|EXPIRA|FIRMA|REGISTRO|MIGUEL|CENTRO|NORTE|SUR|ESTE|OESTE|NAMES|KNOWN|HOLDER|SIGNATURE|CONOCIDO|GENERO|UNIQUE|NUMBER|NUMERO/.test(toks.join(' ')))return '';
+ if(/REPUBLICA|SALVADOR|DOCUMENTO|IDENTIDAD|APELLIDO|SURNAME|NOMBRE|GIVEN|NACIMIENTO|SEXO|GENDER|FECHA|LUGAR|EXPEDICION|EXPIRA|FIRMA|REGISTRO|MIGUEL|CENTRO|NORTE|SUR|ESTE|OESTE|NAMES|KNOWN|HOLDER|SIGNATURE|CONOCIDO|GENERO|UNIQUE|NUMBER|NUMERO|PROFESI|OFICIO|TRADE|IDSLV|MADRE|PADRE|MOTHER|FATHER|CONYUGE|SPOUSE|RESIDENCIA|ADDRESS|MUNICIPIO|DEPARTAMENTO|STATE|CITY|TRAMITE|PROCEDURE|CODIGO|ZONA|MARITAL|SANGRE|BLOOD|ESTADO|FAMILIAR|NIT/.test(toks.join(' ')))return '';
  // Nombre original con tildes y Ñ si la lectura las trae
  return toks.join(' ');
 }
@@ -199,21 +199,28 @@ function duiParse(text){
   if(m&&!out.mrzSur&&m[1].length>=3&&!l.startsWith('IDSLV')){out.mrzSur=m[1].replace(/</g,' ');out.mrzGiven=m[2].replace(/</g,' ');}
  }
  // Frente: con las etiquetas «Apellidos / Nombres» o, si no se leen, las dos primeras líneas con nombre debajo del encabezado
- let sur=duiNextLine(lines,/APELLIDOS|SURNAME/),giv=duiNextLine(lines,/NOMBRES|GIVEN/);
- if(!(sur&&giv)){
+ const isBack=duiSide(text)==='back';
+ let sur=isBack?'':duiNextLine(lines,/APELLIDOS|SURNAME/),giv=isBack?'':duiNextLine(lines,/NOMBRES|GIVEN/);
+ if(!isBack&&!(sur&&giv)){
   const head=lines.findIndex(l=>/DOCUMENTO|IDENTIDAD|REPUBLICA|SALVADOR/.test(duiPlain(l)));
   if(head>=0){const names=lines.slice(head+1,head+8).map(duiNameLine).filter(Boolean);if(names.length>=2){sur=names[0];giv=names[1];}}
  }
- if(sur&&giv){out.frontSur=duiNameLine(sur)||sur;out.frontGiven=duiNameLine(giv)||giv;}
+if(sur&&giv&&!isBack){out.frontSur=duiNameLine(sur)||sur;out.frontGiven=duiNameLine(giv)||giv;}
  if(!out.dui){for(const m of text.matchAll(/\b(\d{8})\s*[-–]\s*(\d)\b/g)){if(duiValid(m[1]+m[2])){out.dui=m[1]+'-'+m[2];break;}}}
  if(!out.birth){const i=lines.findIndex(l=>/NACIMIENTO|BIRTH/.test(duiPlain(l)));const m=(i>=0?lines.slice(i,i+3).join(' '):'').match(/\b(\d{2})\/(\d{2})\/((?:19|20)\d{2})\b/);if(m&&+m[2]<=12&&+m[1]<=31)out.birth=`${m[3]}-${m[2]}-${m[1]}`;}
  if(!out.sex){const i=lines.findIndex(l=>/SEXO|GENDER/.test(duiPlain(l)));if(i>=0){const n=(lines[i+1]||'').trim();if(/^[MF]\b/.test(n))out.sex=n[0];}}
  // Reverso: departamento, distrito y profesión
- const dep=duiNextLine(lines,/DEPARTAMENTO/);
- if(dep){const p=duiPlain(dep);const d=DUI_DEPTOS.find(x=>p.startsWith(x)||p.includes(x));if(d)out.departamento=d;}
- const mun=duiNextLine(lines,/DISTRITO|MUNICIPIO/);
- if(mun){const toks=mun.split(',')[0].trim().split(' ');for(let n=toks.length;n>0&&!out.municipio;n--){const found=duiFindDistrict(toks.slice(0,n).join(' '));if(found)out.municipio=found;}}
- const res=duiNextLine(lines,/RESIDENCIA|ADDRESS/);if(res&&res.length>=4&&!/MUNICIPIO|DEPARTAMENTO/.test(duiPlain(res)))out.residence=res.replace(/\s*,\s*/g,', ');
+ // Los valores van en mayúsculas; las etiquetas («Municipio / City») tienen minúsculas y se descartan
+ const values=(re,n=3)=>{const i=lines.findIndex(l=>re.test(duiPlain(l)));if(i<0)return [];return lines.slice(i,i+n+1).map(l=>l.split(/\s+/).filter(t=>t&&!/[a-záéíóúñ]/.test(t)&&!t.includes('/')&&!/\d/.test(t)).map(duiPlain).join(' ').trim()).filter(Boolean);};
+ const depVals=values(/DEPARTAMENTO/);
+ for(const v of depVals){const d=DUI_DEPTOS.find(x=>v.includes(x));if(d){out.departamento=d;break;}}
+ // Municipio o distrito: el tramo de palabras más largo que sea un nombre conocido (que no sea solo el departamento)
+ const munFound=[];
+ for(const v of values(/DISTRITO|MUNICIPIO/)){const toks=v.split(',')[0].trim().split(' ');
+  for(let a=0;a<toks.length;a++)for(let z=toks.length;z>a;z--){const f=duiFindDistrict(toks.slice(a,z).join(' '));if(f){munFound.push(f);break;}}}
+ out.municipio=munFound.find(m=>duiPlain(m)!==out.departamento)||munFound[0]||undefined;
+ if(!out.municipio)delete out.municipio;
+ const res=duiNextLine(lines,/RESIDENCIA|ADDRESS/);if(res&&res.length>=4&&!/MUNICIPIO|DEPARTAMENTO/.test(duiPlain(res))){let r=res.replace(/\s*,\s*/g,', ').split(' ');while(r.length>1&&r.at(-1).replace(/,/g,'').length<=2)r.pop();out.residence=r.join(' ').replace(/,$/,'');}
  const prof=duiNextLine(lines,/PROFESI/);if(prof&&prof.length<=40)out.occupation=prof.split(/\s{2,}/)[0];
  return out;
 }
@@ -269,7 +276,7 @@ function duiMerge(all){
  const given=duiVote(all.frontCands,'given',all.mrzGiven),sur=duiVote(all.frontCands,'sur',all.mrzSur);
  if(given&&sur)out.name=(given+' '+sur).replace(/\s+/g,' ').trim();
  // DUI anterior: la residencia sirve como dirección del crédito
- if(all.residence)out.address=[all.residence,all.municipio,all.departamento].filter(Boolean).join(', ');
+ if(all.residence)out.address=[all.residence,all.municipio,all.departamento].filter(Boolean).join(', ').toUpperCase();
  for(const k of ['frontCands','frontGiven','frontSur','mrzGiven','mrzSur','residence'])delete out[k];
  return out;
 }
@@ -313,7 +320,7 @@ async function duiHandleImage(file,forcedSide='',preRead=null){
   const parsed=duiParseAll(read.texts||[read.text]);
   for(const [k,v] of Object.entries(parsed))if(v&&k!=='frontCands'&&!duiLastFound[k])duiLastFound[k]=v;
   // Los nombres del frente reemplazan a los anteriores (el reverso solo trae el nombre cortado)
-  if(parsed.frontCands.length)duiLastFound.frontCands=parsed.frontCands;
+  if(parsed.frontCands.length&&side==='front')duiLastFound.frontCands=parsed.frontCands;
   const found=duiMerge(duiLastFound);
   const {filled,diff}=duiApply(found);
   await duiSave();
