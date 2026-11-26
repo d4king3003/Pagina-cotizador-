@@ -102,8 +102,8 @@ function parseSAP(text){
 }
 let deliveryOcrWorker=null;
 function ocrTag(id){const el=document.getElementById(id);if(!el)throw Error('El lector de capturas no está incluido en este archivo.');return el.textContent.trim();}
-async function deliveryReadImage(blob,status){
- status('Leyendo la captura… la primera vez tarda unos segundos.');
+// Lector de texto sin internet (se comparte con el DUI)
+async function ocrWorker(){
  if(!globalThis.Tesseract){const s=document.createElement('script');s.textContent=ocrTag('tvs-ocr-lib');document.head.append(s);}
  if(!deliveryOcrWorker){
   // Abierto como archivo, Chrome no deja que el lector cargue piezas aparte: núcleo y trabajador van en un solo script.
@@ -114,6 +114,11 @@ async function deliveryReadImage(blob,status){
   const workerPath=URL.createObjectURL(new Blob([script],{type:'text/javascript'}));
   deliveryOcrWorker=await Tesseract.createWorker('eng',1,{workerPath,workerBlobURL:false,corePath:'incluido.js',langPath:'https://tvs-panel.local/ocr',cacheMethod:'none',gzip:true});
  }
+ return deliveryOcrWorker;
+}
+async function deliveryReadImage(blob,status){
+ status('Leyendo la captura… la primera vez tarda unos segundos.');
+ await ocrWorker();
  // Se amplía la captura al doble: el texto chico de SAP se lee mejor.
  const bmp=await createImageBitmap(blob),c=document.createElement('canvas');c.width=bmp.width*2;c.height=bmp.height*2;
  const g=c.getContext('2d');g.imageSmoothingQuality='high';g.fillStyle='#fff';g.fillRect(0,0,c.width,c.height);g.drawImage(bmp,0,0,c.width,c.height);
@@ -467,7 +472,7 @@ document.addEventListener('click',e=>{
  else if(action==='delivery-word'){const f=rec();if(f&&downloadDelivery(b.dataset.doc,f,'word')&&$('modal').open&&!$('delivery-form'))$('modal').close();}
  else if(action==='delivery-save-print'){const f=saveDeliveryForm();if(f){deliveryError('');deliveryPrint(b.dataset.doc,f);}}
  else if(action==='delivery-print'){const f=rec();if(f){if($('modal').open&&!$('delivery-form'))$('modal').close();deliveryPrint(b.dataset.doc,f);}}
- else if(action==='delivery-print-menu'){const f=rec();if(!f)return;openModal('Imprimir',`<p>El documento se abre aquí mismo, con tu formato original, listo para imprimir o descargar.</p><div class="credit-office-list">${[['placa','Póliza (placa)'],['carta','Carta de entrega (4 hojas)'],['matricula','IPM (impuesto primera matrícula)'],['exoneracion','Carta de exoneración (2 hojas)'],['compraventa','Compraventa (contado)'],['todo','Todos los documentos juntos']].filter(([k])=>k==='todo'||deliveryKindsFor(f).includes(k)).map(([k,l])=>`<button class="btn" data-action="delivery-print" data-doc="${k}" data-id="${esc(f.id)}">${esc(l)}</button>`).join('')}</div>`,`<button class="btn" data-close>Cerrar</button>`,480);}
+ else if(action==='delivery-print-menu'){const f=rec();if(!f)return;openModal('Imprimir',`<p>El documento se abre aquí mismo, con tu formato original, listo para imprimir o descargar.</p><div class="credit-office-list">${[['placa','Póliza (placa)'],['carta','Carta de entrega (4 hojas)'],['matricula','IPM (impuesto primera matrícula)'],['exoneracion','Carta de exoneración (2 hojas)'],['compraventa','Compraventa (contado)'],['todo','Todos los documentos juntos'],['dui','DUI (frente y reverso)']].filter(([k])=>k==='todo'||k==='dui'||deliveryKindsFor(f).includes(k)).map(([k,l])=>`<button class="btn" data-action="delivery-print" data-doc="${k}" data-id="${esc(f.id)}">${esc(l)}</button>`).join('')}</div>`,`<button class="btn" data-close>Cerrar</button>`,480);}
  else if(action==='delivery-save-pdf'||action==='delivery-save-word'){const f=saveDeliveryForm();if(f){deliveryError('');downloadDelivery(b.dataset.doc,f,action==='delivery-save-pdf'?'pdf':'word');}}
  else if(action==='delivery-word-menu'){const f=rec();if(!f)return;openModal('Descargar en Word',`<p>Se descargan tus documentos originales con los datos de <strong>${esc(f.name)}</strong>. Abrilos en Word, corregí lo que haga falta y guardalos como PDF.</p><div class="credit-office-list">${Object.entries(DELIVERY_KINDS).filter(([k,d])=>!d.pdfOnly&&deliveryKindsFor(f).includes(k)).map(([k,d])=>`<button class="btn" data-action="delivery-word" data-doc="${k}" data-id="${esc(f.id)}">${icon('download')}${esc(d.label)} <span class="credit-office-tag">Word</span></button>`).join('')}</div>`,`<button class="btn" data-close>Cerrar</button>`,520);}
  else if(action==='delivery-delete'){const f=rec();if(!f)return;openModal('Borrar entrega',`<p>¿Querés borrar la entrega de <strong>${esc(f.name)}</strong>?</p><p class="subtext">El crédito y la ficha del cliente no se borran.</p>`,`<button class="btn" data-close>Cancelar</button><button class="btn btn-danger" data-action="delivery-delete-confirm" data-id="${esc(id)}">Sí, borrar</button>`,480);}

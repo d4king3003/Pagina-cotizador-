@@ -159,7 +159,7 @@ function creditPrint(kind,f){
 }
 function creditPrintMenu(id){
  const f=(db.creditForms||[]).find(x=>x.id===id);if(!f)return;
- openModal('Imprimir',`<p>El documento se abre aquí mismo, con el formato original de Crediopciones, listo para imprimir o descargar.</p><div class="credit-office-list">${[['buro','Buró'],['cotizador','Cotizador Siete Tres'],['solicitud','Solicitud de crédito'],['todo','Los tres documentos juntos']].map(([k,l])=>`<button class="btn" data-action="credit-print" data-doc="${k}" data-id="${esc(f.id)}">${esc(l)}</button>`).join('')}</div>`,`<button class="btn" data-close>Cerrar</button>`,480);
+ openModal('Imprimir',`<p>El documento se abre aquí mismo, con el formato original de Crediopciones, listo para imprimir o descargar.</p><div class="credit-office-list">${[['buro','Buró'],['cotizador','Cotizador Siete Tres'],['solicitud','Solicitud de crédito'],['todo','Los tres documentos juntos'],['dui','DUI (frente y reverso)']].map(([k,l])=>`<button class="btn" data-action="credit-print" data-doc="${k}" data-id="${esc(f.id)}">${esc(l)}</button>`).join('')}</div>`,`<button class="btn" data-close>Cerrar</button>`,480);
 }
 document.addEventListener('click',e=>{
  const b=e.target.closest('[data-action="credit-print-menu"],[data-action="credit-print"],[data-action="credit-save-print"]');if(!b)return;
