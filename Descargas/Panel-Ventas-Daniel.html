@@ -86003,15 +86003,53 @@ async function duiReloadFromField(){
 const formatDuiShow=k=>k.slice(0,8)+'-'+k.slice(8);
 
 /* ---------- Imagen: orientar, leer y reconocer el lado ---------- */
-async function duiCanvas(src,rot=0,maxSide=1800){
+async function duiCanvas(src,rot=0,maxSide=1800,minSide=0){
  const bmp=await createImageBitmap(src);
- const sc=Math.min(1,maxSide/Math.max(bmp.width,bmp.height));
+ const long=Math.max(bmp.width,bmp.height),sc=minSide&&long<minSide?minSide/long:Math.min(1,maxSide/long);
  const w=Math.round(bmp.width*sc),h=Math.round(bmp.height*sc),turn=rot%180!==0;
  const c=document.createElement('canvas');c.width=turn?h:w;c.height=turn?w:h;
  const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,c.width,c.height);
  g.translate(c.width/2,c.height/2);g.rotate(rot*Math.PI/180);g.imageSmoothingQuality='high';g.drawImage(bmp,-w/2,-h/2,w,h);
  bmp.close?.();return c;
 }
+// Recorta la foto al borde del DUI cuando trae fondo alrededor (mesa, mano, etc.).
+// Busca la mancha más grande que contrasta con el fondo y tiene forma de tarjeta (1,59 de ancho por 1 de alto).
+function duiCropCanvas(src){
+ const S=320,sc=S/Math.max(src.width,src.height),w=Math.max(1,Math.round(src.width*sc)),h=Math.max(1,Math.round(src.height*sc));
+ const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d',{willReadFrequently:true});g.drawImage(src,0,0,w,h);
+ const px=g.getImageData(0,0,w,h).data,lum=new Float32Array(w*h),hist=new Array(256).fill(0);
+ for(let i=0;i<w*h;i++){const v=.299*px[i*4]+.587*px[i*4+1]+.114*px[i*4+2];lum[i]=v;hist[v|0]++;}
+ // Umbral de Otsu
+ let sum=0;for(let i=0;i<256;i++)sum+=i*hist[i];let sB=0,wB=0,best=0,th=128;
+ for(let i=0;i<256;i++){wB+=hist[i];if(!wB)continue;const wF=w*h-wB;if(!wF)break;sB+=i*hist[i];const mB=sB/wB,mF=(sum-sB)/wF,v=wB*wF*(mB-mF)**2;if(v>best){best=v;th=i;}}
+ let pick=null;
+ // Se prueban varios cortes de brillo: el de Otsu y otros, por si el fondo se parece a la tarjeta
+ const ths=[th,...[50,70,90,110,130,150,170,190,210].filter(t=>Math.abs(t-th)>8)];
+ for(const cut of ths)for(const bright of [true,false]){
+  const th=cut;
+  const seen=new Uint8Array(w*h);
+  for(let start=0;start<w*h;start++){
+   if(seen[start]||(lum[start]>th)!==bright)continue;
+   let x0=w,y0=h,x1=0,y1=0,n=0,edge=0;const st=[start];seen[start]=1;
+   while(st.length){const k=st.pop(),x=k%w,y=(k/w)|0;n++;if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y;if(!x||!y||x===w-1||y===h-1)edge++;
+    for(const q of [k-1,k+1,k-w,k+w]){if(q<0||q>=w*h||seen[q])continue;if((q===k-1&&x===0)||(q===k+1&&x===w-1))continue;if((lum[q]>th)===bright){seen[q]=1;st.push(q);}}}
+   const bw=x1-x0+1,bh=y1-y0+1,ar=Math.max(bw/bh,bh/bw),frac=bw*bh/(w*h);
+   // Forma de tarjeta (de pie o acostada), no todo el fondo, y que no se pegue a las orillas
+   if(n<w*h*.08||n<bw*bh*.55||ar<1.3||ar>1.9||frac>.93||edge>2*(w+h)*.35)continue;
+   const score=bw*bh*(1-Math.min(1,Math.abs(ar-1.586)/.35)*.6);
+   if(!pick||score>pick.score)pick={x0,y0,bw,bh,score};
+  }
+ }
+ if(!pick)return null;
+ // Un poco de margen para no comerse el borde redondeado
+ const m=2,X=Math.max(0,(pick.x0-m)/sc),Y=Math.max(0,(pick.y0-m)/sc),W=Math.min(src.width-X,(pick.bw+2*m)/sc),H=Math.min(src.height-Y,(pick.bh+2*m)/sc);
+ if(W*H>src.width*src.height*.9)return null;
+ const out=document.createElement('canvas');out.width=Math.round(W);out.height=Math.round(H);
+ out.getContext('2d').drawImage(src,X,Y,W,H,0,0,out.width,out.height);
+ return out;
+}
+// Dos pasadas: si la foto ya traía un borde oscuro alrededor de la tarjeta, la segunda lo quita
+function duiCropLoop(src){let c=src;for(let i=0;i<2;i++){let cut=null;try{cut=duiCropCanvas(c);}catch{}if(!cut)break;c=cut;}return c===src?null:c;}
 const duiCanvasBlob=(c,type='image/jpeg',q=.9)=>new Promise((r,j)=>c.toBlob(b=>b?r(b):j(Error('No se pudo preparar la imagen.')),type,q));
 function duiScore(t){
  const u=t.toUpperCase();let s=0;
@@ -86029,17 +86067,23 @@ function duiSide(t){
 async function duiRead(file,status){
  const worker=await ocrWorker();
  // Probar la foto derecha; si viene de lado o de cabeza, se gira hasta que se lea
- const first=await duiCanvas(file,0);
+ const whole=await duiCanvas(file,0);
+ const cropped=duiCropLoop(whole),first=cropped||whole;
  const tries=first.height>first.width*1.15?[90,270,0]:[0,180];
  let best=null;
  for(const rot of tries){
-  const c=rot?await duiCanvas(file,rot):first;
+  const c=rot?await duiCanvas(first,rot):first;
   status('Leyendo el DUI… la primera vez tarda unos segundos.');
+  // Para leer, las fotos chicas se agrandan (las letras del DUI son pequeñas)
   const {data}=await worker.recognize(await duiCanvasBlob(c,'image/png'));
   const score=duiScore(data.text);
-  if(!best||score>best.score)best={rot,canvas:c,text:data.text,score};
+  if(!best||score>best.score)best={rot,canvas:c,text:data.text,score,cropped:!!cropped};
   if(score>=8)break;
  }
+ // Segunda lectura en otro tamaño: cada una se equivoca en letras distintas y se usa lo que pase las validaciones
+ const L=Math.max(best.canvas.width,best.canvas.height),alt=L<1500?await duiCanvas(best.canvas,0,2000,2000):await duiCanvas(best.canvas,0,Math.round(L*.6));
+ try{const {data}=await worker.recognize(await duiCanvasBlob(alt,'image/png'));best.texts=[best.text,data.text];}catch{best.texts=[best.text];}
+ best.text=best.texts.join('\n');
  return best;
 }
 
@@ -86058,6 +86102,10 @@ function duiMrzDate(v,future=false){
  const year=future?2000+yy:(yy>now?1900+yy:2000+yy);
  return `${year}-${m[2]}-${m[3]}`;
 }
+// Dígito verificador del DUI: pesos 9 a 2 sobre los 8 números
+function duiValid(v){const d=String(v||'').replace(/\D/g,'');if(d.length!==9)return false;let s=0;for(let i=0;i<8;i++)s+=+d[i]*(9-i);return (10-s%10)%10===+d[8];}
+// Dígito de control de la zona <<< (7-3-1)
+function duiIcao(v){const w=[7,3,1];let s=0;for(let i=0;i<v.length;i++){const ch=v[i];const n=/\d/.test(ch)?+ch:ch==='<'?0:ch.charCodeAt(0)-55;s+=n*w[i%3];}return s%10;}
 const DUI_CONNECT=['DE','DEL','LA','LAS','LOS','Y'];
 // Línea con pinta de nombre: palabras de letras (las de 1 o 2 letras se quitan, salvo «de», «la», etc.)
 function duiNameLine(raw){
@@ -86065,7 +86113,7 @@ function duiNameLine(raw){
  while(toks.length&&DUI_CONNECT.includes(toks.at(-1)))toks.pop();
  const letters=toks.join('').length;
  if(!toks.length||letters<6||!toks.some(t=>t.length>=5))return '';
- if(/REPUBLICA|SALVADOR|DOCUMENTO|IDENTIDAD|APELLIDO|SURNAME|NOMBRE|GIVEN|NACIMIENTO|SEXO|GENDER|FECHA|LUGAR|EXPEDICION|EXPIRA|FIRMA|REGISTRO|MIGUEL|CENTRO|NORTE|SUR|ESTE|OESTE/.test(toks.join(' ')))return '';
+ if(/REPUBLICA|SALVADOR|DOCUMENTO|IDENTIDAD|APELLIDO|SURNAME|NOMBRE|GIVEN|NACIMIENTO|SEXO|GENDER|FECHA|LUGAR|EXPEDICION|EXPIRA|FIRMA|REGISTRO|MIGUEL|CENTRO|NORTE|SUR|ESTE|OESTE|NAMES|KNOWN|HOLDER|SIGNATURE|CONOCIDO|GENERO|UNIQUE|NUMBER|NUMERO/.test(toks.join(' ')))return '';
  // Nombre original con tildes y Ñ si la lectura las trae
  return toks.join(' ');
 }
@@ -86075,9 +86123,9 @@ function duiParse(text){
  const mrzLines=text.toUpperCase().replace(/[«‹]/g,'<').split(/\n+/).map(l=>l.replace(/\s/g,'').replace(/K(?=[<K]*$)/g,'<'));
  for(const l of mrzLines){
   let m=l.match(/IDSLV([0-9OQDIL]{8})<*([0-9OQDIL])/);
-  if(m&&!out.dui){const fix=v=>v.replace(/[OQD]/g,'0').replace(/[IL]/g,'1');out.dui=fix(m[1])+'-'+fix(m[2]);}
-  m=l.replace(/O/g,'0').match(/(\d{6})\d([MF])\d{6}\dSLV/);
-  if(m&&!out.birth){out.birth=duiMrzDate(m[1]);out.sex=m[2];}
+  if(m&&!out.dui){const fix=v=>v.replace(/[OQD]/g,'0').replace(/[IL]/g,'1'),d=fix(m[1])+'-'+fix(m[2]);if(duiValid(d))out.dui=d;}
+  m=l.replace(/O/g,'0').match(/(\d{6})(\d)([MF])\d{6}\dSLV/);
+  if(m&&!out.birth&&duiIcao(m[1])===+m[2]){out.birth=duiMrzDate(m[1]);out.sex=m[3];}
   m=l.match(/^([A-Z]+(?:<[A-Z]+)*)<<([A-Z]+(?:<[A-Z]+)*)<*$/);
   if(m&&!out.mrzSur&&m[1].length>=3&&!l.startsWith('IDSLV')){out.mrzSur=m[1].replace(/</g,' ');out.mrzGiven=m[2].replace(/</g,' ');}
  }
@@ -86088,23 +86136,72 @@ function duiParse(text){
   if(head>=0){const names=lines.slice(head+1,head+8).map(duiNameLine).filter(Boolean);if(names.length>=2){sur=names[0];giv=names[1];}}
  }
  if(sur&&giv){out.frontSur=duiNameLine(sur)||sur;out.frontGiven=duiNameLine(giv)||giv;}
- if(!out.dui){const m=text.match(/\b(\d{8})\s*[-–]\s*(\d)\b/);if(m)out.dui=m[1]+'-'+m[2];}
+ if(!out.dui){for(const m of text.matchAll(/\b(\d{8})\s*[-–]\s*(\d)\b/g)){if(duiValid(m[1]+m[2])){out.dui=m[1]+'-'+m[2];break;}}}
  if(!out.birth){const i=lines.findIndex(l=>/NACIMIENTO|BIRTH/.test(duiPlain(l)));const m=(i>=0?lines.slice(i,i+3).join(' '):'').match(/\b(\d{2})\/(\d{2})\/((?:19|20)\d{2})\b/);if(m&&+m[2]<=12&&+m[1]<=31)out.birth=`${m[3]}-${m[2]}-${m[1]}`;}
  if(!out.sex){const i=lines.findIndex(l=>/SEXO|GENDER/.test(duiPlain(l)));if(i>=0){const n=(lines[i+1]||'').trim();if(/^[MF]\b/.test(n))out.sex=n[0];}}
  // Reverso: departamento, distrito y profesión
  const dep=duiNextLine(lines,/DEPARTAMENTO/);
  if(dep){const p=duiPlain(dep);const d=DUI_DEPTOS.find(x=>p.startsWith(x)||p.includes(x));if(d)out.departamento=d;}
  const mun=duiNextLine(lines,/DISTRITO|MUNICIPIO/);
- if(mun){const first=mun.split(',')[0].trim();const found=duiFindDistrict(first);if(found)out.municipio=found;}
+ if(mun){const toks=mun.split(',')[0].trim().split(' ');for(let n=toks.length;n>0&&!out.municipio;n--){const found=duiFindDistrict(toks.slice(0,n).join(' '));if(found)out.municipio=found;}}
+ const res=duiNextLine(lines,/RESIDENCIA|ADDRESS/);if(res&&res.length>=4&&!/MUNICIPIO|DEPARTAMENTO/.test(duiPlain(res)))out.residence=res.replace(/\s*,\s*/g,', ');
  const prof=duiNextLine(lines,/PROFESI/);if(prof&&prof.length<=40)out.occupation=prof.split(/\s{2,}/)[0];
  return out;
 }
 // Une lo leído en las dos caras. El nombre del frente va completo; el del reverso puede venir cortado.
+function duiLev(a,b){const d=Array.from({length:a.length+1},(_,i)=>[i]);for(let j=1;j<=b.length;j++)d[0][j]=j;for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[a.length][b.length];}
+// Junta el nombre leído en el frente con el del reverso, palabra por palabra.
+// El reverso casi no se equivoca pero puede venir cortado; el frente viene completo pero puede tener letras mal leídas.
+function duiFixName(front,mrz){
+ if(!front)return mrz||'';if(!mrz)return front;
+ const f=front.split(' '),m=mrz.split(' ');
+ if(f.length!==m.length)return front;
+ return f.map((w,i)=>{const r=m[i];
+  if(w===r||w.startsWith(r)&&i===m.length-1)return w;            // igual, o el reverso cortado al final
+  if(r.length>=w.length||i<m.length-1)return duiLev(w,r)<=Math.max(2,Math.floor(r.length/3))?r:w;
+  // Última palabra cortada en el reverso: se toma el comienzo del reverso y el final del frente
+  const head=w.slice(0,r.length);return duiLev(head,r)<=2?r+w.slice(r.length):w;
+ }).join(' ');
+}
+// Une las lecturas de una misma foto: lo validado de cualquiera, y todos los nombres del frente como candidatos
+function duiParseAll(texts){
+ const out={frontCands:[]};
+ for(const t of texts){
+  const p=duiParse(t);
+  for(const [k,v] of Object.entries(p))if(v&&!['frontGiven','frontSur'].includes(k)&&!out[k])out[k]=v;
+  if(p.frontGiven&&p.frontSur)out.frontCands.push({given:p.frontGiven,sur:p.frontSur});
+ }
+ return out;
+}
+// Elige el nombre del frente que más se parece al del reverso (o el primero, si no hay reverso)
+function duiPickFront(cands,mrzGiven,mrzSur){
+ if(!cands?.length)return null;
+ if(!mrzSur)return cands[0];
+ const cost=c=>duiLev(c.sur,mrzSur)+duiLev(c.given.slice(0,(mrzGiven||'').length),mrzGiven||'');
+ return [...cands].sort((a,b)=>cost(a)-cost(b))[0];
+}
+// Palabra por palabra, entre todas las lecturas del frente, se elige la que coincide con el reverso
+function duiVote(cands,key,mrz){
+ const lists=(cands||[]).map(c=>String(c[key]||'').split(' ').filter(Boolean)).filter(l=>l.length);
+ if(!lists.length)return mrz||'';
+ if(!mrz)return lists[0].join(' ');
+ const m=mrz.split(' '),same=lists.filter(l=>l.length===m.length);
+ if(!same.length)return duiFixName(lists[0].join(' '),mrz);
+ return m.map((r,i)=>{
+  const opts=same.map(l=>l[i]);
+  const full=opts.filter(w=>w.startsWith(r)).sort((a,b)=>b.length-a.length)[0];
+  if(full)return full;
+  const best=[...opts].sort((a,b)=>duiLev(a.slice(0,r.length),r)-duiLev(b.slice(0,r.length),r))[0];
+  return duiFixName(best,r);
+ }).join(' ');
+}
 function duiMerge(all){
  const out={...all};
- const given=all.frontGiven||all.mrzGiven||'',sur=all.frontSur||all.mrzSur||'';
+ const given=duiVote(all.frontCands,'given',all.mrzGiven),sur=duiVote(all.frontCands,'sur',all.mrzSur);
  if(given&&sur)out.name=(given+' '+sur).replace(/\s+/g,' ').trim();
- for(const k of ['frontGiven','frontSur','mrzGiven','mrzSur'])delete out[k];
+ // DUI anterior: la residencia sirve como dirección del crédito
+ if(all.residence)out.address=[all.residence,all.municipio,all.departamento].filter(Boolean).join(', ');
+ for(const k of ['frontCands','frontGiven','frontSur','mrzGiven','mrzSur','residence'])delete out[k];
  return out;
 }
 function duiFindDistrict(v){
@@ -86114,13 +86211,13 @@ function duiFindDistrict(v){
 }
 function duiAge(birth){const m=String(birth||'').match(/^(\d{4})-(\d\d)-(\d\d)$/);if(!m)return '';const n=new Date();let a=n.getFullYear()-m[1];if(n.getMonth()+1<+m[2]||(n.getMonth()+1===+m[2]&&n.getDate()<+m[3]))a--;return a>0&&a<120?String(a):'';}
 let duiAuto={};
-const DUI_LABELS={name:'nombre',dui:'DUI',birth:'nacimiento',sex:'sexo',age:'edad',occupation:'ocupación',departamento:'departamento',municipio:'municipio'};
+const DUI_LABELS={address:'dirección',name:'nombre',dui:'DUI',birth:'nacimiento',sex:'sexo',age:'edad',occupation:'ocupación',departamento:'departamento',municipio:'municipio'};
 // Llena los campos vacíos; si un campo ya tiene otro valor, ofrece cambiarlo
 function duiApply(found,overwrite=false){
  const form=duiFormEl();if(!form)return {filled:[],diff:[]};
  const vals={...found};
  if(form.id==='credit-form'){delete vals.age;delete vals.occupation;delete vals.departamento;delete vals.municipio;}
- else{if(vals.birth)vals.age=duiAge(vals.birth);delete vals.birth;delete vals.sex;}
+ else{delete vals.address;if(vals.birth)vals.age=duiAge(vals.birth);delete vals.birth;delete vals.sex;}
  const filled=[],diff=[];
  for(const [k,v] of Object.entries(vals)){
   if(!v)continue;
@@ -86140,13 +86237,14 @@ async function duiHandleImage(file,forcedSide='',preRead=null){
   const read=preRead||await duiRead(file,status);
   const side=forcedSide||duiSide(read.text)||(!duiState.front?'front':!duiState.back?'back':'front');
   // Se guarda derecha y en JPEG (más liviana), con el lado largo de 1600 px como máximo
-  const c=await duiCanvas(file,read.rot,1600);
-  duiState[side]=await duiCanvasBlob(c,'image/jpeg',.88);
+  // La foto guardada es la ya recortada y derecha (lado largo de 1600 px como máximo)
+  const c=await duiCanvas(read.canvas,0,1600),cropped=read.cropped;
+  duiState[side]=await duiCanvasBlob(c,'image/jpeg',.9);
   duiRender();
-  const parsed=duiParse(read.text);
-  for(const [k,v] of Object.entries(parsed))if(v&&!duiLastFound[k])duiLastFound[k]=v;
-  // El nombre del frente reemplaza al del reverso (que puede venir cortado)
-  if(parsed.frontGiven){duiLastFound.frontGiven=parsed.frontGiven;duiLastFound.frontSur=parsed.frontSur;}
+  const parsed=duiParseAll(read.texts||[read.text]);
+  for(const [k,v] of Object.entries(parsed))if(v&&k!=='frontCands'&&!duiLastFound[k])duiLastFound[k]=v;
+  // Los nombres del frente reemplazan a los anteriores (el reverso solo trae el nombre cortado)
+  if(parsed.frontCands.length)duiLastFound.frontCands=parsed.frontCands;
   const found=duiMerge(duiLastFound);
   const {filled,diff}=duiApply(found);
   await duiSave();
@@ -86154,7 +86252,7 @@ async function duiHandleImage(file,forcedSide='',preRead=null){
   const missing=!duiState.front?' Ahora pegá el frente.':!duiState.back?' Ahora pegá el reverso.':'';
   const got=filled.length?` Llené: ${filled.map(k=>DUI_LABELS[k]||k).join(', ')}.`:Object.keys(found).length?'':' No pude leer datos en esta foto: revisá que se vea clara y derecha, o escribilos a mano.';
   const dif=diff.length?` En el formulario ya había otro valor en: ${diff.map(k=>DUI_LABELS[k]||k).join(', ')}.`:'';
-  duiStatus(`${sideTxt} del DUI listo.${got}${dif}${missing}`,!filled.length&&!Object.keys(found).length,diff.length?' <button type="button" class="text-button" data-dui-use>Usar los datos del DUI</button>':'');
+  duiStatus(`${sideTxt} del DUI listo${cropped?' (recortado al borde del DUI)':''}.${got}${dif}${missing}`,!filled.length&&!Object.keys(found).length,diff.length?' <button type="button" class="text-button" data-dui-use>Usar los datos del DUI</button>':'');
  }catch(err){duiStatus('No se pudo leer la foto: '+(err?.message||err)+'.',true);}
 }
 const duiImageFrom=dt=>[...(dt?.files||[])].find(f=>f.type.startsWith('image/'))||[...(dt?.items||[])].map(i=>i.kind==='file'&&i.type.startsWith('image/')?i.getAsFile():null).find(Boolean);
@@ -86231,7 +86329,7 @@ document.addEventListener('click',async e=>{
 // Al cerrar el formulario se limpian las fotos en memoria
 document.addEventListener('close',e=>{if(e.target===$('modal'))duiState={front:null,back:null,key:'',form:''};},true);
 // Para las pruebas automáticas
-globalThis.__duiTest={read:duiRead,parse:t=>duiMerge(duiParse(t)),canvas:duiCanvas,blob:duiCanvasBlob,score:duiScore,ocr:()=>ocrWorker()};
+globalThis.__duiTest={read:duiRead,parse:t=>duiMerge(duiParseAll(String(t).split('\n\u0000'))),crop:duiCropLoop,canvas:duiCanvas,blob:duiCanvasBlob,score:duiScore,ocr:()=>ocrWorker()};
 
 // Entrega de la moto: carta de entrega (4 hojas) y autorización para pago en línea del impuesto de primera matrícula.
 // Los datos de la moto (motor, chasis, póliza, color) se pegan desde SAP: como texto o como captura (se lee sin internet).
